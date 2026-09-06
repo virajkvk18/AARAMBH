@@ -1,6 +1,6 @@
 # AARAMBH
 
-**A single window that actually thinks — not just files paperwork.**
+**A single window that actually thinks - not just files paperwork.**
 
 Built for Smart India Hackathon 2026 · Problem Statement 26130 · Government of Maharashtra, Maharashtra State Innovation Society (Dept. of Skills, Employment, Entrepreneurship & Innovation)
 
