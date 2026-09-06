@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import {
   MapPin,
   Mail,
@@ -43,34 +42,34 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5">
               <li>
-                <Link href="/about" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   About AARAMBH Single Window
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/user-guide" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Investor User Guide & Manual
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/faqs" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Frequently Asked Questions (FAQs)
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/grievance" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Grievance Redressal & Support
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Contact Department Officers
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/act-rules" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Industrial Policies & Acts
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -82,29 +81,29 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2.5">
               <li>
-                <Link href="/terms" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Terms of Service & Usage
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Privacy Policy & Data Security
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/hyperlinking-policy" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Hyperlinking Policy
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/copyright" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Copyright & Intellectual Property
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/sitemap" className="hover:text-indigo-400 transition-colors">
+                <span className="text-slate-400">
                   Portal Sitemap
-                </Link>
+                </span>
               </li>
               <li>
                 <a

@@ -81,7 +81,7 @@ export default function DashboardHomePage() {
     {
       title: "Document Vault",
       subtitle: "AI OCR verification & DigiLocker document sync",
-      href: "/dashboard/document-vault",
+      href: "/dashboard/vault",
       icon: FolderLock,
       btnLabel: "Manage Vault",
       accent: "border-blue-200 hover:border-blue-400 bg-gradient-to-br from-white to-blue-50/40",
@@ -90,7 +90,7 @@ export default function DashboardHomePage() {
     {
       title: "DAG Workflow",
       subtitle: "Inspect multi-department parallel dependency graphs",
-      href: "/dashboard/workflows",
+      href: "/dashboard/dag",
       icon: GitFork,
       btnLabel: "View Pipelines",
       accent: "border-purple-200 hover:border-purple-400 bg-gradient-to-br from-white to-purple-50/40",
@@ -99,7 +99,7 @@ export default function DashboardHomePage() {
     {
       title: "SLA Tracker",
       subtitle: "Real-time statutory countdowns & deemed approvals",
-      href: "/dashboard/sla-tracker",
+      href: "/dashboard/sla",
       icon: Clock,
       btnLabel: "Track Timelines",
       accent: "border-emerald-200 hover:border-emerald-400 bg-gradient-to-br from-white to-emerald-50/40",
@@ -230,7 +230,7 @@ export default function DashboardHomePage() {
             </p>
           </div>
           <Link
-            href="/dashboard/sla-tracker"
+            href="/dashboard/sla"
             className="text-xs font-bold text-[#4F46E5] hover:underline flex items-center space-x-1"
           >
             <span>Open Comprehensive SLA Tracker</span>
@@ -262,7 +262,7 @@ export default function DashboardHomePage() {
                   </span>
                 </td>
                 <td className="px-6 py-3.5 text-right">
-                  <Link href="/dashboard/workflows" className="text-indigo-600 font-bold hover:underline">
+                  <Link href="/dashboard/dag" className="text-indigo-600 font-bold hover:underline">
                     Graph Node
                   </Link>
                 </td>
@@ -279,7 +279,7 @@ export default function DashboardHomePage() {
                   </span>
                 </td>
                 <td className="px-6 py-3.5 text-right">
-                  <Link href="/dashboard/workflows" className="text-indigo-600 font-bold hover:underline">
+                  <Link href="/dashboard/dag" className="text-indigo-600 font-bold hover:underline">
                     Graph Node
                   </Link>
                 </td>

@@ -160,7 +160,7 @@ export default function SLATrackerPage() {
 
         <div className="flex items-center gap-3 shrink-0">
           <Link
-            href="/dashboard/workflows"
+            href="/dashboard/dag"
             className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-xs transition-all"
           >
             <span>Back to DAG Workflow</span>

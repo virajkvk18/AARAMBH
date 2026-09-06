@@ -332,7 +332,7 @@ export default function DAGWorkflowPage() {
           </button>
 
           <Link
-            href="/dashboard/sla-tracker"
+            href="/dashboard/sla"
             className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-xs transition-all"
           >
             <span>Open SLA Tracker</span>
@@ -473,7 +473,7 @@ export default function DAGWorkflowPage() {
               </div>
             </div>
             <Link
-              href="/dashboard/sla-tracker"
+              href="/dashboard/sla"
               className="px-5 py-2.5 rounded-xl bg-white text-emerald-950 font-bold text-xs hover:bg-emerald-50 transition-colors shadow-md whitespace-nowrap"
             >
               View Deemed SLA Certifications

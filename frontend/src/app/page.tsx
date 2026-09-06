@@ -135,7 +135,6 @@ interface KeyApproval {
   slaDays: number;
   category: "Pre-Establishment" | "Pre-Operation" | "Utility";
   description: string;
-  link: string;
 }
 
 const keyApprovalsData: KeyApproval[] = [
@@ -148,7 +147,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Direct plot allotment, building layout approval, and provisional possession across Maharashtra industrial estates.",
-    link: "/approvals/midc-land-allotment",
   },
   {
     id: "mpcb-cte",
@@ -159,7 +157,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Statutory environmental consent categorization (Red/Orange/Green/White) before commencement of industrial construction.",
-    link: "/approvals/mpcb-cte",
   },
   {
     id: "fire-noc",
@@ -170,7 +167,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Fire system compliance inspection, high-rise clearance, and provisional firefighting system installation certificate.",
-    link: "/approvals/fire-noc",
   },
   {
     id: "water-supply",
@@ -181,7 +177,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Utility",
     description:
       "Pipeline connectivity feasibility, raw & treated water volume quota reservation for industrial production.",
-    link: "/approvals/water-supply",
   },
   {
     id: "dish-license",
@@ -192,7 +187,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Operation",
     description:
       "Industrial factory license approval, boiler registration, and occupational worker safety compliance sign-off.",
-    link: "/approvals/dish-license",
   },
   {
     id: "power-feasi",
@@ -203,7 +197,6 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Utility",
     description:
       "High Tension / Low Tension electrical grid load feasibility, transformer installation NOC, and energized meter connection.",
-    link: "/approvals/power-sanction",
   },
 ];
 
@@ -276,7 +269,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <Link
-                href="/know-your-approvals"
+                href="/dashboard/kya"
                 className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition-all duration-150 hover:-translate-y-0.5"
               >
                 <Compass className="w-4 h-4" />
@@ -285,7 +278,7 @@ export default function HomePage() {
               </Link>
 
               <Link
-                href="/track-status"
+                href="/dashboard/sla"
                 className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 font-semibold text-sm border border-slate-700 hover:border-slate-600 transition-all duration-150"
               >
                 <Search className="w-4 h-4 text-slate-400" />
@@ -391,13 +384,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            <Link
-              href="/approvals"
-              className="inline-flex items-center space-x-1.5 text-sm font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors"
-            >
-              <span>Explore All Approvals</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <span className="inline-flex items-center space-x-1.5 text-sm font-semibold text-slate-400 cursor-not-allowed" aria-disabled="true">
+              <span>Approval directory unavailable in this demo</span>
+            </span>
           </div>
 
           {/* Cards Grid */}
@@ -444,13 +433,9 @@ export default function HomePage() {
                     <span className="text-[11px] font-medium text-slate-400">
                       Online Application
                     </span>
-                    <Link
-                      href={approval.link}
-                      className="inline-flex items-center space-x-1 text-xs font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors"
-                    >
-                      <span>View Details</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <span className="text-xs font-semibold text-slate-400" aria-disabled="true">
+                      Details unavailable in this demo
+                    </span>
                   </div>
                 </div>
               );
@@ -478,7 +463,7 @@ export default function HomePage() {
             </p>
             <div className="mt-8">
               <Link
-                href="/know-your-approvals"
+                href="/dashboard/kya"
                 className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-md transition-all duration-150"
               >
                 <Sparkles className="w-4 h-4 text-indigo-200" />

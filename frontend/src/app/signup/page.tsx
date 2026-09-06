@@ -240,9 +240,7 @@ export default function SignupPage() {
             />
             <label htmlFor="agreeTerms" className="text-xs text-slate-600 leading-snug">
               I agree to the{" "}
-              <Link href="/terms" className="text-indigo-600 hover:underline">
-                Terms of Service
-              </Link>{" "}
+              <span className="text-slate-600">Terms of Service</span>{" "}
               and declare that all details provided are accurate under the Maharashtra Industrial Single Window Act.
             </label>
           </div>

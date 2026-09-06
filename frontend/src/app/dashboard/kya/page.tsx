@@ -702,7 +702,7 @@ export default function KYAWizardPage() {
 
             <div className="flex items-center gap-3">
               <Link
-                href="/dashboard/document-vault"
+                href="/dashboard/vault"
                 className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all shrink-0"
               >
                 <span>Proceed to Document Vault</span>
@@ -808,7 +808,7 @@ export default function KYAWizardPage() {
                 Data saved to your shared enterprise profile in <code>enterpriseStore</code>.
               </div>
               <Link
-                href="/dashboard/document-vault"
+                href="/dashboard/vault"
                 className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
               >
                 <span>Upload Documents for these Clearances</span>

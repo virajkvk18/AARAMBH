@@ -360,9 +360,7 @@ export default function LoginPage() {
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span>256-Bit SSL Encrypted Session</span>
           </span>
-          <Link href="/helpdesk" className="text-indigo-600 hover:underline">
-            Need Help Logging In?
-          </Link>
+          <span className="text-slate-400">Helpdesk unavailable in this demo</span>
         </div>
       </div>
     </div>
