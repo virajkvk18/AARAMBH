@@ -311,62 +311,62 @@ export default function HomePage() {
 
   return (
     <div className="w-full bg-[#FCFAF8] min-h-screen">
-      {/* 1. HERO SECTION (Burgundy, Sunset Coral & Warm Gold) */}
-      <section className="relative bg-gradient-to-b from-[#14050B] via-[#1E0911] to-[#14050B] bg-topo-pattern text-white pt-14 pb-20 overflow-hidden border-b border-[#36101E]">
+      {/* 1. HERO SECTION (High-Contrast Burgundy, Sunset Coral & Luminous Sand Gold) */}
+      <section className="relative bg-gradient-to-b from-[#13040A] via-[#1C0710] to-[#13040A] bg-topo-pattern text-white pt-16 pb-24 overflow-hidden border-b border-[#3D1121]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Maharashtra Gov Single Window Badge */}
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#FE7251]/15 border border-[#FE7251]/35 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#FE7251] animate-pulse"></span>
+            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#250C19] border border-[#FE7251]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-sm shadow-[#FE7251]"></span>
               <span>AARAMBH • Government of Maharashtra Single Window Portal</span>
             </div>
 
             {/* Main Hero Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-sm">
               Explore, Apply and Get all Approvals Required to Start your Business in{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFCA7C] to-[#FE7251]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251] font-black drop-shadow-md">
                 Maharashtra
               </span>
             </h1>
 
             {/* Sub-headline */}
-            <p className="mt-5 text-base sm:text-lg text-[#E0C7BC] leading-relaxed max-w-3xl mx-auto font-normal">
+            <p className="mt-5 text-base sm:text-lg text-[#F5EBE6] leading-relaxed max-w-3xl mx-auto font-normal drop-shadow-xs">
               Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.
             </p>
 
             {/* Unified Search Bar */}
-            <div className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl border border-[#EFE4DC] flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800">
+            <div className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2.5 sm:p-3 shadow-2xl shadow-black/40 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 text-slate-800">
               {/* Category Dropdown */}
               <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-3">
                 <select
                   value={searchCategory}
                   onChange={(e) => setSearchCategory(e.target.value)}
-                  className="w-full sm:w-auto bg-[#FFF8F3] hover:bg-[#FFF0E6] text-xs font-bold text-slate-800 px-3 py-2.5 rounded-xl border-0 focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8"
+                  className="w-full sm:w-auto bg-[#FFF5ED] hover:bg-[#FFEBE0] text-xs font-bold text-slate-900 px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8 transition-colors"
                 >
                   <option value="All Approvals">All Approvals</option>
                   <option value="State Approvals">State Approvals (MH)</option>
                   <option value="Central Approvals">Central Approvals</option>
                   <option value="Government Schemes">Govt. Schemes & Subsidies</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
 
               {/* Search Text Input */}
               <div className="flex-1 flex items-center px-3">
-                <Search className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+                <Search className="w-4 h-4 text-slate-500 mr-2.5 shrink-0" />
                 <input
                   type="text"
                   placeholder="Search for approvals, licences, registrations, services e.g. MIDC, MPCB CTE..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-xs sm:text-sm text-slate-900 placeholder-slate-400 bg-transparent border-0 focus:outline-none focus:ring-0"
+                  className="w-full text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 bg-transparent border-0 focus:outline-none focus:ring-0"
                 />
               </div>
 
               {/* Coral / Burgundy Explore All Button */}
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs sm:text-sm tracking-wide shadow-md shadow-[#9B2A48]/30 transition-all duration-150 shrink-0 hover:scale-[1.02]"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02]"
               >
                 <span>EXPLORE ALL</span>
                 <ArrowRight className="w-4 h-4" />
@@ -374,23 +374,23 @@ export default function HomePage() {
             </div>
 
             {/* Secondary Callout Bar ("Click Here & Know Your Approvals") */}
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3.5">
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center space-x-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-lg shadow-[#9B2A48]/40 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
+                className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl shadow-[#9B2A48]/50 border border-[#FFCA7C]/50 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
                 <span>Click Here & Know Your Approvals</span>
                 <Sparkles className="w-4 h-4 text-[#FFCA7C]" />
               </Link>
-              <span className="text-xs text-[#C4A89C] font-medium">
+              <span className="text-xs text-[#F5EBE6] font-semibold">
                 Get a customized list of clearances in under 3 minutes
               </span>
             </div>
 
             {/* Popular Search Chips */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-[#EFE4DC]">
-              <span className="text-[#C4A89C] font-semibold">Popular Clearances:</span>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
+              <span className="text-[#FFCA7C] font-bold">Popular Clearances:</span>
               {[
                 { name: "MIDC Land Allotment", href: "/dashboard/prevalidation" },
                 { name: "MPCB CTE", href: "/dashboard/prevalidation" },
@@ -401,7 +401,7 @@ export default function HomePage() {
                 <Link
                   key={chip.name}
                   href={chip.href}
-                  className="px-2.5 py-1 rounded-lg bg-[#250C19]/90 hover:bg-[#381326] text-[#EFE4DC] border border-[#521C35] hover:border-[#FE7251] hover:text-white transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[#2D0E1D] hover:bg-[#3D1427] text-white font-medium border border-[#FE7251]/40 hover:border-[#FFCA7C] hover:text-[#FFCA7C] shadow-xs transition-colors"
                 >
                   {chip.name}
                 </Link>
