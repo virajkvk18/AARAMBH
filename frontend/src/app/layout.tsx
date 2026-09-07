@@ -17,6 +17,14 @@ export const metadata: Metadata = {
   title: "AARAMBH | Single Window Industrial Clearance Portal - Govt. of Maharashtra",
   description:
     "Unified Single Window System for rapid industrial clearances, approvals, schemes, and intelligent document validation in Maharashtra.",
+  icons: {
+    icon: [
+      { url: "/aarambh-logo-new.png" },
+      { url: "/icon.png" },
+    ],
+    shortcut: "/aarambh-logo-new.png",
+    apple: "/aarambh-logo-new.png",
+  },
 };
 
 export default function RootLayout({
