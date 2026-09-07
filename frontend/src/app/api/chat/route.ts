@@ -1,34 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SYSTEM_PROMPT = `You are "AARAMBH", the official clearance and investment advisor for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
+const SYSTEM_PROMPT = `You are "AARAMBH", the official clearance and investment advisory intelligence for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
 
-Core Directives:
-1. Direct Answers First: ALWAYS directly and specifically answer the user's question in the very first sentence. Never start with a generic greeting, canned disclaimer, or capability list unless specifically asked.
-2. Tone & Style: Maintain a professional, concise, authoritative government advisory tone. Do not use informal language, unnecessary filler, or excessive emojis. Use clear bullet points and bold headers for readability.
-3. Legal & Business Eligibility (e.g. Age, Registration, Compliance):
-   - Under the Indian Contract Act (1872) and Indian Majority Act (1875), any individual aged 18 or older is legally competent to contract, register an enterprise, hold commercial assets, and serve as a Director, Partner, or Sole Proprietor.
-   - Outline the legal entity options (Sole Proprietorship / Udyam MSME, Private Limited Company via MCA SPICe+, LLP, Partnership).
-   - Detail the primary statutory identity requirements: PAN, Aadhaar, Bank Account, GSTIN.
-   - Explain how once registered, statutory industrial clearances in Maharashtra (MIDC land allotment, MPCB consent, Fire NOC, DISH factory license) are processed seamlessly through the AARAMBH Single Window Portal.
-4. Maharashtra Statutory Clearances & Regulations:
-   - MIDC (Maharashtra Industrial Development Corporation): Land plot allocation, zoning, building layout blueprint approval (SLA: 15 working days).
-   - MPCB (Maharashtra Pollution Control Board): Consent to Establish (CTE) & Consent to Operate (CTO) categorized by pollution index: White (exempt/intimation), Green, Orange, Red (SLA: 15 to 30 working days).
-   - Directorate of Maharashtra Fire Services: Provisional Fire Safety NOC and Final NOC (SLA: 14 working days).
-   - DISH (Directorate of Industrial Safety & Health): Factory license under the Factories Act 1948, boiler registration, worker safety approval (SLA: 10 working days).
-   - MSEDCL (Maharashtra State Electricity Distribution Co. Ltd): HT/LT power connectivity feasibility (SLA: 7 working days).
-   - Deemed Approvals: Under the Maharashtra Right to Public Services Act (RTS Act 2015), clearances not queried or resolved within statutory SLA working days are deemed approved by operation of law.
-   - Package Scheme of Incentives (PSI 2019): Subsidies on capital investment (15% to 40%+), electricity duty exemptions, and stamp duty waivers.
-5. Out-of-Scope Requests:
-   - If a question is entirely unrelated to business, industry, trade, or statutory clearances (e.g. sports, entertainment, general trivia), state succinctly that your scope is dedicated to Maharashtra business registrations, industrial clearances, and regulatory compliance, and politely redirect the user.
-6. Ambiguous Requests:
-   - When a user query lacks necessary project parameters (such as sector category, proposed investment amount, or geographic zone), answer the known aspects directly, then ask 1-2 precise clarifying questions.`;
+Core Operational Rules:
+1. Direct Answer First: ALWAYS answer the user's specific question directly in the very first sentence. If asked about age eligibility (e.g. 16, 17, 18, 19), immediately explain the legal age requirement under Indian Law (Indian Contract Act 1872 & Indian Majority Act 1875 where age 18 is the age of majority; minors under 18 cannot enter into binding commercial contracts or be direct company directors, but can have a business registered through a legal guardian/parent or hold shares in trust).
+2. Authoritative, Professional Tone: Do not use generic filler, artificial pleasantries, or templated deflections. Format responses using clean markdown headers and bullet points.
+3. Maharashtra Regulatory Scope:
+   - Provide concrete guidance on MIDC (Land allotment & building plan - 15 days SLA), MPCB (Pollution CTE/CTO - 15 to 30 days SLA), Fire NOC (14 days SLA), DISH (Factory License - 10 days SLA), MSEDCL (Power Sanction - 7 days SLA), and PSI 2019 Incentives (subsidies & duty waivers).
+   - Reference the Maharashtra Right to Public Services Act (RTS Act 2015) for deemed statutory approvals when timelines elapse.
+4. Out-of-Scope Redirection:
+   - If a question is entirely unrelated to business, industry, compliance, or Maharashtra commerce, state concisely in one sentence that your scope is limited to Maharashtra enterprise clearances and industrial regulations.
+5. Clarifying Questions:
+   - Only ask clarifying questions when essential project parameters (such as sector or investment size) are strictly required to determine the exact statutory clearance track.`;
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { messages, userApiKey } = body;
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
         { error: "Invalid request: 'messages' array is required." },
         { status: 400 }
@@ -39,63 +29,24 @@ export async function POST(req: NextRequest) {
       ? userApiKey.trim()
       : (process.env.GROQ_API_KEY || process.env.GROQ_KEY || "");
 
-    const lastUserMessage = messages[messages.length - 1]?.content || "";
+    console.log(
+      `[AARAMBH Chat API] Incoming request with ${messages.length} messages. GROQ_API_KEY status: ${
+        apiKey ? `CONFIGURED (${apiKey.slice(0, 6)}...${apiKey.slice(-4)})` : "NOT CONFIGURED"
+      }`
+    );
 
     if (!apiKey) {
-      // Direct, contextual response answering the exact question
-      const q = lastUserMessage.toLowerCase();
-      let answer = "";
-
-      if (q.includes("19") || q.includes("age") || q.includes("start a business") || q.includes("young")) {
-        answer = `**Yes, at 19 years old, you are fully legally eligible to start, register, and operate a business in Maharashtra.**
-
-### 1. Legal Eligibility
-Under the **Indian Majority Act (1875)** and the **Indian Contract Act (1872)**, any individual who is 18 years or older is legally an adult competent to enter into binding legal contracts, hold commercial assets, and serve as a business owner or corporate director.
-
----
-
-### 2. Available Business Structures
-You can establish your venture under any of the following structures:
-- **Sole Proprietorship:** Easiest to start; register via **Udyam MSME Registration** (instant online verification).
-- **Private Limited Company:** Registered through the Ministry of Corporate Affairs (MCA) SPICe+ form; you can be a Director and Shareholder.
-- **Limited Liability Partnership (LLP):** Suitable for multi-founder ventures with limited liability protection.
-- **Partnership Firm:** Registered with the Maharashtra Registrar of Firms (RoF).
-
----
-
-### 3. Core Prerequisites to Begin
-To register your business and open a corporate bank account, you will need:
-1. **Permanent Account Number (PAN)**
-2. **Aadhaar Card** (for e-KYC and digital signature verification)
-3. **Dedicated Business Bank Account**
-4. **GST Registration (GSTIN)** (mandatory for turnover exceeding statutory thresholds or inter-state trade)
-
----
-
-### 4. Maharashtra Single Window Clearances (AARAMBH)
-Once your legal entity is formed, all statutory industrial and operational clearances can be processed through the **AARAMBH Single Window Portal**:
-- **Land & Zoning:** MIDC plot allotment and building blueprint approval (15-day SLA).
-- **Environmental Consent:** MPCB Consent to Establish (CTE) based on your pollution categorization (White/Green/Orange/Red).
-- **Factory & Safety:** DISH factory license and Fire Safety NOC.
-- **State Subsidies:** Eligible for capital subsidies and power tariff incentives under the **Package Scheme of Incentives (PSI 2019)**.`;
-      } else {
-        answer = `**AARAMBH Single Window Portal**
-
-Your query regarding **"${lastUserMessage}"** has been received. 
-
-To guide you with the exact regulatory requirements, please specify:
-1. **Industry Sector** (e.g., Manufacturing, Food Processing, IT/ITES, Chemicals)
-2. **Proposed Location** (e.g., MIDC Industrial Estate, Municipal Corporation, or Private Land)
-3. **Investment Scale** (MSME, Large Enterprise, or Mega Project)`;
-      }
-
-      return NextResponse.json({
-        content: answer,
-        model: "standard",
-      });
+      console.warn("[AARAMBH Chat API] GROQ_API_KEY is not set in environment.");
+      return NextResponse.json(
+        {
+          error:
+            "GROQ_API_KEY is not set. Please add GROQ_API_KEY=gsk_... to frontend/.env.local and restart the server.",
+        },
+        { status: 500 }
+      );
     }
 
-    // Call Groq API via official chat completions endpoint
+    // Call official Groq API endpoint
     const groqPayload = {
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -105,9 +56,11 @@ To guide you with the exact regulatory requirements, please specify:
           content: m.content,
         })),
       ],
-      temperature: 0.3,
+      temperature: 0.2,
       max_tokens: 1024,
     };
+
+    console.log("[AARAMBH Chat API] Calling Groq API with model: llama-3.3-70b-versatile...");
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -119,7 +72,11 @@ To guide you with the exact regulatory requirements, please specify:
     });
 
     if (!response.ok) {
-      // Fallback to llama-3.1-8b-instant if 70B is rate-limited or busy
+      const errText = await response.text();
+      console.error(`[AARAMBH Chat API] Groq 70B call failed (${response.status}):`, errText);
+
+      // Attempt fallback to 8B instant model
+      console.log("[AARAMBH Chat API] Attempting fallback to llama-3.1-8b-instant...");
       const fallbackResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -133,31 +90,35 @@ To guide you with the exact regulatory requirements, please specify:
       });
 
       if (!fallbackResponse.ok) {
+        const fallbackErrText = await fallbackResponse.text();
+        console.error(`[AARAMBH Chat API] Groq 8B fallback failed (${fallbackResponse.status}):`, fallbackErrText);
         return NextResponse.json(
-          { error: "Single window query service is temporarily unavailable. Please try again or call helpline 1800-120-8040." },
-          { status: 503 }
+          { error: `Groq API Error (${response.status}): ${errText}` },
+          { status: response.status }
         );
       }
 
       const fallbackData = await fallbackResponse.json();
       const answer = fallbackData.choices?.[0]?.message?.content || "No response received.";
+      console.log("[AARAMBH Chat API] Successfully generated response via llama-3.1-8b-instant.");
       return NextResponse.json({
         content: answer,
-        model: "standard",
+        model: "llama-3.1-8b-instant",
       });
     }
 
     const data = await response.json();
     const answer = data.choices?.[0]?.message?.content || "No response received.";
+    console.log("[AARAMBH Chat API] Successfully generated response via llama-3.3-70b-versatile.");
 
     return NextResponse.json({
       content: answer,
-      model: "standard",
+      model: "llama-3.3-70b-versatile",
     });
   } catch (err: unknown) {
-    console.error("Chat API error:", err);
+    console.error("[AARAMBH Chat API] Unexpected exception in route handler:", err);
     return NextResponse.json(
-      { error: "Single window query service is temporarily unavailable. Please try again or call helpline 1800-120-8040." },
+      { error: (err instanceof Error ? err.message : "Internal server error in AARAMBH Chat Service") },
       { status: 500 }
     );
   }

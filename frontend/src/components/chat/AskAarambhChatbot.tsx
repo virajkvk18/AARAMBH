@@ -77,18 +77,21 @@ export default function AskAarambhChatbot() {
         content: m.content,
       }));
 
+      const savedKey = typeof window !== "undefined" ? localStorage.getItem("aarambh_groq_api_key") : null;
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: history,
+          userApiKey: savedKey || undefined,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch response");
+        throw new Error(data.error || "Failed to fetch response from AARAMBH advisory service");
       }
 
       const botMessage: Message = {
@@ -104,7 +107,7 @@ export default function AskAarambhChatbot() {
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at **1800-120-8040**.",
+        content: (err instanceof Error ? err.message : "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at 1800-120-8040."),
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMessage]);
