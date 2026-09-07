@@ -59,14 +59,58 @@ function getRuntimeApiKey(userKey?: string): string {
   return "";
 }
 
-// Order of priority models currently active and supported on Groq API
-const CANDIDATE_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-8b-instant",
-  "llama-3.2-3b-preview",
-  "llama-3.2-1b-preview",
-  "llama-3.2-11b-vision-preview",
-];
+// Cached active models per API key
+let cachedModels: { models: string[]; timestamp: number } | null = null;
+const CACHE_TTL_MS = 1000 * 60 * 10; // 10 minutes
+
+async function getAvailableGroqModels(apiKey: string): Promise<string[]> {
+  if (cachedModels && Date.now() - cachedModels.timestamp < CACHE_TTL_MS) {
+    return cachedModels.models;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.data)) {
+        const activeIds: string[] = data.data
+          .map((m: { id: string }) => m.id)
+          .filter((id: string) => !id.includes("whisper") && !id.includes("guard") && !id.includes("tts"));
+
+        // Sort by preferred flagship models first
+        const sorted = activeIds.sort((a, b) => {
+          const scoreA = a.includes("llama-3.3") ? 100 : a.includes("70b") ? 80 : a.includes("llama-3.1") ? 60 : a.includes("8b") ? 40 : 10;
+          const scoreB = b.includes("llama-3.3") ? 100 : b.includes("70b") ? 80 : b.includes("llama-3.1") ? 60 : b.includes("8b") ? 40 : 10;
+          return scoreB - scoreA;
+        });
+
+        if (sorted.length > 0) {
+          cachedModels = { models: sorted, timestamp: Date.now() };
+          console.log("[AARAMBH Chat API] Dynamically discovered active Groq models:", sorted);
+          return sorted;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[AARAMBH Chat API] Dynamic model lookup warning:", e);
+  }
+
+  // Safe fallback if lookup times out
+  return [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "deepseek-r1-distill-llama-70b",
+    "llama-3.2-3b-preview",
+  ];
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -92,12 +136,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Iterate through supported Groq models with automated fallback
+    // Dynamically retrieve only active models authorized for this API key
+    const candidateModels = await getAvailableGroqModels(apiKey);
+
     let lastErrorText = "";
     let rateLimitHit = false;
     const attemptedErrors: Record<string, string> = {};
 
-    for (const model of CANDIDATE_MODELS) {
+    for (const model of candidateModels) {
       try {
         const groqPayload = {
           model,
@@ -113,7 +159,7 @@ export async function POST(req: NextRequest) {
         };
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
@@ -147,10 +193,9 @@ export async function POST(req: NextRequest) {
           // use rawErr
         }
 
-        // Check for specific auth or rate limit errors
         if (response.status === 401) {
           return NextResponse.json(
-            { error: "Invalid or expired Groq API key. Please check your GROQ_API_KEY." },
+            { error: "Invalid or expired Groq API key. Please verify your GROQ_API_KEY." },
             { status: 401 }
           );
         }
@@ -160,9 +205,7 @@ export async function POST(req: NextRequest) {
         }
 
         attemptedErrors[model] = `[${response.status}] ${parsedMessage}`;
-        if (!parsedMessage.includes("decommissioned")) {
-          lastErrorText = parsedMessage;
-        }
+        lastErrorText = parsedMessage;
         console.warn(`[AARAMBH Chat API] Model ${model} returned ${response.status}: ${parsedMessage}`);
       } catch (modelErr) {
         const errMsg = modelErr instanceof Error ? modelErr.message : String(modelErr);
