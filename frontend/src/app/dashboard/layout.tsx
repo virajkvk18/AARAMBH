@@ -36,69 +36,36 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isOfficer = user?.role === "officer";
+  // Demo role toggle for development
+  const [demoIsOfficer, setDemoIsOfficer] = useState(false);
 
-  // Navigation Items
-  const navItems = [
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      badge: undefined,
-    },
-    {
-      label: "KYA Wizard",
-      href: "/dashboard/kya",
-      icon: Compass,
-      badge: "AI Powered",
-    },
-    {
-      label: "Document Vault",
-      href: "/dashboard/vault",
-      icon: FolderLock,
-      badge: "DigiLocker",
-    },
-    {
-      label: "Pre-Validation",
-      href: "/dashboard/prevalidation",
-      icon: FileCheck2,
-      badge: undefined,
-    },
-    {
-      label: "DAG Workflow",
-      href: "/dashboard/dag",
-      icon: GitFork,
-      badge: "Parallel",
-    },
-    {
-      label: "SLA Tracker",
-      href: "/dashboard/sla",
-      icon: Clock,
-      badge: undefined,
-    },
-    ...(isOfficer
-      ? [
-          {
-            label: "Officer Workspace",
-            href: "/dashboard/officer-workspace",
-            icon: ShieldCheck,
-            badge: "Officer",
-            highlight: true,
-          },
-        ]
-      : []),
-    {
-      label: "Grievances",
-      href: "/dashboard/grievances",
-      icon: MessageSquareWarning,
-      badge: undefined,
-    },
-    {
-      label: "Profile & Enterprise",
-      href: "/dashboard/profile",
-      icon: User,
-      badge: undefined,
-    },
-  ];
+  // Role‑based navigation configuration
+  const navigationConfig = {
+    business: [
+      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
+      { label: "My Documents", href: "/dashboard/vault", icon: FolderLock },
+      { label: "Check & Validate", href: "/dashboard/prevalidation", icon: FileCheck2 },
+      { label: "Approval Journey", href: "/dashboard/dag", icon: GitFork },
+      { label: "Track Progress", href: "/dashboard/sla", icon: Clock },
+      { label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: "Business Profile", href: "/dashboard/profile", icon: User },
+    ],
+    ministry: [
+      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Applications", href: "/dashboard/kya", icon: Compass },
+      { label: "Document Review", href: "/dashboard/vault", icon: FolderLock },
+      { label: "Validation Queue", href: "/dashboard/prevalidation", icon: FileCheck2 },
+      { label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork },
+      { label: "SLA Monitoring", href: "/dashboard/sla", icon: Clock },
+      { label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: "Department Profile", href: "/dashboard/profile", icon: User },
+    ],
+  };
+
+  // Determine current role (demo switcher can modify this)
+  const currentRole = demoIsOfficer ? "ministry" : "business";
+  const navItems = navigationConfig[currentRole];
 
   return (
     <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC] flex">
@@ -242,7 +209,7 @@ export default function DashboardLayout({
             <span className="text-xs font-bold text-slate-800">Workspace Menu</span>
           </button>
 
-          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded cursor-pointer" title="Toggle demo role (Business/Ministry)" onClick={() => setDemoIsOfficer(!demoIsOfficer)}>
             {user?.role === "officer" ? "Officer View" : "Investor View"}
           </span>
         </div>
