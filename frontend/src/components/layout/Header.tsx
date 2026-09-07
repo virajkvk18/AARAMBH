@@ -8,7 +8,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0B1728] text-white border-b border-slate-800 shadow-md">
+    <header className="sticky top-0 z-40 w-full bg-[#16060E] text-white border-b border-[#36101E] shadow-md shadow-black/20">
       {/* Main Navigation Bar */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -21,11 +21,11 @@ export default function Header() {
                 <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
                   AARAMBH
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FE7251]/15 text-[#FFCA7C] border border-[#FE7251]/30 uppercase tracking-wider">
                   MH-SWS
                 </span>
               </div>
-              <span className="text-[11px] font-medium text-slate-300 tracking-wide">
+              <span className="text-[11px] font-medium text-[#E0C7BC] tracking-wide">
                 Single Window System • Govt. of Maharashtra
               </span>
             </div>
@@ -35,15 +35,15 @@ export default function Header() {
           <div className="hidden sm:flex items-center space-x-3">
             <Link
               href="/login"
-              className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 cursor-pointer"
+              className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-[#250C19]/90 hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 cursor-pointer"
             >
-              <LogIn className="w-4 h-4 text-emerald-400" />
+              <LogIn className="w-4 h-4 text-[#FE7251]" />
               <span>Login</span>
             </Link>
 
             <Link
               href="/signup"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-emerald-950/50 transition-all duration-150 cursor-pointer hover:scale-[1.02]"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all duration-150 cursor-pointer hover:scale-[1.02]"
             >
               <UserPlus className="w-4 h-4 text-white" />
               <span>Sign Up</span>
@@ -54,13 +54,13 @@ export default function Header() {
           <div className="flex sm:hidden items-center space-x-2">
             <Link
               href="/login"
-              className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-200 text-xs font-bold"
+              className="px-3.5 py-1.5 rounded-lg border border-[#521C35] bg-[#250C19] text-[#FFE8DE] text-xs font-bold"
             >
               Login
             </Link>
             <Link
               href="/signup"
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-black"
+              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-black"
             >
               Sign Up
             </Link>

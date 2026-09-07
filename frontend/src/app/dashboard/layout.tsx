@@ -87,20 +87,20 @@ export default function DashboardLayout({
 
       {/* LEFT PERSISTENT SIDEBAR */}
       <aside
-        className={`fixed lg:sticky top-20 z-40 h-[calc(100vh-80px)] bg-[#0F172A] text-slate-300 border-r border-slate-800 transition-all duration-200 flex flex-col justify-between ${
+        className={`fixed lg:sticky top-20 z-40 h-[calc(100vh-80px)] bg-[#16060E] text-[#E0C7BC] border-r border-[#36101E] transition-all duration-200 flex flex-col justify-between ${
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
         } ${collapsed ? "lg:w-20" : "lg:w-64"}`}
       >
         {/* Top Header in Sidebar */}
         <div>
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 border-b border-[#36101E] flex items-center justify-between">
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : "block"}`}>
                 <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-12 h-12 object-contain" />
               <div className="truncate">
                 <p className="text-xs font-bold text-white tracking-wide truncate">
                   {user?.role === "officer" ? "OFFICER CONSOLE" : "INVESTOR PORTAL"}
                 </p>
-                <p className="text-[10px] text-slate-400 truncate">Maharashtra Single Window</p>
+                <p className="text-[10px] text-[#FFCA7C] truncate">Maharashtra Single Window</p>
               </div>
             </div>
 
@@ -114,7 +114,7 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="hidden lg:flex p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19] transition-colors"
               title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -124,7 +124,7 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              className="lg:hidden p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -147,16 +147,16 @@ export default function DashboardLayout({
                   title={collapsed ? item.label : undefined}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group ${
                     isActive
-                      ? "bg-[#4F46E5] text-white shadow-md shadow-indigo-600/20"
+                      ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white shadow-md shadow-[#9B2A48]/30"
                       : item.highlight
-                      ? "text-emerald-400 hover:bg-emerald-950/40 border border-emerald-800/40"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                      ? "text-[#FFCA7C] hover:bg-[#250C19] border border-[#521C35]"
+                      : "text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
                   }`}
                 >
                   <div className="flex items-center space-x-3 overflow-hidden">
                     <IconComp
                       className={`w-4 h-4 shrink-0 ${
-                        isActive ? "text-white" : item.highlight ? "text-emerald-400" : "text-slate-400 group-hover:text-indigo-400"
+                        isActive ? "text-white" : item.highlight ? "text-[#FE7251]" : "text-[#C4A89C] group-hover:text-[#FE7251]"
                       }`}
                     />
                     <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}>
@@ -168,10 +168,10 @@ export default function DashboardLayout({
                     <span
                       className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
                         isActive
-                          ? "bg-indigo-700 text-white"
+                          ? "bg-[#16060E] text-[#FFCA7C]"
                           : item.badge === "Officer"
-                          ? "bg-emerald-900/80 text-emerald-300 border border-emerald-700"
-                          : "bg-slate-800 text-indigo-300 border border-slate-700"
+                          ? "bg-[#250C19] text-[#FFCA7C] border border-[#521C35]"
+                          : "bg-[#250C19] text-[#FE7251] border border-[#521C35]"
                       }`}
                     >
                       {item.badge}
@@ -184,22 +184,22 @@ export default function DashboardLayout({
         </div>
 
         {/* User Card at bottom of Sidebar */}
-        <div className="p-3 border-t border-slate-800 bg-[#0A0F1D]">
+        <div className="p-3 border-t border-[#36101E] bg-[#0D0307]">
           <div className={`flex items-center justify-between ${collapsed ? "lg:flex-col lg:gap-2" : ""}`}>
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : ""}`}>
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-indigo-400 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#250C19] border border-[#521C35] flex items-center justify-center font-bold text-xs text-[#FFCA7C] shrink-0">
                 {user?.name ? user.name[0].toUpperCase() : "U"}
               </div>
               <div className="truncate">
                 <p className="text-xs font-bold text-white truncate">{user?.name || "Guest User"}</p>
-                <p className="text-[10px] text-slate-400 truncate capitalize">{user?.role || "Applicant"}</p>
+                <p className="text-[10px] text-[#C4A89C] truncate capitalize">{user?.role || "Applicant"}</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={logout}
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />

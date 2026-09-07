@@ -197,19 +197,19 @@ export default function AskAarambhChatbot() {
         <div className="fixed bottom-5 right-5 z-50 flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-5 duration-300">
           <button
             onClick={() => setIsOpen(true)}
-            className="group flex items-center space-x-2.5 px-3.5 py-2 rounded-full bg-[#0B1728] hover:bg-black text-white shadow-xl border border-slate-700 hover:border-slate-500 hover:scale-105 transition-all duration-200 cursor-pointer"
+            className="group flex items-center space-x-2.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white shadow-xl shadow-[#9B2A48]/30 border border-[#FED17A]/40 hover:scale-105 transition-all duration-200 cursor-pointer"
           >
-            {/* Black & White Logo Container */}
+            {/* Logo Container */}
             <div className="relative flex items-center justify-center">
               <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-7 h-7 object-contain" />
-              <span className="w-2 h-2 rounded-full bg-white absolute -top-0.5 -right-0.5 animate-ping opacity-75"></span>
+              <span className="w-2 h-2 rounded-full bg-[#FFCA7C] absolute -top-0.5 -right-0.5 animate-ping opacity-75"></span>
             </div>
 
             <div className="flex items-center space-x-1.5 pr-1">
               <span className="text-xs font-bold tracking-wide text-white">
                 Ask AARAMBH
               </span>
-              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-white/15 text-slate-200 border border-white/20 uppercase tracking-wider">
+              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-white/20 text-[#FFF2DF] border border-white/30 uppercase tracking-wider">
                 AI
               </span>
             </div>
@@ -220,15 +220,15 @@ export default function AskAarambhChatbot() {
       {/* 2. Interactive Chat Window */}
       {isOpen && (
         <div
-          className={`fixed right-3 sm:right-5 bottom-5 z-50 w-[88vw] sm:w-[370px] bg-white rounded-2xl shadow-2xl border border-slate-300 overflow-hidden flex flex-col transition-all duration-200 animate-in fade-in zoom-in-95 ${
+          className={`fixed right-3 sm:right-5 bottom-5 z-50 w-[88vw] sm:w-[370px] bg-white rounded-2xl shadow-2xl border border-[#F0E5E0] overflow-hidden flex flex-col transition-all duration-200 animate-in fade-in zoom-in-95 ${
             isMinimized ? "h-14" : "h-[520px] max-h-[80vh]"
           }`}
         >
           {/* Header */}
-          <div className="bg-[#0B1728] text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 shrink-0">
+          <div className="bg-[#16060E] text-white px-4 py-3 flex items-center justify-between border-b border-[#36101E] shrink-0">
             <div className="flex items-center space-x-2.5">
-              {/* B&W Logo */}
-              <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center shadow-xs">
+              {/* Logo */}
+              <div className="w-8 h-8 rounded-lg bg-[#250C19] border border-[#521C35] text-black flex items-center justify-center shadow-xs">
                 <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-6 h-6 object-contain" />
               </div>
               <div>
@@ -236,11 +236,11 @@ export default function AskAarambhChatbot() {
                   <h3 className="text-xs font-black text-white tracking-wide">
                     AARAMBH
                   </h3>
-                  <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-white/15 text-slate-200 border border-white/20">
+                  <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30">
                     Govt. AI
                   </span>
                 </div>
-                <p className="text-[9px] text-slate-400">
+                <p className="text-[9px] text-[#C4A89C]">
                   Single Window Clearance Assistant
                 </p>
               </div>
@@ -252,7 +252,7 @@ export default function AskAarambhChatbot() {
                 type="button"
                 onClick={handleResetChat}
                 title="Reset Conversation"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19] transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -260,7 +260,7 @@ export default function AskAarambhChatbot() {
                 type="button"
                 onClick={() => setIsMinimized(!isMinimized)}
                 title={isMinimized ? "Maximize" : "Minimize"}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19] transition-colors cursor-pointer"
               >
                 {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
               </button>
@@ -268,7 +268,7 @@ export default function AskAarambhChatbot() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Close Chat"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -278,7 +278,7 @@ export default function AskAarambhChatbot() {
           {!isMinimized && (
             <>
               {/* Messages Body */}
-              <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-slate-50/50">
+              <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[#FCFAF8]">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -290,8 +290,8 @@ export default function AskAarambhChatbot() {
                     <div
                       className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-xs ${
                         msg.role === "user"
-                          ? "bg-slate-800 text-white"
-                          : "bg-black text-white border border-slate-700"
+                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white"
+                          : "bg-[#16060E] text-[#FFCA7C] border border-[#36101E]"
                       }`}
                     >
                       {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
@@ -301,8 +301,8 @@ export default function AskAarambhChatbot() {
                     <div
                       className={`max-w-[85%] rounded-xl p-3 text-xs shadow-xs ${
                         msg.role === "user"
-                          ? "bg-[#0B1728] text-white rounded-tr-none"
-                          : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
+                          ? "bg-[#9B2A48] text-white rounded-tr-none"
+                          : "bg-white text-slate-800 border border-[#F0E5E0] rounded-tl-none"
                       }`}
                     >
                       <div className="space-y-1">
@@ -310,7 +310,7 @@ export default function AskAarambhChatbot() {
                       </div>
                       <span
                         className={`text-[9px] mt-1 block text-right ${
-                          msg.role === "user" ? "text-slate-400" : "text-slate-400"
+                          msg.role === "user" ? "text-rose-200" : "text-slate-400"
                         }`}
                       >
                         {msg.timestamp}
@@ -322,13 +322,13 @@ export default function AskAarambhChatbot() {
                 {/* Loading Indicator */}
                 {loading && (
                   <div className="flex items-start gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-black text-white border border-slate-700 flex items-center justify-center shrink-0 shadow-xs animate-pulse">
+                    <div className="w-6 h-6 rounded-lg bg-[#16060E] text-[#FFCA7C] border border-[#36101E] flex items-center justify-center shrink-0 shadow-xs animate-pulse">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl rounded-tl-none p-2.5 shadow-xs flex items-center space-x-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-bounce"></span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-bounce [animation-delay:0.2s]"></span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-bounce [animation-delay:0.4s]"></span>
+                    <div className="bg-white border border-[#F0E5E0] rounded-xl rounded-tl-none p-2.5 shadow-xs flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.2s]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[10px] text-slate-500 font-medium ml-1">
                         AARAMBH is consulting statutory records...
                       </span>
@@ -341,12 +341,12 @@ export default function AskAarambhChatbot() {
 
               {/* Quick Prompt Chips (Visible when only initial greeting exists) */}
               {messages.length <= 1 && (
-                <div className="px-3 py-2 bg-slate-100/70 border-t border-slate-200 flex flex-nowrap overflow-x-auto gap-1 shrink-0 scrollbar-none">
+                <div className="px-3 py-2 bg-[#FFF7F0] border-t border-[#F0E5E0] flex flex-nowrap overflow-x-auto gap-1 shrink-0 scrollbar-none">
                   {INITIAL_SUGGESTIONS.map((suggestion) => (
                     <button
                       key={suggestion}
                       onClick={() => handleSendMessage(suggestion)}
-                      className="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-slate-400 hover:text-black text-slate-700 text-[10px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0 shadow-xs"
+                      className="px-2 py-1 rounded-md bg-white border border-[#FED17A] hover:border-[#FE7251] hover:text-[#9B2A48] text-slate-700 text-[10px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0 shadow-xs"
                     >
                       {suggestion}
                     </button>
@@ -355,7 +355,7 @@ export default function AskAarambhChatbot() {
               )}
 
               {/* Input Footer */}
-              <div className="p-2.5 bg-white border-t border-slate-200 shrink-0">
+              <div className="p-2.5 bg-white border-t border-[#F0E5E0] shrink-0">
                 <div className="flex items-end gap-1.5">
                   <textarea
                     rows={1}
@@ -363,13 +363,13 @@ export default function AskAarambhChatbot() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask about age eligibility, MIDC, MPCB CTE, Fire NOC..."
-                    className="flex-1 max-h-20 min-h-[36px] px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-800 focus:ring-1 focus:ring-slate-800 focus:outline-none resize-none"
+                    className="flex-1 max-h-20 min-h-[36px] px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251] focus:outline-none resize-none"
                   />
                   <button
                     type="button"
                     onClick={() => handleSendMessage()}
                     disabled={!input.trim() || loading}
-                    className="w-9 h-9 rounded-lg bg-black hover:bg-slate-800 text-white flex items-center justify-center shrink-0 shadow-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-9 h-9 rounded-lg bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white flex items-center justify-center shrink-0 shadow-sm transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>

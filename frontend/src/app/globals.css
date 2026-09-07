@@ -1,37 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --color-nsws-navy-950: #060D17;
-  --color-nsws-navy-900: #0B1728;
-  --color-nsws-navy-800: #0E2038;
-  --color-nsws-navy-700: #162A45;
-  --color-nsws-blue-accent: #1E40AF;
-  --color-nsws-gold: #FFB800;
-  --color-nsws-gold-hover: #E5A600;
-  --color-nsws-amber: #F59E0B;
-  --color-nsws-green: #00A859;
-  --color-nsws-green-hover: #008F4C;
-  --color-nsws-green-light: #ECFDF5;
-  --color-nsws-canvas: #F8FAFC;
-  --color-nsws-surface: #FFFFFF;
-  --color-nsws-border: #E2E8F0;
+  --color-brand-burgundy: #9B2A48;
+  --color-brand-burgundy-dark: #741C34;
+  --color-brand-burgundy-deep: #16060E;
+  --color-brand-coral: #FE7251;
+  --color-brand-coral-hover: #E85E3E;
+  --color-brand-gold: #FFCA7C;
+  --color-brand-gold-light: #FFF2DF;
 
-  --color-slate-dark: #0B1728;
-  --color-slate-dark-900: #0B1728;
-  --color-slate-dark-800: #0E2038;
-  --color-canvas: #F8FAFC;
-  --color-indigo-accent: #1E40AF;
-  --color-status-green: #00A859;
-  --color-status-amber: #F59E0B;
-  --color-status-rose: #E11D48;
-  --color-status-purple: #9333EA;
+  --color-nsws-navy-950: #12040A;
+  --color-nsws-navy-900: #190710;
+  --color-nsws-navy-800: #250C19;
+  --color-nsws-navy-700: #381326;
+  --color-nsws-blue-accent: #FE7251;
+  --color-nsws-gold: #FFCA7C;
+  --color-nsws-gold-hover: #F0B863;
+  --color-nsws-amber: #FE7251;
+  --color-nsws-green: #9B2A48;
+  --color-nsws-green-hover: #7E1E38;
+  --color-nsws-green-light: #FDF1F4;
+  --color-nsws-canvas: #FCFAF8;
+  --color-nsws-surface: #FFFFFF;
+  --color-nsws-border: #EFE4DC;
+
+  --color-slate-dark: #190710;
+  --color-slate-dark-900: #190710;
+  --color-slate-dark-800: #250C19;
+  --color-canvas: #FCFAF8;
+  --color-indigo-accent: #FE7251;
+  --color-status-green: #10B981;
+  --color-status-amber: #FE7251;
+  --color-status-rose: #9B2A48;
+  --color-status-purple: #8B5CF6;
 
   --font-inter: var(--font-inter), sans-serif;
 }
 
 :root {
-  --background: #F8FAFC;
-  --foreground: #0B1728;
+  --background: #FCFAF8;
+  --foreground: #1A0710;
 }
 
 body {
@@ -41,32 +49,34 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom NSWS-like scrollbars */
+/* Custom scrollbars with warm coral/gold accents */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #F8F1EB;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #E0C7BC;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #FE7251;
 }
 
-/* Background Topographic Pattern for Hero */
+/* Background Topographic Pattern with Burgundy, Coral & Gold Ambient Glows */
 .bg-topo-pattern {
-  background-color: #0B1728;
-  background-image: radial-gradient(circle at 50% 50%, rgba(30, 64, 175, 0.15) 0%, transparent 60%),
-    radial-gradient(rgba(255, 184, 0, 0.08) 1px, transparent 1px);
-  background-size: 100% 100%, 28px 28px;
+  background-color: #16060E;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(155, 42, 72, 0.45) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(254, 114, 81, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 202, 124, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 28px 28px;
 }
 
 /* Cross pattern watermark for approval cards */
 .bg-cross-pattern {
-  background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+  background-image: radial-gradient(#E8D7CE 1px, transparent 1px);
   background-size: 16px 16px;
 }
