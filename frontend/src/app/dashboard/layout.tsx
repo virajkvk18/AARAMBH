@@ -95,9 +95,7 @@ export default function DashboardLayout({
         <div>
           <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : "block"}`}>
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-bold text-sm shrink-0">
-                आ
-              </div>
+                <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-12 h-12 object-contain" />
               <div className="truncate">
                 <p className="text-xs font-bold text-white tracking-wide truncate">
                   {user?.role === "officer" ? "OFFICER CONSOLE" : "INVESTOR PORTAL"}

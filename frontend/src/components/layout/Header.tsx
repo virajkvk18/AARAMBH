@@ -29,12 +29,7 @@ export default function Header() {
           {/* Left Brand Identity: Logo + Govt. of Maharashtra */}
           <Link href="/" className="flex items-center space-x-3.5 group focus:outline-hidden">
             {/* NSWS-style Interlinked Dual Node Icon in Emerald Green & White */}
-            <div className="w-11 h-11 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
-              <div className="flex items-center space-x-1">
-                <span className="w-3.5 h-3.5 rounded-full bg-[#00A859] shadow-xs shadow-emerald-500/50"></span>
-                <span className="w-3.5 h-3.5 rounded-full bg-white shadow-xs"></span>
-              </div>
-            </div>
+            <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-11 h-11 object-contain" />
 
             <div className="flex flex-col">
               <div className="flex items-center space-x-1.5">

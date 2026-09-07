@@ -201,9 +201,7 @@ export default function AskAarambhChatbot() {
           >
             {/* Black & White Logo Container */}
             <div className="relative flex items-center justify-center">
-              <div className="w-7 h-7 rounded-full bg-white text-black flex items-center justify-center shadow-sm">
-                <Bot className="w-4 h-4 text-slate-950" />
-              </div>
+              <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-7 h-7 object-contain" />
               <span className="w-2 h-2 rounded-full bg-white absolute -top-0.5 -right-0.5 animate-ping opacity-75"></span>
             </div>
 
@@ -231,7 +229,7 @@ export default function AskAarambhChatbot() {
             <div className="flex items-center space-x-2.5">
               {/* B&W Logo */}
               <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center shadow-xs">
-                <Bot className="w-4.5 h-4.5 text-slate-950" />
+                <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-6 h-6 object-contain" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
