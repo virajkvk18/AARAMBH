@@ -21,11 +21,13 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
 export default function SignupPage() {
   const { loginAsApplicant, loginWithDigiLocker } = useAuth();
+  const { t } = useLanguage();
 
   // Current Step: 1 = Initial Credentials, 2 = Entity Type (Img 2), 3 = PAN Validation (Img 3), 4 = Address (Img 4)
   const [currentStep, setCurrentStep] = useState<number>(2);
@@ -99,10 +101,10 @@ export default function SignupPage() {
         <div className="bg-[#FFF9F5] border-b border-[#F0E5E0] px-6 sm:px-10 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider">
-              Setup your profile
+              {t("auth.signup_title", "Setup your profile")}
             </span>
             <span className="text-xs font-mono font-bold text-slate-500">
-              • Step {currentStep} of 4
+              • {t("auth.step", "Step")} {currentStep} {t("auth.of", "of")} 4
             </span>
           </div>
 

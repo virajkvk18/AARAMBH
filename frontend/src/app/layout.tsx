@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AskAarambhChatbot from "@/components/chat/AskAarambhChatbot";
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,13 +39,15 @@ export default function RootLayout({
         className="min-h-full flex flex-col bg-[#F8FAFC] text-[#0F172A] font-sans"
         suppressHydrationWarning
       >
-        <AuthProvider>
-          <TopUtilityBar />
-          <Header />
-          <main className="flex-1 w-full">{children}</main>
-          <Footer />
-          <AskAarambhChatbot />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <TopUtilityBar />
+            <Header />
+            <main className="flex-1 w-full">{children}</main>
+            <Footer />
+            <AskAarambhChatbot />
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

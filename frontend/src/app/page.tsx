@@ -40,6 +40,7 @@ import {
   FileCheck,
   ChevronDown,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 // --- Sector Data (12 Sectors from Image 5) ---
 interface SectorItem {
@@ -302,6 +303,8 @@ const industrialZones = [
 ];
 
 export default function HomePage() {
+  const { t, language } = useLanguage();
+
   // State for search filter dropdown
   const [searchCategory, setSearchCategory] = useState("All Approvals");
   const [searchQuery, setSearchQuery] = useState("");
@@ -318,20 +321,21 @@ export default function HomePage() {
             {/* Maharashtra Gov Single Window Badge */}
             <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#250C19] border border-[#FE7251]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-sm shadow-[#FE7251]"></span>
-              <span>AARAMBH • Government of Maharashtra Single Window Portal</span>
+              <span>AARAMBH • {t("topbar.gov_statement", "Government of Maharashtra")}</span>
             </div>
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-sm">
-              Explore, Apply and Get all Approvals Required to Start your Business in{" "}
+              {t("hero.headline_start", "Accelerating Industrial")}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251] font-black drop-shadow-md">
-                Maharashtra
-              </span>
+                {t("hero.headline_highlight", "Enterprise Growth")}
+              </span>{" "}
+              {t("hero.headline_end", "in Maharashtra")}
             </h1>
 
             {/* Sub-headline */}
             <p className="mt-5 text-base sm:text-lg text-[#F5EBE6] leading-relaxed max-w-3xl mx-auto font-normal drop-shadow-xs">
-              Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.
+              {t("hero.subheadline", "Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.")}
             </p>
 
             {/* Unified Search Bar */}
@@ -343,10 +347,10 @@ export default function HomePage() {
                   onChange={(e) => setSearchCategory(e.target.value)}
                   className="w-full sm:w-auto bg-[#FFF5ED] hover:bg-[#FFEBE0] text-xs font-bold text-slate-900 px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8 transition-colors"
                 >
-                  <option value="All Approvals">All Approvals</option>
-                  <option value="State Approvals">State Approvals (MH)</option>
-                  <option value="Central Approvals">Central Approvals</option>
-                  <option value="Government Schemes">Govt. Schemes & Subsidies</option>
+                  <option value="All Approvals">{t("hero.all_approvals", "All Approvals")}</option>
+                  <option value="State Approvals">{t("hero.state_approvals", "State Approvals (MH)")}</option>
+                  <option value="Central Approvals">{t("hero.central_approvals", "Central Approvals")}</option>
+                  <option value="Government Schemes">{t("hero.govt_schemes", "Govt. Schemes & Subsidies")}</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
@@ -356,7 +360,7 @@ export default function HomePage() {
                 <Search className="w-4 h-4 text-slate-500 mr-2.5 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search for approvals, licences, registrations, services e.g. MIDC, MPCB CTE..."
+                  placeholder={t("hero.search_placeholder", "Search for approvals, licences, registrations, services e.g. MIDC, MPCB CTE...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 bg-transparent border-0 focus:outline-none focus:ring-0"
@@ -368,7 +372,7 @@ export default function HomePage() {
                 href="/dashboard/kya"
                 className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02]"
               >
-                <span>EXPLORE ALL</span>
+                <span>{t("hero.explore_all", "EXPLORE ALL")}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -380,23 +384,23 @@ export default function HomePage() {
                 className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl shadow-[#9B2A48]/50 border border-[#FFCA7C]/50 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
-                <span>Click Here & Know Your Approvals</span>
+                <span>{t("hero.click_kya", "Click Here & Know Your Approvals")}</span>
                 <Sparkles className="w-4 h-4 text-[#FFCA7C]" />
               </Link>
               <span className="text-xs text-[#F5EBE6] font-semibold">
-                Get a customized list of clearances in under 3 minutes
+                {t("hero.kya_tagline", "Get a customized list of clearances in under 3 minutes")}
               </span>
             </div>
 
             {/* Popular Search Chips */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
-              <span className="text-[#FFCA7C] font-bold">Popular Clearances:</span>
+              <span className="text-[#FFCA7C] font-bold">{t("hero.popular_clearances", "Popular Clearances:")}</span>
               {[
-                { name: "MIDC Land Allotment", href: "/dashboard/prevalidation" },
-                { name: "MPCB CTE", href: "/dashboard/prevalidation" },
-                { name: "Fire NOC", href: "/dashboard/prevalidation" },
-                { name: "DISH Factory License", href: "/dashboard/prevalidation" },
-                { name: "HT Power Sanction", href: "/dashboard/dag" },
+                { name: language === "mr" ? "MIDC जमीन वाटप" : language === "hi" ? "MIDC भूमि आवंटन" : "MIDC Land Allotment", href: "/dashboard/prevalidation" },
+                { name: language === "mr" ? "MPCB प्रदूषण संमती" : language === "hi" ? "MPCB प्रदूषण सहमति" : "MPCB CTE", href: "/dashboard/prevalidation" },
+                { name: language === "mr" ? "अग्निशमन NOC" : language === "hi" ? "फायर NOC" : "Fire NOC", href: "/dashboard/prevalidation" },
+                { name: language === "mr" ? "DISH फॅक्टरी परवाना" : language === "hi" ? "DISH कारखाना लाइसेंस" : "DISH Factory License", href: "/dashboard/prevalidation" },
+                { name: language === "mr" ? "HT वीज मंजुरी" : language === "hi" ? "HT विद्युत स्वीकृति" : "HT Power Sanction", href: "/dashboard/dag" },
               ].map((chip) => (
                 <Link
                   key={chip.name}
@@ -418,13 +422,13 @@ export default function HomePage() {
           <div>
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-black uppercase tracking-widest mb-3">
               <BadgeCheck className="w-3.5 h-3.5 text-[#FE7251]" />
-              <span>BENEFITS</span>
+              <span>{t("benefits.badge", "BENEFITS")}</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-[#18080E] tracking-tight">
-              How does AARAMBH help you?
+              {t("benefits.how_help", "How does AARAMBH help you?")}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
-              Eliminating procedural hurdles with an intelligent digital infrastructure engineered specifically for Maharashtra&apos;s industrial ecosystem.
+              {t("benefits.how_help_sub", "Eliminating procedural hurdles with an intelligent digital infrastructure engineered specifically for Maharashtra's industrial ecosystem.")}
             </p>
           </div>
 
@@ -434,7 +438,7 @@ export default function HomePage() {
             className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-[#250C19] hover:bg-[#381326] text-white border border-[#521C35] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 self-start md:self-auto cursor-pointer"
           >
             <Play className="w-4 h-4 fill-[#FE7251] text-[#FE7251]" />
-            <span>PLAY VIDEO TO KNOW MORE</span>
+            <span>{t("benefits.play_video", "PLAY VIDEO TO KNOW MORE")}</span>
           </button>
         </div>
 
@@ -468,7 +472,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-[#F0E5E0] flex items-center text-xs font-bold text-[#9B2A48] group-hover:text-[#FE7251]">
-                  <span>Explore Feature</span>
+                  <span>{t("benefits.explore_feature", "Explore Feature")}</span>
                   <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
@@ -484,10 +488,10 @@ export default function HomePage() {
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white">
-                Need Dedicated Single-Window Assistance?
+                {t("benefits.helpline_title", "Need Dedicated Single-Window Assistance?")}
               </h3>
               <p className="text-xs sm:text-sm text-[#E0C7BC] mt-1">
-                Call Toll-Free Investor Helpline <strong className="text-[#FFCA7C] font-mono">1800-120-8040</strong> (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.
+                {t("benefits.helpline_desc", "Call Toll-Free Investor Helpline 1800-120-8040 (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.")}
               </p>
             </div>
           </div>
@@ -496,13 +500,13 @@ export default function HomePage() {
               href="/dashboard/workflows"
               className="px-5 py-2.5 rounded-xl bg-[#250C19] hover:bg-[#381326] text-[#FFE8DE] font-bold text-xs border border-[#521C35] transition-colors"
             >
-              Raise a Query
+              {t("benefits.raise_query", "Raise a Query")}
             </Link>
             <Link
               href="/dashboard/kya"
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs shadow-md transition-colors"
             >
-              KYA Wizard →
+              {t("dash.kya", "KYA Wizard")} →
             </Link>
           </div>
         </div>
@@ -517,13 +521,13 @@ export default function HomePage() {
               <div className="relative z-10">
                 <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FE7251]/15 border border-[#FE7251]/30 text-[#FFCA7C] text-[11px] font-bold uppercase tracking-wider mb-4">
                   <Landmark className="w-3.5 h-3.5" />
-                  <span>Statutory Clearances</span>
+                  <span>{t("clearances.statutory_tag", "Statutory Clearances")}</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
-                  Key Approvals
+                  {t("nav.approvals", "Key Approvals")}
                 </h2>
                 <p className="text-xs sm:text-sm text-[#E0C7BC] mt-3 leading-relaxed">
-                  Fast-track your statutory compliance lifecycle across Maharashtra regulatory departments with standardized single-window processing.
+                  {t("clearances.sub", "Fast-track your statutory compliance lifecycle across Maharashtra regulatory departments with standardized single-window processing.")}
                 </p>
               </div>
 
@@ -533,7 +537,7 @@ export default function HomePage() {
                   href="/dashboard/workflows"
                   className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/50 transition-transform hover:-translate-y-0.5 cursor-pointer"
                 >
-                  <span>VIEW ALL APPROVALS</span>
+                  <span>{t("clearances.view_all", "VIEW ALL APPROVALS")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -559,7 +563,7 @@ export default function HomePage() {
                             {approval.category}
                           </span>
                           <span className="text-[11px] font-bold text-[#FE7251]">
-                            SLA: {approval.slaDays} Working Days
+                            SLA: {approval.slaDays} {t("clearances.working_days", "Working Days")}
                           </span>
                         </div>
                       </div>
@@ -581,13 +585,13 @@ export default function HomePage() {
                     {/* Footer Action */}
                     <div className="mt-6 pt-4 border-t border-[#F0E5E0] flex items-center justify-between">
                       <span className="text-[11px] font-medium text-slate-400">
-                        Online Application
+                        {t("clearances.online_app", "Online Application")}
                       </span>
                       <Link
                         href={approval.href}
                         className="inline-flex items-center text-xs font-bold text-[#9B2A48] group-hover:text-[#FE7251]"
                       >
-                        <span>Apply Online</span>
+                        <span>{t("clearances.apply_online", "Apply Online")}</span>
                         <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
@@ -604,14 +608,14 @@ export default function HomePage() {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>SECTOR SPECIFIC DIRECTORY</span>
+            <span>{t("sectors.directory_tag", "SECTOR SPECIFIC DIRECTORY")}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-[#18080E] tracking-tight">
-            Which approvals are required to start my business in{" "}
+            {t("sectors.which_approvals", "Which approvals are required to start my business in")}{" "}
             <span className="text-[#FE7251]">Maharashtra</span>?
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 mt-2">
-            Select your industry sector below to discover the exact statutory clearances, licenses, and applicable state incentives under Package Scheme of Incentives (PSI 2019).
+            {t("sectors.select_industry", "Select your industry sector below to discover the exact statutory clearances, licenses, and applicable state incentives under Package Scheme of Incentives (PSI 2019).")}
           </p>
         </div>
 
@@ -647,7 +651,7 @@ export default function HomePage() {
 
                 <div className="mt-4 pt-2 border-t border-[#F0E5E0]/40 flex items-center justify-between text-[11px]">
                   <span className={isSelected ? "text-[#FFCA7C] font-bold" : "text-[#9B2A48] font-bold"}>
-                    {sector.approvalsCount} Approvals
+                    {sector.approvalsCount} {t("sectors.approvals_suffix", "Approvals")}
                   </span>
                   <ChevronRight className={`w-3.5 h-3.5 ${isSelected ? "text-[#FFCA7C]" : "text-slate-400"}`} />
                 </div>
@@ -669,7 +673,7 @@ export default function HomePage() {
                     {selectedSector.name}
                   </h3>
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48]">
-                    {selectedSector.approvalsCount} Clearances Required
+                    {selectedSector.approvalsCount} {t("sectors.clearances_required", "Clearances Required")}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-1">
@@ -682,13 +686,13 @@ export default function HomePage() {
                 onClick={() => setSelectedSector(null)}
                 className="px-4 py-2 rounded-xl bg-[#FAF2EE] hover:bg-[#F0E5E0] text-slate-700 font-bold text-xs cursor-pointer"
               >
-                Close
+                {language === "mr" ? "बंद करा" : language === "hi" ? "बंद करें" : "Close"}
               </button>
               <Link
                 href="/dashboard/kya"
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs shadow-md"
               >
-                Launch KYA for {selectedSector.name.split(" ")[0]} →
+                {t("sectors.launch_kya_prefix", "Launch KYA for")} {selectedSector.name.split(" ")[0]} →
               </Link>
             </div>
           </div>
@@ -702,20 +706,20 @@ export default function HomePage() {
             <div>
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] text-xs font-bold uppercase tracking-wider mb-2">
                 <Building2 className="w-3.5 h-3.5 text-[#FE7251]" />
-                <span>STATE CLUSTERS</span>
+                <span>{t("zones.clusters_tag", "STATE CLUSTERS")}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#18080E] tracking-tight">
-                Explore Maharashtra Industrial Zones
+                {t("zones.explore_title", "Explore Maharashtra Industrial Zones")}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                Plug-and-play industrial infrastructure across prime MIDC estates and DMIC corridors.
+                {t("zones.explore_sub", "Plug-and-play industrial infrastructure across prime MIDC estates and DMIC corridors.")}
               </p>
             </div>
             <Link
               href="/dashboard/workflows"
               className="inline-flex items-center space-x-2 text-xs font-bold text-[#9B2A48] hover:text-[#FE7251]"
             >
-              <span>View All 36 Districts</span>
+              <span>{t("zones.view_all_districts", "View All 36 Districts")}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -739,11 +743,11 @@ export default function HomePage() {
 
                   <div className="mt-4 pt-3 border-t border-[#F0E5E0] text-xs space-y-1.5">
                     <div className="flex items-center justify-between text-slate-600">
-                      <span>Primary Sectors:</span>
+                      <span>{t("zones.primary_sectors", "Primary Sectors:")}</span>
                       <strong className="text-slate-800 text-right">{zone.focus}</strong>
                     </div>
                     <div className="flex items-center justify-between text-slate-600">
-                      <span>Available Land:</span>
+                      <span>{t("zones.available_land", "Available Land:")}</span>
                       <strong className="text-[#FE7251]">{zone.plotsAvailable}</strong>
                     </div>
                   </div>
@@ -754,7 +758,7 @@ export default function HomePage() {
                     href="/dashboard/kya"
                     className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] flex items-center justify-between"
                   >
-                    <span>Check Approvals for this Zone</span>
+                    <span>{t("zones.check_approvals", "Check Approvals for this Zone")}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

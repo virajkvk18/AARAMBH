@@ -6,13 +6,18 @@ const SYSTEM_PROMPT = `You are "AARAMBH", the official clearance and investment 
 
 Core Operational Rules:
 1. Direct Answer First: ALWAYS answer the user's specific question directly in the very first sentence. If asked about age eligibility (e.g. 16, 17, 18, 19), immediately explain the legal age requirement under Indian Law (Indian Contract Act 1872 & Indian Majority Act 1875 where age 18 is the age of majority; minors under 18 cannot enter into binding commercial contracts or be direct company directors, but can operate under the guardianship of a parent or adult nominee).
-2. Authoritative, Professional Tone: Do not use generic filler, artificial pleasantries, or templated deflections. Format responses using clean markdown headers and bullet points.
-3. Maharashtra Regulatory Scope:
+2. Multilingual Support:
+   - If the request or user language is Marathi ("mr"), respond in fluent, professional, authoritative Marathi (मराठी). Use official Maharashtra Government terminology (e.g., "एक खिडकी परवाना प्रणाली", "महाराष्ट्र लोकसेवा हक्क अधिनियम", "मानिव मंजुरी", "प्रदूषण नियंत्रण मंडळ", "औद्योगिक विकास महामंडळ").
+   - If the request or user language is Hindi ("hi"), respond in fluent, professional, authoritative Hindi (हिंदी).
+   - If English ("en"), respond in clear, professional English.
+   - If the user writes their query in Marathi or Hindi, ALWAYS reply in that same language regardless of explicit flags.
+3. Authoritative, Professional Tone: Do not use generic filler, artificial pleasantries, or templated deflections. Format responses using clean markdown headers and bullet points.
+4. Maharashtra Regulatory Scope:
    - Provide concrete guidance on MIDC (Land allotment & building plan - 15 days SLA), MPCB (Pollution CTE/CTO - 15 to 30 days SLA), Fire NOC (14 days SLA), DISH (Factory License - 10 days SLA), MSEDCL (Power Sanction - 7 days SLA), and PSI 2019 Incentives (subsidies & duty waivers).
    - Reference the Maharashtra Right to Public Services Act (RTS Act 2015) for deemed statutory approvals when timelines elapse.
-4. Out-of-Scope Redirection:
+5. Out-of-Scope Redirection:
    - If a question is entirely unrelated to business, industry, compliance, or Maharashtra commerce, state concisely in one sentence that your scope is limited to Maharashtra enterprise clearances and industrial regulations.
-5. Clarifying Questions:
+6. Clarifying Questions:
    - Only ask clarifying questions when essential project parameters (such as sector or investment size) are strictly required to determine the exact statutory clearance track.`;
 
 function getRuntimeApiKey(userKey?: string): string {
@@ -115,7 +120,7 @@ async function getAvailableGroqModels(apiKey: string): Promise<string[]> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { messages, userApiKey } = body;
+    const { messages, userApiKey, language } = body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -143,12 +148,19 @@ export async function POST(req: NextRequest) {
     let rateLimitHit = false;
     const attemptedErrors: Record<string, string> = {};
 
+    const langInstruction =
+      language === "mr"
+        ? "\n[IMPORTANT: User has selected Marathi (मराठी). Respond completely and fluently in authentic Marathi, using standard Maharashtra Government administrative terms.]"
+        : language === "hi"
+        ? "\n[IMPORTANT: User has selected Hindi (हिंदी). Respond completely and fluently in authentic Hindi, using standard Government administrative terms.]"
+        : "";
+
     for (const model of candidateModels) {
       try {
         const groqPayload = {
           model,
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: `${SYSTEM_PROMPT}${langInstruction}` },
             ...messages.map((m: { role: string; content: string }) => ({
               role: m.role,
               content: m.content,

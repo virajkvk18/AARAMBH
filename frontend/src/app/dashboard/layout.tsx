@@ -24,6 +24,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function DashboardLayout({
   children,
@@ -31,6 +32,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -50,24 +52,24 @@ export default function DashboardLayout({
   // Role‑based navigation configuration
   const navigationConfig: Record<string, NavItem[]> = {
     business: [
-      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
-      { label: "My Documents", href: "/dashboard/vault", icon: FolderLock },
-      { label: "Check & Validate", href: "/dashboard/prevalidation", icon: FileCheck2 },
-      { label: "Approval Journey", href: "/dashboard/dag", icon: GitFork },
-      { label: "Track Progress", href: "/dashboard/sla", icon: Clock },
-      { label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: "Business Profile", href: "/dashboard/profile", icon: User },
+      { label: t("dash.overview"), href: "/dashboard", icon: LayoutDashboard },
+      { label: t("dash.kya"), href: "/dashboard/kya", icon: Compass },
+      { label: t("dash.vault"), href: "/dashboard/vault", icon: FolderLock },
+      { label: t("dash.prevalidation"), href: "/dashboard/prevalidation", icon: FileCheck2 },
+      { label: t("dash.dag"), href: "/dashboard/dag", icon: GitFork },
+      { label: t("dash.sla"), href: "/dashboard/sla", icon: Clock },
+      { label: t("dash.grievances"), href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: t("dash.profile"), href: "/dashboard/profile", icon: User },
     ],
     ministry: [
-      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Applications", href: "/dashboard/kya", icon: Compass },
-      { label: "Document Review", href: "/dashboard/vault", icon: FolderLock },
-      { label: "Validation Queue", href: "/dashboard/prevalidation", icon: FileCheck2 },
-      { label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork },
-      { label: "SLA Monitoring", href: "/dashboard/sla", icon: Clock },
-      { label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: "Department Profile", href: "/dashboard/profile", icon: User },
+      { label: t("dash.overview"), href: "/dashboard", icon: LayoutDashboard },
+      { label: t("dash.kya"), href: "/dashboard/kya", icon: Compass },
+      { label: t("dash.vault"), href: "/dashboard/vault", icon: FolderLock },
+      { label: t("dash.prevalidation"), href: "/dashboard/prevalidation", icon: FileCheck2 },
+      { label: t("dash.dag"), href: "/dashboard/dag", icon: GitFork },
+      { label: t("dash.sla"), href: "/dashboard/sla", icon: Clock },
+      { label: t("dash.grievances"), href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: t("dash.profile"), href: "/dashboard/profile", icon: User },
     ],
   };
 

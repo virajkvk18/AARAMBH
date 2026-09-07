@@ -19,9 +19,11 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LoginPage() {
   const { loginAsApplicant, loginAsOfficer, loginWithDigiLocker } = useAuth();
+  const { t } = useLanguage();
 
   const [activeRole, setActiveRole] = useState<"applicant" | "officer">("applicant");
   const [email, setEmail] = useState("investor@smartelectronics.in");
@@ -55,7 +57,7 @@ export default function LoginPage() {
               AARAMBH
             </span>
             <span className="text-[10px] font-semibold text-[#FFCA7C] uppercase tracking-wider">
-              Govt. of Maharashtra Single Window
+              {t("topbar.portal_title", "Govt. of Maharashtra Single Window")}
             </span>
           </div>
         </Link>
@@ -71,7 +73,7 @@ export default function LoginPage() {
                 : "text-[#C4A89C] hover:text-white"
             }`}
           >
-            Investor Login
+            {t("auth.investor_login", "Investor Login")}
           </button>
           <button
             type="button"
@@ -82,7 +84,7 @@ export default function LoginPage() {
                 : "text-[#C4A89C] hover:text-white"
             }`}
           >
-            Dept. Officer
+            {t("auth.officer_login", "Dept. Officer")}
           </button>
         </div>
       </div>
@@ -93,10 +95,10 @@ export default function LoginPage() {
         <div className="lg:col-span-5 p-8 sm:p-12 flex flex-col justify-between bg-white">
           <div>
             <h1 className="text-3xl font-black text-[#18080E] tracking-tight">
-              Sign In
+              {t("auth.sign_in", "Sign In")}
             </h1>
             <p className="text-xs text-slate-500 mt-1">
-              To access your dashboard and apply for approvals.
+              {t("auth.sign_in_sub", "To access your dashboard and apply for approvals.")}
             </p>
 
             {/* Officer Dept Selector if Officer */}
@@ -123,7 +125,7 @@ export default function LoginPage() {
               {/* Email Address */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Email Address
+                  {t("auth.email", "Email Address")}
                 </label>
                 <div className="relative">
                   <input
@@ -140,7 +142,7 @@ export default function LoginPage() {
               {/* Password with Eye Toggle */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Password
+                  {t("auth.password", "Password")}
                 </label>
                 <div className="relative">
                   <input
@@ -167,14 +169,14 @@ export default function LoginPage() {
                   type="submit"
                   className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer"
                 >
-                  Sign In
+                  {t("auth.sign_in", "Sign In")}
                 </button>
                 <button
                   type="button"
                   onClick={() => alert("Password reset instructions have been sent to your registered email.")}
                   className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] hover:underline cursor-pointer"
                 >
-                  Forgot Password?
+                  {t("auth.forgot_password", "Forgot Password?")}
                 </button>
               </div>
             </form>
@@ -188,7 +190,7 @@ export default function LoginPage() {
                   className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
-                  <span>Login with DigiLocker Account</span>
+                  <span>{t("auth.digilocker_login", "Login with DigiLocker Account")}</span>
                 </button>
               </div>
             )}
@@ -197,9 +199,9 @@ export default function LoginPage() {
           {/* Bottom Warm Sand Strip */}
           <div className="mt-8 -mx-8 sm:-mx-12 -mb-8 sm:-mb-12 p-4 bg-[#FFF7F0] border-t border-[#F0E5E0] text-center">
             <span className="text-xs text-slate-700">
-              Don&apos;t have an account?{" "}
+              {t("auth.no_account", "Don't have an account?")}{" "}
               <Link href="/signup" className="font-bold text-[#FE7251] hover:underline ml-1">
-                Sign Up Now
+                {t("auth.signup_now", "Sign Up Now")}
               </Link>
             </span>
           </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   MapPin,
@@ -9,8 +11,11 @@ import {
   ShieldCheck,
   Award,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-[#14050B] text-[#E0C7BC] border-t border-[#36101E] text-sm">
       {/* Top Banner: Quick Single-Window Assurance */}
@@ -45,12 +50,12 @@ export default function Footer() {
                   AARAMBH
                 </span>
                 <span className="text-[10px] font-semibold text-[#FFCA7C] block tracking-wide uppercase">
-                  Govt. of Maharashtra Single Window
+                  {t("nav.portal_sub")}
                 </span>
               </div>
             </div>
             <p className="text-xs text-[#C4A89C] leading-relaxed">
-              Automated single-window investment clearance gateway orchestrating statutory approvals across MIDC, MPCB, DISH, Fire Services, and Energy utilities.
+              {t("footer.desc")}
             </p>
             <div className="flex items-center space-x-2 text-xs text-[#FFE8DE] pt-1">
               <ShieldCheck className="w-4 h-4 text-[#FE7251]" />

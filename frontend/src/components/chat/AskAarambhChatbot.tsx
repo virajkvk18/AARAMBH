@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   HelpCircle,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Message {
   id: string;
@@ -24,30 +25,69 @@ interface Message {
   timestamp: string;
 }
 
-const INITIAL_SUGGESTIONS = [
-  "I'm 19 years old, can I start a business?",
-  "How do I apply for MIDC Land in Pune?",
-  "What is the statutory SLA for MPCB Consent?",
-  "How does Deemed Approval work under the RTS Act?",
-  "What subsidies are offered in PSI 2019 scheme?",
-];
+const SUGGESTIONS_MAP: Record<string, string[]> = {
+  en: [
+    "I'm 19 years old, can I start a business?",
+    "How do I apply for MIDC Land in Pune?",
+    "What is the statutory SLA for MPCB Consent?",
+    "How does Deemed Approval work under the RTS Act?",
+    "What subsidies are offered in PSI 2019 scheme?",
+  ],
+  mr: [
+    "माझे वय १९ वर्षे आहे, मी उद्योग सुरू करू शकतो का?",
+    "पुणे चाकण MIDC मध्ये जमीन कशी मिळवावी?",
+    "MPCB संमतीसाठी वैधानिक SLA दिवस किती आहेत?",
+    "लोकसेवा हक्क कायद्यांतर्गत मानिव मंजुरी कशी मिळते?",
+    "PSI २०१९ योजनेअंतर्गत कोणते अनुदान मिळते?",
+  ],
+  hi: [
+    "मेरी आयु 19 वर्ष है, क्या मैं उद्योग शुरू कर सकता हूँ?",
+    "पुणे चाकण MIDC में भूमि आवंटन के लिए कैसे आवेदन करें?",
+    "MPCB प्रदूषण सहमति का वैधानिक SLA क्या है?",
+    "RTS कानून के तहत डीम्ड अप्रूवल कैसे काम करता है?",
+    "PSI 2019 योजना में कौन सी सब्सिडी उपलब्ध हैं?",
+  ],
+};
 
-const INITIAL_GREETING: Message = {
-  id: "welcome-msg",
-  role: "assistant",
-  content:
-    "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about MIDC, MPCB, Fire NOC, DISH licensing, PSI 2019 incentives, or SLA timelines for your application.",
-  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+const WELCOME_MAP: Record<string, string> = {
+  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about MIDC, MPCB, Fire NOC, DISH licensing, PSI 2019 incentives, or SLA timelines for your application.",
+  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला MIDC जमीन, MPCB प्रदूषण परवाना, अग्निशमन NOC, DISH फॅक्टरी परवाना, PSI २०१९ सबसिडी किंवा SLA मुदतीबद्दल विचारा.",
+  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे MIDC भूमि, MPCB सहमति, फायर NOC, DISH फैक्ट्री लाइसेंस, PSI 2019 सब्सिडी या SLA समयसीमा के बारे में पूछें।",
 };
 
 export default function AskAarambhChatbot() {
+  const { language, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "welcome-msg",
+      role: "assistant",
+      content: WELCOME_MAP[language] || WELCOME_MAP.en,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Update greeting when language switches if no user chat history yet
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length <= 1) {
+        return [
+          {
+            id: "welcome-msg",
+            role: "assistant",
+            content: WELCOME_MAP[language] || WELCOME_MAP.en,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          },
+        ];
+      }
+      return prev;
+    });
+  }, [language]);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -85,6 +125,7 @@ export default function AskAarambhChatbot() {
         body: JSON.stringify({
           messages: history,
           userApiKey: savedKey || undefined,
+          language,
         }),
       });
 
@@ -97,17 +138,24 @@ export default function AskAarambhChatbot() {
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         role: "assistant",
-        content: data.content || "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040.",
+        content: data.content || (language === "mr" ? "सध्या आपल्या विनंतीवर प्रक्रिया करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा १८००-१२०-८०४० वर संपर्क साधा." : language === "hi" ? "वर्तमान में आपके अनुरोध को संसाधित नहीं किया जा सका। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।" : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040."),
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (err: unknown) {
       console.error("Chat error:", err);
+      const errorFallback =
+        language === "mr"
+          ? "या क्षणी आपल्या विनंतीवर प्रक्रिया करण्यात अडचण येत आहे. कृपया पुन्हा विचारून पहा किंवा १८००-१२०-८०४० वर संपर्क साधा."
+          : language === "hi"
+          ? "इस समय आपके अनुरोध को संसाधित करने में असमर्थ। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।"
+          : "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at 1800-120-8040.";
+
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: (err instanceof Error ? err.message : "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at 1800-120-8040."),
+        content: (err instanceof Error ? err.message : errorFallback),
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -124,7 +172,14 @@ export default function AskAarambhChatbot() {
   };
 
   const handleResetChat = () => {
-    setMessages([INITIAL_GREETING]);
+    setMessages([
+      {
+        id: "welcome-msg",
+        role: "assistant",
+        content: WELCOME_MAP[language] || WELCOME_MAP.en,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      },
+    ]);
   };
 
   // Render clean formatting (headers, bold, lists)
@@ -330,7 +385,7 @@ export default function AskAarambhChatbot() {
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.2s]"></span>
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[10px] text-slate-500 font-medium ml-1">
-                        AARAMBH is consulting statutory records...
+                        {language === "mr" ? "आरंभ वैधानिक नियमावली तपासत आहे..." : language === "hi" ? "आरंभ वैधानिक रिकॉर्ड की जांच कर रहा है..." : "AARAMBH is consulting statutory records..."}
                       </span>
                     </div>
                   </div>
@@ -342,7 +397,7 @@ export default function AskAarambhChatbot() {
               {/* Quick Prompt Chips (Visible when only initial greeting exists) */}
               {messages.length <= 1 && (
                 <div className="px-3 py-2 bg-[#FFF7F0] border-t border-[#F0E5E0] flex flex-nowrap overflow-x-auto gap-1 shrink-0 scrollbar-none">
-                  {INITIAL_SUGGESTIONS.map((suggestion) => (
+                  {(SUGGESTIONS_MAP[language] || SUGGESTIONS_MAP.en).map((suggestion) => (
                     <button
                       key={suggestion}
                       onClick={() => handleSendMessage(suggestion)}
@@ -362,7 +417,7 @@ export default function AskAarambhChatbot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask about age eligibility, MIDC, MPCB CTE, Fire NOC..."
+                    placeholder={t("chat.placeholder", "Ask about clearances, MIDC zones, PSI subsidies, or SLAs...")}
                     className="flex-1 max-h-20 min-h-[36px] px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251] focus:outline-none resize-none"
                   />
                   <button
@@ -375,8 +430,8 @@ export default function AskAarambhChatbot() {
                   </button>
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[8px] text-slate-400 px-0.5">
-                  <span>Single Window Clearance Portal</span>
-                  <span>Govt. of Maharashtra</span>
+                  <span>{t("topbar.portal_title", "Single Window Clearance Portal")}</span>
+                  <span>{language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
                 </div>
               </div>
             </>

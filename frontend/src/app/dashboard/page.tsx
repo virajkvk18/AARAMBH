@@ -20,9 +20,11 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const userName = user?.name || "Investor";
   const isOfficer = user?.role === "officer";
@@ -30,37 +32,37 @@ export default function DashboardHomePage() {
   // KPI Data
   const kpiData = [
     {
-      title: "Clearances Identified",
+      title: t("dash.kpi_active"),
       value: "12",
       suffix: " Approvals",
-      change: "6 Pre-Est • 6 Pre-Op",
+      change: t("dash.kpi_active_sub"),
       changeType: "neutral",
       icon: Layers,
       color: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "Active Parallel Pipelines",
-      value: "4",
-      suffix: " Departments",
-      change: "MIDC, MPCB, Fire, DISH",
+      title: t("dash.kpi_parallel"),
+      value: "36",
+      suffix: " Days",
+      change: t("dash.kpi_parallel_sub"),
       changeType: "positive",
       icon: GitFork,
       color: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "Projected Lead Time Saved",
-      value: "42",
-      suffix: " Days",
-      change: "Parallel vs Sequential routing",
+      title: t("dash.kpi_sla"),
+      value: "100%",
+      suffix: "",
+      change: t("dash.kpi_sla_sub"),
       changeType: "positive",
       icon: Clock,
       color: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "Eligible Subsidies",
-      value: "₹2.4",
-      suffix: " Cr",
-      change: "PSI 2019 Scheme Eligible",
+      title: t("dash.kpi_deemed"),
+      value: "5",
+      suffix: " Guaranteed",
+      change: t("dash.kpi_deemed_sub"),
       changeType: "positive",
       icon: Award,
       color: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
@@ -70,7 +72,7 @@ export default function DashboardHomePage() {
   // Quick Action Feature Buttons
   const quickActions = [
     {
-      title: "KYA Wizard",
+      title: t("dash.kya"),
       subtitle: "Evaluate required statutory approvals & incentives",
       href: "/dashboard/kya",
       icon: Compass,
@@ -79,7 +81,7 @@ export default function DashboardHomePage() {
       iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "Document Vault",
+      title: t("dash.vault"),
       subtitle: "AI OCR verification & DigiLocker document sync",
       href: "/dashboard/vault",
       icon: FolderLock,
@@ -88,7 +90,7 @@ export default function DashboardHomePage() {
       iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "DAG Workflow",
+      title: t("dash.dag"),
       subtitle: "Inspect multi-department parallel dependency graphs",
       href: "/dashboard/dag",
       icon: GitFork,
@@ -97,7 +99,7 @@ export default function DashboardHomePage() {
       iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: "SLA Tracker",
+      title: t("dash.sla"),
       subtitle: "Real-time statutory countdowns & deemed approvals",
       href: "/dashboard/sla",
       icon: Clock,
