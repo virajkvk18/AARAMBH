@@ -311,20 +311,20 @@ export default function HomePage() {
 
   return (
     <div className="w-full bg-[#F8FAFC] min-h-screen">
-      {/* 1. HERO SECTION (NSWS Image 1 Style: Topo Navy Background, Bold Headlines, Unified Search & Gold CTA) */}
-      <section className="relative bg-[#0B1728] bg-topo-pattern text-white pt-12 pb-20 overflow-hidden border-b border-slate-800">
+      {/* 1. HERO SECTION (Executive Deep Navy & Emerald Theme) */}
+      <section className="relative bg-gradient-to-b from-[#0A1628] via-[#0E1F38] to-[#0A1628] bg-topo-pattern text-white pt-14 pb-20 overflow-hidden border-b border-slate-800">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Maharashtra Gov Single Window Badge */}
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#0E2038] border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#00A859] animate-pulse"></span>
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>AARAMBH • Government of Maharashtra Single Window Portal</span>
             </div>
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-white leading-tight">
               Explore, Apply and Get all Approvals Required to Start your Business in{" "}
-              <span className="text-[#FFB800] underline decoration-amber-400/40 decoration-4 underline-offset-8">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">
                 Maharashtra
               </span>
             </h1>
@@ -334,14 +334,14 @@ export default function HomePage() {
               Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.
             </p>
 
-            {/* Unified Search Bar (Image 1 Style: White Card with Category Selector + Input + Green CTA Button) */}
+            {/* Unified Search Bar */}
             <div className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800">
               {/* Category Dropdown */}
               <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-3">
                 <select
                   value={searchCategory}
                   onChange={(e) => setSearchCategory(e.target.value)}
-                  className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 px-3 py-2.5 rounded-xl border-0 focus:ring-2 focus:ring-[#00A859] cursor-pointer appearance-none pr-8"
+                  className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 px-3 py-2.5 rounded-xl border-0 focus:ring-2 focus:ring-emerald-500 cursor-pointer appearance-none pr-8"
                 >
                   <option value="All Approvals">All Approvals</option>
                   <option value="State Approvals">State Approvals (MH)</option>
@@ -363,25 +363,25 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Green Explore All Button */}
+              {/* Emerald Explore All Button */}
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs sm:text-sm tracking-wide shadow-md transition-all duration-150 shrink-0 hover:scale-[1.02]"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm tracking-wide shadow-md shadow-emerald-950/30 transition-all duration-150 shrink-0 hover:scale-[1.02]"
               >
                 <span>EXPLORE ALL</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Secondary Gold Callout Bar (Image 1: "Click Here & Know Your Approvals") */}
+            {/* Secondary Callout Bar ("Click Here & Know Your Approvals") */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center space-x-2.5 px-6 py-3 rounded-xl bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] font-black text-xs sm:text-sm tracking-wider uppercase shadow-lg shadow-amber-500/20 transition-all duration-150 hover:-translate-y-0.5"
+                className="inline-flex items-center space-x-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-lg shadow-emerald-950/40 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
               >
-                <Compass className="w-4 h-4 text-[#0B1728]" />
+                <Compass className="w-4 h-4 text-white" />
                 <span>Click Here & Know Your Approvals</span>
-                <Sparkles className="w-4 h-4 text-[#0B1728]" />
+                <Sparkles className="w-4 h-4 text-amber-300" />
               </Link>
               <span className="text-xs text-slate-400 font-medium">
                 Get a customized list of clearances in under 3 minutes
@@ -401,7 +401,7 @@ export default function HomePage() {
                 <Link
                   key={chip.name}
                   href={chip.href}
-                  className="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/80 hover:text-white transition-colors"
+                  className="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/80 hover:border-emerald-500/40 hover:text-white transition-colors"
                 >
                   {chip.name}
                 </Link>
@@ -411,13 +411,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. BENEFITS SECTION (Image 2 Style: Green BENEFITS Pill, "How does AARAMBH help you?", Orange Video Button, 6 Green Icon Cards & Assistance Box) */}
+      {/* 2. BENEFITS SECTION */}
       <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#ECFDF5] border border-emerald-200 text-[#00A859] text-xs font-black uppercase tracking-widest mb-3">
-              <BadgeCheck className="w-3.5 h-3.5 text-[#00A859]" />
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-black uppercase tracking-widest mb-3">
+              <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>BENEFITS</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0B1728] tracking-tight">
@@ -428,37 +428,37 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Orange "Play Video to Know More" CTA */}
+          {/* Video CTA Button */}
           <button
             onClick={() => setVideoModalOpen(true)}
-            className="inline-flex items-center space-x-2 px-5 py-3 rounded-full bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 self-start md:self-auto cursor-pointer"
+            className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 self-start md:self-auto cursor-pointer"
           >
-            <Play className="w-4 h-4 fill-white" />
+            <Play className="w-4 h-4 fill-emerald-400 text-emerald-400" />
             <span>PLAY VIDEO TO KNOW MORE</span>
           </button>
         </div>
 
-        {/* 6 Feature Cards with Green Circle Icons */}
+        {/* 6 Feature Cards with Emerald Circle Icons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {benefitsData.map((benefit) => {
             const IconComp = benefit.icon;
             return (
               <div
                 key={benefit.id}
-                className="bg-white rounded-2xl p-7 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between group"
+                className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xs hover:shadow-xl hover:border-emerald-400 transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    {/* Green NSWS-Style Icon Circle */}
-                    <div className="w-13 h-13 rounded-2xl bg-[#ECFDF5] border border-emerald-100 text-[#00A859] group-hover:bg-[#00A859] group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-xs">
+                    {/* Emerald Icon Circle */}
+                    <div className="w-13 h-13 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-xs">
                       <IconComp className="w-6 h-6" />
                     </div>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-[#00A859] transition-colors">
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-emerald-700 transition-colors">
                       {benefit.tag}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-[#0B1728] group-hover:text-[#00A859] transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-[#0B1728] group-hover:text-emerald-700 transition-colors">
                     {benefit.title}
                   </h3>
 
@@ -467,7 +467,7 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center text-xs font-bold text-[#00A859] group-hover:text-[#008F4C]">
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center text-xs font-bold text-emerald-600 group-hover:text-emerald-700">
                   <span>Explore Feature</span>
                   <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                 </div>
@@ -476,10 +476,10 @@ export default function HomePage() {
           })}
         </div>
 
-        {/* Bottom Assistance Banner (Matching Image 2 helpline box) */}
-        <div className="mt-10 bg-[#0E2038] rounded-2xl p-6 sm:p-8 text-white border border-slate-700 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Bottom Assistance Banner */}
+        <div className="mt-10 bg-[#0A1628] rounded-2xl p-6 sm:p-8 text-white border border-slate-800 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 rounded-2xl bg-amber-400/20 border border-amber-400/40 text-amber-400 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
               <PhoneCall className="w-7 h-7" />
             </div>
             <div>
@@ -487,20 +487,20 @@ export default function HomePage() {
                 Need Dedicated Single-Window Assistance?
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                Call Toll-Free Investor Helpline <strong className="text-amber-300 font-mono">1800-120-8040</strong> (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.
+                Call Toll-Free Investor Helpline <strong className="text-emerald-300 font-mono">1800-120-8040</strong> (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.
               </p>
             </div>
           </div>
           <div className="flex items-center space-x-3 shrink-0">
             <Link
               href="/dashboard/workflows"
-              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-600"
+              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-700 transition-colors"
             >
               Raise a Query
             </Link>
             <Link
               href="/dashboard/kya"
-              className="px-5 py-2.5 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs shadow-sm"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors"
             >
               KYA Wizard →
             </Link>
@@ -508,14 +508,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. KEY APPROVALS SECTION (Image 3 Style: Dark Slanted Left Container with "VIEW ALL APPROVALS" + 4 White Watermarked Approval Cards) */}
+      {/* 3. KEY APPROVALS SECTION */}
       <section className="bg-white border-y border-slate-200 py-16 sm:py-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Left Dark Slanted Hero Container (Image 3) */}
-            <div className="lg:col-span-4 bg-[#0B1728] bg-topo-pattern text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xl border border-slate-800 relative overflow-hidden">
+            {/* Left Container */}
+            <div className="lg:col-span-4 bg-[#0A1628] bg-topo-pattern text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xl border border-slate-800 relative overflow-hidden">
               <div className="relative z-10">
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold uppercase tracking-wider mb-4">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold uppercase tracking-wider mb-4">
                   <Landmark className="w-3.5 h-3.5" />
                   <span>Statutory Clearances</span>
                 </div>
@@ -527,11 +527,11 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* View All Approvals Orange CTA */}
+              {/* View All Approvals CTA */}
               <div className="mt-8 relative z-10">
                 <Link
                   href="/dashboard/workflows"
-                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:-translate-y-0.5"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-950/50 transition-transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   <span>VIEW ALL APPROVALS</span>
                   <ArrowRight className="w-4 h-4" />
@@ -539,7 +539,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Side: 4 Elevated White Approval Cards (Image 3) */}
+            {/* Right Side: 4 Elevated White Approval Cards */}
             <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {keyApprovalsData.map((approval) => {
                 const IconComp = approval.icon;
@@ -551,21 +551,21 @@ export default function HomePage() {
                     <div>
                       {/* Header: Icon + Category + SLA */}
                       <div className="flex items-start justify-between gap-3 mb-4">
-                        <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 text-[#00A859] group-hover:bg-[#00A859] group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                        <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-xs">
                           <IconComp className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                             {approval.category}
                           </span>
-                          <span className="text-[11px] font-bold text-[#00A859]">
+                          <span className="text-[11px] font-bold text-emerald-600">
                             SLA: {approval.slaDays} Working Days
                           </span>
                         </div>
                       </div>
 
                       {/* Title & Department */}
-                      <h3 className="text-sm sm:text-base font-bold text-[#0B1728] leading-snug group-hover:text-[#00A859] transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-[#0B1728] leading-snug group-hover:text-emerald-700 transition-colors">
                         {approval.name}
                       </h3>
                       <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
@@ -585,7 +585,7 @@ export default function HomePage() {
                       </span>
                       <Link
                         href={approval.href}
-                        className="inline-flex items-center text-xs font-bold text-[#00A859] group-hover:text-[#008F4C]"
+                        className="inline-flex items-center text-xs font-bold text-emerald-600 group-hover:text-emerald-700"
                       >
                         <span>Apply Online</span>
                         <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
@@ -599,23 +599,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. 12-SECTOR APPROVAL EXPLORER (Image 5 Style: "Which approvals are required to start my business in Select Sectors ▾") */}
+      {/* 4. 12-SECTOR APPROVAL EXPLORER */}
       <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             <span>SECTOR SPECIFIC DIRECTORY</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0B1728] tracking-tight">
             Which approvals are required to start my business in{" "}
-            <span className="text-[#00A859]">Maharashtra</span>?
+            <span className="text-emerald-600">Maharashtra</span>?
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 mt-2">
             Select your industry sector below to discover the exact statutory clearances, licenses, and applicable state incentives under Package Scheme of Incentives (PSI 2019).
           </p>
         </div>
 
-        {/* 12 Sector Cards Grid (Image 5) */}
+        {/* 12 Sector Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {sectorsData.map((sector) => {
             const IconComp = sector.icon;
@@ -626,7 +626,7 @@ export default function HomePage() {
                 onClick={() => setSelectedSector(sector)}
                 className={`p-4 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? "bg-[#0B1728] text-white border-amber-400 shadow-lg scale-[1.02]"
+                    ? "bg-[#0A1628] text-white border-emerald-500 shadow-lg scale-[1.02]"
                     : "bg-white text-slate-800 border-slate-200 hover:border-emerald-300 hover:shadow-md"
                 }`}
               >
@@ -634,8 +634,8 @@ export default function HomePage() {
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
                       isSelected
-                        ? "bg-[#FFB800] text-[#0B1728]"
-                        : "bg-slate-50 text-[#00A859]"
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-50 text-emerald-600"
                     }`}
                   >
                     <IconComp className="w-5 h-5" />
@@ -646,10 +646,10 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-4 pt-2 border-t border-slate-100/40 flex items-center justify-between text-[11px]">
-                  <span className={isSelected ? "text-amber-300 font-bold" : "text-[#00A859] font-bold"}>
+                  <span className={isSelected ? "text-emerald-300 font-bold" : "text-emerald-600 font-bold"}>
                     {sector.approvalsCount} Approvals
                   </span>
-                  <ChevronRight className={`w-3.5 h-3.5 ${isSelected ? "text-amber-300" : "text-slate-400"}`} />
+                  <ChevronRight className={`w-3.5 h-3.5 ${isSelected ? "text-emerald-300" : "text-slate-400"}`} />
                 </div>
               </button>
             );
@@ -660,7 +660,7 @@ export default function HomePage() {
         {selectedSector && (
           <div className="mt-8 bg-white rounded-2xl p-6 sm:p-8 border border-emerald-200 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#ECFDF5] border border-emerald-200 text-[#00A859] flex items-center justify-center shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-[#ECFDF5] border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0">
                 <selectedSector.icon className="w-7 h-7" />
               </div>
               <div>
@@ -668,7 +668,7 @@ export default function HomePage() {
                   <h3 className="text-lg font-black text-[#0B1728]">
                     {selectedSector.name}
                   </h3>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#00A859]">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-emerald-700">
                     {selectedSector.approvalsCount} Clearances Required
                   </span>
                 </div>
@@ -680,13 +680,13 @@ export default function HomePage() {
             <div className="flex items-center space-x-3 shrink-0">
               <button
                 onClick={() => setSelectedSector(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
               >
                 Close
               </button>
               <Link
                 href="/dashboard/kya"
-                className="px-5 py-2.5 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs shadow-md"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md"
               >
                 Launch KYA for {selectedSector.name.split(" ")[0]} →
               </Link>
@@ -695,7 +695,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 5. MAHARASHTRA INDUSTRIAL ZONES & DISTRICTS (Image 4 Style) */}
+      {/* 5. MAHARASHTRA INDUSTRIAL ZONES & DISTRICTS */}
       <section className="bg-slate-50 border-t border-slate-200 py-16 sm:py-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -713,7 +713,7 @@ export default function HomePage() {
             </div>
             <Link
               href="/dashboard/workflows"
-              className="inline-flex items-center space-x-2 text-xs font-bold text-[#00A859] hover:text-[#008F4C]"
+              className="inline-flex items-center space-x-2 text-xs font-bold text-emerald-600 hover:text-emerald-700"
             >
               <span>View All 36 Districts</span>
               <ChevronRight className="w-4 h-4" />
@@ -727,7 +727,7 @@ export default function HomePage() {
                 className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between"
               >
                 <div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 uppercase">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase">
                     MIDC Zone
                   </span>
                   <h3 className="text-base font-bold text-[#0B1728] mt-3">
@@ -744,7 +744,7 @@ export default function HomePage() {
                     </div>
                     <div className="flex items-center justify-between text-slate-600">
                       <span>Available Land:</span>
-                      <strong className="text-[#00A859]">{zone.plotsAvailable}</strong>
+                      <strong className="text-emerald-600">{zone.plotsAvailable}</strong>
                     </div>
                   </div>
                 </div>
@@ -752,7 +752,7 @@ export default function HomePage() {
                 <div className="mt-5 pt-3 border-t border-slate-100">
                   <Link
                     href="/dashboard/kya"
-                    className="text-xs font-bold text-[#00A859] hover:underline flex items-center justify-between"
+                    className="text-xs font-bold text-emerald-600 hover:underline flex items-center justify-between"
                   >
                     <span>Check Approvals for this Zone</span>
                     <ChevronRight className="w-3.5 h-3.5" />

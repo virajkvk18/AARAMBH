@@ -21,7 +21,7 @@ export default function Header() {
                 <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
                   AARAMBH
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 uppercase tracking-wider">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
                   MH-SWS
                 </span>
               </div>
@@ -35,17 +35,17 @@ export default function Header() {
           <div className="hidden sm:flex items-center space-x-3">
             <Link
               href="/login"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-md bg-[#0B1728] hover:bg-[#12233D] border-2 border-amber-400 text-amber-400 font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 hover:shadow-amber-400/20"
+              className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 cursor-pointer"
             >
-              <LogIn className="w-4 h-4 text-amber-400" />
+              <LogIn className="w-4 h-4 text-emerald-400" />
               <span>Login</span>
             </Link>
 
             <Link
               href="/signup"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-md bg-amber-400 hover:bg-amber-500 text-[#0B1728] font-black text-xs uppercase tracking-wider shadow-sm transition-all duration-150"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-emerald-950/50 transition-all duration-150 cursor-pointer hover:scale-[1.02]"
             >
-              <UserPlus className="w-4 h-4 text-[#0B1728]" />
+              <UserPlus className="w-4 h-4 text-white" />
               <span>Sign Up</span>
             </Link>
           </div>
@@ -54,13 +54,13 @@ export default function Header() {
           <div className="flex sm:hidden items-center space-x-2">
             <Link
               href="/login"
-              className="px-3.5 py-1.5 rounded-md border border-amber-400 text-amber-400 text-xs font-bold"
+              className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-200 text-xs font-bold"
             >
               Login
             </Link>
             <Link
               href="/signup"
-              className="px-3 py-1.5 rounded-md bg-amber-400 text-[#0B1728] text-xs font-black"
+              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-black"
             >
               Sign Up
             </Link>
