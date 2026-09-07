@@ -102,14 +102,25 @@ export default function PreValidationPage() {
   // Form Fields State for MPCB Consent to Establish
   const [formData, setFormData] = useState({
     entityName: extractedFields.entity_name?.value || "Maharashtra Solvents & Chemicals Pvt Ltd",
-    pan: extractedFields.pan?.value || "ABCDE1234F",
-    gstin: extractedFields.gstin?.value || "27ABCDE1234F1Z5",
+    pan: extractedFields.pan?.value || "",
+    gstin: extractedFields.gstin?.value || "",
+    aadhaar: extractedFields.aadhaar?.value || "",
     sector: sector || "Chemical Manufacturing",
     locationZone: locationZone || "Chakan MIDC (Pune)",
     powerLoadKva: powerLoadKva || 250,
     capexCr: capexCr || 35,
     resolvedPlotArea: "5000",
   });
+
+  // Sync with store extracted fields if they change
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      pan: extractedFields.pan?.value !== undefined ? (extractedFields.pan?.value || "") : prev.pan,
+      gstin: extractedFields.gstin?.value !== undefined ? (extractedFields.gstin?.value || "") : prev.gstin,
+      aadhaar: extractedFields.aadhaar?.value !== undefined ? (extractedFields.aadhaar?.value || "") : prev.aadhaar,
+    }));
+  }, [extractedFields]);
 
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
@@ -221,7 +232,7 @@ export default function PreValidationPage() {
             <div>
               <p className="font-bold text-[#9B2A48]">All Cross-Document Consistency Checks Passed</p>
               <p className="text-[#886A75] text-[11px]">
-                Plot area ({docAValue} sq.m), PAN, and GSTIN are 100% synchronized across MIDC and DPR dossiers.
+                Plot area ({docAValue} sq.m) is synchronized across MIDC and DPR statutory dossiers.
               </p>
             </div>
           </div>
@@ -451,12 +462,22 @@ export default function PreValidationPage() {
 
             {/* PAN */}
             <div>
-              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
-                Enterprise PAN
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider">
+                  Enterprise PAN
+                </label>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                    formData.pan ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
+                  }`}
+                >
+                  {formData.pan ? "AI Synced" : "Missing (null)"}
+                </span>
+              </div>
               <input
                 type="text"
                 value={formData.pan}
+                placeholder="No PAN detected (null)"
                 onChange={(e) => setFormData({ ...formData, pan: e.target.value.toUpperCase() })}
                 className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
@@ -464,13 +485,46 @@ export default function PreValidationPage() {
 
             {/* GSTIN */}
             <div>
-              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
-                Maharashtra GSTIN
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider">
+                  Maharashtra GSTIN
+                </label>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                    formData.gstin ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
+                  }`}
+                >
+                  {formData.gstin ? "AI Synced" : "Missing (null)"}
+                </span>
+              </div>
               <input
                 type="text"
                 value={formData.gstin}
+                placeholder="No GSTIN detected (null)"
                 onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
+              />
+            </div>
+
+            {/* Aadhaar (Signatory) */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider">
+                  Signatory Aadhaar
+                </label>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                    formData.aadhaar ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
+                  }`}
+                >
+                  {formData.aadhaar ? "AI Synced" : "Missing (null)"}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={formData.aadhaar}
+                placeholder="No Aadhaar detected (null)"
+                onChange={(e) => setFormData({ ...formData, aadhaar: e.target.value })}
                 className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
             </div>

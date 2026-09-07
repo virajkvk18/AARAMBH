@@ -102,10 +102,12 @@ def extract_fields_with_groq_or_heuristics(raw_text: str) -> Dict[str, Dict[str,
             "- entity_name (Company/Enterprise legal name)\n"
             "- pan (10-digit Permanent Account Number, format: 5 letters + 4 digits + 1 letter)\n"
             "- gstin (15-character GST number)\n"
+            "- aadhaar (12-digit Indian Aadhaar number)\n"
             "- plot_area_sqm (Industrial plot size in square meters)\n"
             "- power_load_kva (Sanctioned or required electricity load in kVA or KW)\n"
             "- capex_amount (Total capital expenditure / project investment in INR or Crores)\n\n"
             "Return a JSON object where each field has 'value' (string or null) and 'confidence_score' (float 0.0 to 1.0). "
+            "If a field is not present in the document text, set its 'value' to null and 'confidence_score' to 0.0. "
             "Only output valid JSON with no markdown backticks."
         )
 
@@ -141,6 +143,13 @@ def extract_fields_with_groq_or_heuristics(raw_text: str) -> Dict[str, Dict[str,
     results["gstin"] = {
         "value": gstin_match.group(1).upper() if gstin_match else None,
         "confidence_score": 0.96 if gstin_match else 0.0
+    }
+
+    # Aadhaar: 12 digits (often grouped in 4s: XXXX XXXX XXXX or XXXXXXXXXXXX)
+    aadhaar_match = re.search(r'\b([2-9][0-9]{3}[\s-]?[0-9]{4}[\s-]?[0-9]{4})\b', raw_text)
+    results["aadhaar"] = {
+        "value": aadhaar_match.group(1).replace(" ", "").replace("-", "") if aadhaar_match else None,
+        "confidence_score": 0.95 if aadhaar_match else 0.0
     }
 
     # Entity Name
@@ -215,12 +224,19 @@ async def extract_document(file: UploadFile = File(...)):
 
         # Format into typed response
         typed_fields = {}
-        for key in ["entity_name", "pan", "gstin", "plot_area_sqm", "power_load_kva", "capex_amount"]:
+        for key in ["entity_name", "pan", "gstin", "aadhaar", "plot_area_sqm", "power_load_kva", "capex_amount"]:
             item = extracted_raw.get(key, {})
-            typed_fields[key] = ExtractedField(
-                value=str(item.get("value")) if item.get("value") is not None else None,
-                confidence_score=float(item.get("confidence_score", 0.85))
-            )
+            val = item.get("value")
+            if val is not None and str(val).strip() and str(val).lower() not in ("none", "null"):
+                typed_fields[key] = ExtractedField(
+                    value=str(val).strip(),
+                    confidence_score=float(item.get("confidence_score", 0.85))
+                )
+            else:
+                typed_fields[key] = ExtractedField(
+                    value=None,
+                    confidence_score=0.0
+                )
 
         return ExtractionResponse(
             status="success",

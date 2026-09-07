@@ -10,6 +10,7 @@ import {
   supabase,
   isSupabaseConfigured,
   localDb,
+  localFileStore,
   initializeDagNodesForEnterprise,
   DbEnterprise,
   DbDocument,
@@ -256,6 +257,87 @@ app.post("/api/documents", async (req: Request, res: Response): Promise<void> =>
   }
 });
 
+/**
+ * GET /api/documents
+ * Fetch all documents for an enterprise
+ */
+app.get("/api/documents", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const enterpriseId = (req.query.enterprise_id as string) || "ENT-MH-2026-8891";
+    const docs = Array.from(localDb.documents.values()).filter(
+      (d) => d.enterprise_id === enterpriseId
+    );
+    res.json({
+      status: "success",
+      documents: docs,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to fetch documents" });
+  }
+});
+
+/**
+ * GET /api/documents/:id/file
+ * Serve actual uploaded document file directly
+ */
+app.get("/api/documents/:id/file", (req: Request, res: Response): void => {
+  try {
+    const id = String(req.params.id);
+    const file = localFileStore.get(id);
+
+    if (!file) {
+      res.status(404).json({ error: "Document file not found or expired from session cache." });
+      return;
+    }
+
+    res.setHeader("Content-Type", file.mimetype);
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${encodeURIComponent(file.filename)}"`
+    );
+    res.send(file.buffer);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to stream document file" });
+  }
+});
+
+/**
+ * DELETE /api/documents/:id
+ * Remove document, stored file buffer, and associated extracted fields
+ */
+app.delete("/api/documents/:id", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = String(req.params.id);
+    const existed = localDb.documents.delete(id);
+    localFileStore.delete(id);
+
+    // Delete associated extracted fields for this document
+    for (const [key, field] of localDb.extractedFields.entries()) {
+      if (field.document_id === id) {
+        localDb.extractedFields.delete(key);
+      }
+    }
+
+    if (supabase) {
+      try {
+        await supabase.from("documents").delete().eq("id", id);
+        await supabase.from("extracted_fields").delete().eq("document_id", id);
+      } catch (sbErr) {
+        console.warn("Supabase document delete warning:", sbErr);
+      }
+    }
+
+    res.json({
+      status: "success",
+      message: "Document removed successfully",
+      id,
+      existed,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to delete document" });
+  }
+});
+
 // ==========================================
 // 3. DAG WORKFLOW REST ENDPOINTS
 // ==========================================
@@ -408,14 +490,17 @@ type AiExtractionResponse = {
   extraction_method: string;
 };
 
-function persistVaultExtraction(extraction: AiExtractionResponse): {
+function persistVaultExtraction(
+  extraction: AiExtractionResponse,
+  docId: string,
+  fileUrl: string
+): {
   document: DbDocument;
   extracted_fields: DbExtractedField[];
 } {
   const enterpriseId = "ENT-MH-2026-8891";
-  const documentId = `DOC-${Date.now().toString(36).toUpperCase()}`;
   const document: DbDocument = {
-    id: documentId,
+    id: docId,
     enterprise_id: enterpriseId,
     file_name: extraction.file_name,
     file_type: extraction.file_type || "application/octet-stream",
@@ -423,21 +508,22 @@ function persistVaultExtraction(extraction: AiExtractionResponse): {
     verification_status: "AI_EXTRACTED",
     raw_text_snippet: extraction.raw_text_snippet || "",
     created_at: new Date().toISOString(),
+    file_url: fileUrl,
   };
-  localDb.documents.set(documentId, document);
+  localDb.documents.set(docId, document);
 
   const extracted_fields = Object.entries(extraction.extracted_fields).map(([field_name, item]) => {
     const confidence = typeof item.confidence_score === "number" ? item.confidence_score : 0;
     const record: DbExtractedField = {
-      id: `EF-${documentId}-${field_name}`,
+      id: `EF-${docId}-${field_name}`,
       enterprise_id: enterpriseId,
-      document_id: documentId,
+      document_id: docId,
       field_name,
       field_value: item.value == null ? "" : String(item.value),
       confidence_score: confidence,
       created_at: new Date().toISOString(),
     };
-    localDb.extractedFields.set(`${enterpriseId}:${field_name}`, record);
+    localDb.extractedFields.set(`${enterpriseId}:${docId}:${field_name}`, record);
     return record;
   });
 
@@ -461,6 +547,14 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
       res.status(415).json({ error: "Unsupported file type. Upload a PDF, JPG, or PNG document." });
       return;
     }
+
+    const docId = `DOC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    localFileStore.set(docId, {
+      buffer,
+      mimetype,
+      filename: originalname,
+    });
+    const fileUrl = `/api/documents/${docId}/file`;
 
     try {
       const formData = new FormData();
@@ -487,26 +581,45 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
         return;
       }
 
-      const persisted = persistVaultExtraction(extraction);
+      const persisted = persistVaultExtraction(extraction, docId, fileUrl);
       res.status(200).json({ ...extraction, document: persisted.document });
     } catch (aiErr: any) {
-      const aiStatus = aiErr.response?.status;
       const aiDetail = aiErr.response?.data?.detail || aiErr.response?.data?.error;
-      if (aiStatus) {
-        console.warn(`AI extraction rejected the document with status ${aiStatus}.`);
-        res.status(aiStatus).json({ error: aiDetail || "AI service could not extract this document." });
-        return;
-      }
+      
+      // Store document in localDb so it remains viewable and manageable even if AI service is offline
+      const fallbackDoc: DbDocument = {
+        id: docId,
+        enterprise_id: "ENT-MH-2026-8891",
+        file_name: originalname,
+        file_type: mimetype,
+        source: "UPLOAD",
+        verification_status: "UPLOADED",
+        raw_text_snippet: "",
+        created_at: new Date().toISOString(),
+        file_url: fileUrl,
+      };
+      localDb.documents.set(docId, fallbackDoc);
 
-      console.warn("AI extraction service is unavailable or timed out.");
-      res.status(aiErr.code === "ECONNABORTED" ? 504 : 503).json({
-        error: aiErr.code === "ECONNABORTED"
-          ? "AI extraction timed out. Please try again with a smaller or clearer document."
-          : "AI extraction service is unavailable. Please try again shortly.",
+      res.status(200).json({
+        status: "partial_success",
+        file_name: originalname,
+        file_type: mimetype,
+        raw_text_snippet: "",
+        extracted_fields: {
+          entity_name: { value: null, confidence_score: 0 },
+          pan: { value: null, confidence_score: 0 },
+          gstin: { value: null, confidence_score: 0 },
+          aadhaar: { value: null, confidence_score: 0 },
+          plot_area_sqm: { value: null, confidence_score: 0 },
+          power_load_kva: { value: null, confidence_score: 0 },
+          capex_amount: { value: null, confidence_score: 0 },
+        },
+        extraction_method: "None",
+        document: fallbackDoc,
+        warning: aiDetail || "AI extraction was not available, but document is stored and viewable.",
       });
     }
   } catch (error: any) {
-    console.error("Vault extraction request failed.");
     res.status(500).json({ error: "Failed to process the document." });
   }
 });

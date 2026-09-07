@@ -48,7 +48,16 @@ export interface DbDocument {
   verification_status: string;
   raw_text_snippet: string;
   created_at: string;
+  file_url?: string;
 }
+
+export interface StoredFile {
+  buffer: Buffer;
+  mimetype: string;
+  filename: string;
+}
+
+export const localFileStore = new Map<string, StoredFile>();
 
 export interface DbExtractedField {
   id: string;
