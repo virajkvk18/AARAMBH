@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 const SYSTEM_PROMPT = `You are "AARAMBH", the official clearance and investment advisory intelligence for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
 
@@ -13,6 +15,50 @@ Core Operational Rules:
 5. Clarifying Questions:
    - Only ask clarifying questions when essential project parameters (such as sector or investment size) are strictly required to determine the exact statutory clearance track.`;
 
+function getRuntimeApiKey(userKey?: string): string {
+  if (userKey && userKey.trim().startsWith("gsk_")) {
+    return userKey.trim();
+  }
+
+  if (process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim()) {
+    return process.env.GROQ_API_KEY.trim();
+  }
+
+  // Hot-read from .env.local in real-time so users don't have to restart server
+  try {
+    const envLocalPath = path.join(process.cwd(), ".env.local");
+    if (fs.existsSync(envLocalPath)) {
+      const content = fs.readFileSync(envLocalPath, "utf-8");
+      const match = content.match(/GROQ_API_KEY\s*=\s*["']?([^"'\r\n]+)["']?/i);
+      if (match && match[1] && match[1].trim() && match[1].trim().startsWith("gsk_")) {
+        const key = match[1].trim();
+        process.env.GROQ_API_KEY = key;
+        return key;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  // Also check parent root .env
+  try {
+    const rootEnvPath = path.join(process.cwd(), "..", ".env");
+    if (fs.existsSync(rootEnvPath)) {
+      const content = fs.readFileSync(rootEnvPath, "utf-8");
+      const match = content.match(/GROQ_API_KEY\s*=\s*["']?([^"'\r\n]+)["']?/i);
+      if (match && match[1] && match[1].trim() && match[1].trim().startsWith("gsk_")) {
+        const key = match[1].trim();
+        process.env.GROQ_API_KEY = key;
+        return key;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return "";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -25,22 +71,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const apiKey = (userApiKey && userApiKey.trim().startsWith("gsk_"))
-      ? userApiKey.trim()
-      : (process.env.GROQ_API_KEY || process.env.GROQ_KEY || "");
+    const apiKey = getRuntimeApiKey(userApiKey);
 
     console.log(
-      `[AARAMBH Chat API] Incoming request with ${messages.length} messages. GROQ_API_KEY status: ${
-        apiKey ? `CONFIGURED (${apiKey.slice(0, 6)}...${apiKey.slice(-4)})` : "NOT CONFIGURED"
+      `[AARAMBH Chat API] Request received. Key status: ${
+        apiKey ? `VALID (${apiKey.slice(0, 6)}...${apiKey.slice(-4)})` : "EMPTY"
       }`
     );
 
     if (!apiKey) {
-      console.warn("[AARAMBH Chat API] GROQ_API_KEY is not set in environment.");
       return NextResponse.json(
         {
           error:
-            "GROQ_API_KEY is not set. Please add GROQ_API_KEY=gsk_... to frontend/.env.local and restart the server.",
+            "Please paste your Groq API key into frontend/.env.local (e.g. GROQ_API_KEY=gsk_...) and save the file.",
         },
         { status: 500 }
       );
@@ -60,8 +103,6 @@ export async function POST(req: NextRequest) {
       max_tokens: 1024,
     };
 
-    console.log("[AARAMBH Chat API] Calling Groq API with model: llama-3.3-70b-versatile...");
-
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -76,7 +117,6 @@ export async function POST(req: NextRequest) {
       console.error(`[AARAMBH Chat API] Groq 70B call failed (${response.status}):`, errText);
 
       // Attempt fallback to 8B instant model
-      console.log("[AARAMBH Chat API] Attempting fallback to llama-3.1-8b-instant...");
       const fallbackResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -90,8 +130,6 @@ export async function POST(req: NextRequest) {
       });
 
       if (!fallbackResponse.ok) {
-        const fallbackErrText = await fallbackResponse.text();
-        console.error(`[AARAMBH Chat API] Groq 8B fallback failed (${fallbackResponse.status}):`, fallbackErrText);
         return NextResponse.json(
           { error: `Groq API Error (${response.status}): ${errText}` },
           { status: response.status }
@@ -100,7 +138,6 @@ export async function POST(req: NextRequest) {
 
       const fallbackData = await fallbackResponse.json();
       const answer = fallbackData.choices?.[0]?.message?.content || "No response received.";
-      console.log("[AARAMBH Chat API] Successfully generated response via llama-3.1-8b-instant.");
       return NextResponse.json({
         content: answer,
         model: "llama-3.1-8b-instant",
@@ -109,14 +146,13 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
     const answer = data.choices?.[0]?.message?.content || "No response received.";
-    console.log("[AARAMBH Chat API] Successfully generated response via llama-3.3-70b-versatile.");
 
     return NextResponse.json({
       content: answer,
       model: "llama-3.3-70b-versatile",
     });
   } catch (err: unknown) {
-    console.error("[AARAMBH Chat API] Unexpected exception in route handler:", err);
+    console.error("[AARAMBH Chat API] Exception in route handler:", err);
     return NextResponse.json(
       { error: (err instanceof Error ? err.message : "Internal server error in AARAMBH Chat Service") },
       { status: 500 }
