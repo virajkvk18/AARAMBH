@@ -6,361 +6,320 @@ import {
   Building2,
   Mail,
   Lock,
-  Smartphone,
+  Eye,
+  EyeOff,
   ShieldCheck,
   ArrowRight,
   Sparkles,
-  KeyRound,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  ExternalLink,
+  Landmark,
+  Building,
+  Factory,
+  Flame,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const { loginAsApplicant, loginAsOfficer, loginWithDigiLocker } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<"business" | "officer">("business");
-
-  // Business User State
-  const [businessIdentifier, setBusinessIdentifier] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpValue, setOtpValue] = useState("");
-  const [otpError, setOtpError] = useState("");
-
-  // Officer State
-  const [officerEmail, setOfficerEmail] = useState("");
-  const [officerPassword, setOfficerPassword] = useState("");
+  const [activeRole, setActiveRole] = useState<"applicant" | "officer">("applicant");
+  const [email, setEmail] = useState("investor@smartelectronics.in");
+  const [password, setPassword] = useState("password123");
+  const [showPassword, setShowPassword] = useState(false);
   const [officerDept, setOfficerDept] = useState("MIDC Industrial Clearances");
 
-  // Handlers
-  const handleSendOtp = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!businessIdentifier.trim()) return;
-    setOtpSent(true);
-    setOtpError("");
-    setOtpValue("123456"); // Pre-fill mock OTP for smooth demo experience
-  };
+    if (!email) return;
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otpValue.trim() !== "123456" && otpValue.trim().length < 4) {
-      setOtpError("Invalid OTP. Please enter 123456 for testing.");
-      return;
+    if (activeRole === "applicant") {
+      loginAsApplicant(
+        email,
+        "Sanjay Deshmukh",
+        "Smart Electronics Maharashtra Ltd"
+      );
+    } else {
+      loginAsOfficer(email, officerDept);
     }
-    loginAsApplicant(
-      businessIdentifier.includes("@") ? businessIdentifier : `${businessIdentifier}@enterprise.in`,
-      "Mahesh Deshmukh",
-      "Deshmukh Precision Engineering Ltd"
-    );
-  };
-
-  const handleOfficerLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!officerEmail.trim() || !officerPassword.trim()) return;
-    loginAsOfficer(officerEmail, officerDept);
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
-      {/* Top Identity Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#0F172A] border border-slate-700 text-white font-black text-2xl shadow-md mb-3 text-indigo-400">
-          आ
+    <div className="min-h-screen bg-[#0B1728] bg-topo-pattern py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center relative overflow-hidden">
+      {/* Top Left Branding */}
+      <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="w-10 h-10 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner">
+            <div className="flex items-center space-x-1">
+              <span className="w-3 h-3 rounded-full bg-[#00A859]"></span>
+              <span className="w-3 h-3 rounded-full bg-white"></span>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-black tracking-tight text-white font-sans">
+              AARAMBH
+            </span>
+            <span className="text-[10px] font-semibold text-amber-300 uppercase tracking-wider">
+              Govt. of Maharashtra Single Window
+            </span>
+          </div>
+        </Link>
+
+        {/* Quick Role Toggle */}
+        <div className="flex items-center bg-[#0E2038] p-1 rounded-xl border border-slate-700">
+          <button
+            type="button"
+            onClick={() => setActiveRole("applicant")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              activeRole === "applicant"
+                ? "bg-[#00A859] text-white shadow-sm"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Investor Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveRole("officer")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              activeRole === "officer"
+                ? "bg-amber-500 text-[#0B1728] shadow-sm font-black"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Dept. Officer
+          </button>
         </div>
-        <h2 className="text-2xl font-extrabold text-[#0F172A] tracking-tight">
-          AARAMBH Single Window Portal
-        </h2>
-        <p className="mt-1 text-xs text-slate-500">
-          Dept. of Skills, Employment, Entrepreneurship & Innovation, Govt. of Maharashtra
-        </p>
       </div>
 
-      {/* Main Authentication Card */}
-      <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden">
-        {/* Tab Switcher (Business User vs Officer Login) */}
-        <div className="flex border-b border-slate-200 bg-slate-50/80">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("business");
-              setOtpSent(false);
-            }}
-            className={`flex-1 py-3.5 px-4 text-center text-xs sm:text-sm font-bold transition-colors border-b-2 flex items-center justify-center space-x-2 ${
-              activeTab === "business"
-                ? "border-[#4F46E5] text-[#4F46E5] bg-white"
-                : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>Business User Login</span>
-          </button>
+      {/* Main Dual-Pane Card (Matching Image 1: media_1788757339327.png) */}
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl border border-slate-700 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Side: White Sign In Form */}
+        <div className="lg:col-span-5 p-8 sm:p-12 flex flex-col justify-between bg-white">
+          <div>
+            <h1 className="text-3xl font-black text-[#0B1728] tracking-tight">
+              Sign In
+            </h1>
+            <p className="text-xs text-slate-500 mt-1">
+              To access your dashboard and apply for approvals.
+            </p>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab("officer")}
-            className={`flex-1 py-3.5 px-4 text-center text-xs sm:text-sm font-bold transition-colors border-b-2 flex items-center justify-center space-x-2 ${
-              activeTab === "officer"
-                ? "border-[#4F46E5] text-[#4F46E5] bg-white"
-                : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Department Officer Login</span>
-          </button>
-        </div>
-
-        <div className="p-6 sm:p-8 space-y-6">
-          {/* BUSINESS USER TAB */}
-          {activeTab === "business" && (
-            <div className="space-y-6">
-              {/* Fast-Track DigiLocker Login Button */}
-              <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // TODO: replace with real DigiLocker OAuth flow
-                    loginWithDigiLocker();
-                  }}
-                  className="w-full flex items-center justify-center space-x-3 py-3 px-4 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-900 font-bold text-sm shadow-xs transition-all duration-150 group cursor-pointer"
-                >
-                  <div className="w-6 h-6 rounded-md bg-[#006699] text-white flex items-center justify-center font-black text-xs">
-                    DL
-                  </div>
-                  <span>Instant Login via DigiLocker</span>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-200/70 text-blue-900 uppercase">
-                    Verified
-                  </span>
-                </button>
-              </div>
-
-              {/* Separator */}
-              <div className="relative flex items-center justify-center">
-                <div className="border-t border-slate-200 w-full"></div>
-                <span className="bg-white px-3 text-xs text-slate-400 font-medium uppercase tracking-wider">
-                  or email / mobile otp
-                </span>
-                <div className="border-t border-slate-200 w-full"></div>
-              </div>
-
-              {/* OTP Flow */}
-              {!otpSent ? (
-                <form onSubmit={handleSendOtp} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="businessIdentifier"
-                      className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
-                    >
-                      Registered Email or Mobile Number
-                    </label>
-                    <div className="relative rounded-lg shadow-xs">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Mail className="w-4 h-4" />
-                      </div>
-                      <input
-                        id="businessIdentifier"
-                        type="text"
-                        required
-                        value={businessIdentifier}
-                        onChange={(e) => setBusinessIdentifier(e.target.value)}
-                        placeholder="investor@enterprise.com or 9876543210"
-                        className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
-                    <p className="mt-1.5 text-[11px] text-slate-500">
-                      An OTP will be dispatched to your registered contact details.
-                    </p>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all duration-150 cursor-pointer"
-                  >
-                    <span>Send Verification OTP</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyOtp} className="space-y-4">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start space-x-2.5 text-xs text-emerald-800">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="font-semibold">OTP Sent Successfully</p>
-                      <p className="text-emerald-700 text-[11px] mt-0.5">
-                        Dispatched to <strong>{businessIdentifier}</strong>. For demonstration, use demo code: <strong>123456</strong>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="otpValue"
-                      className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
-                    >
-                      Enter 6-Digit OTP
-                    </label>
-                    <div className="relative rounded-lg shadow-xs">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <KeyRound className="w-4 h-4" />
-                      </div>
-                      <input
-                        id="otpValue"
-                        type="text"
-                        maxLength={6}
-                        required
-                        value={otpValue}
-                        onChange={(e) => setOtpValue(e.target.value)}
-                        placeholder="123456"
-                        className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 tracking-widest font-mono font-bold placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    {otpError && (
-                      <p className="mt-1 text-xs text-rose-600 font-medium flex items-center space-x-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{otpError}</span>
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setOtpSent(false)}
-                      className="text-slate-500 hover:text-slate-800 underline"
-                    >
-                      Change Contact
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOtpValue("123456");
-                        alert("Mock OTP re-sent: 123456");
-                      }}
-                      className="text-[#4F46E5] font-semibold hover:underline"
-                    >
-                      Resend OTP
-                    </button>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all duration-150 cursor-pointer"
-                  >
-                    <span>Verify & Login to Investor Dashboard</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </form>
-              )}
-
-              {/* Sign Up Footer Link */}
-              <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
-                New Investor on AARAMBH?{" "}
-                <Link
-                  href="/signup"
-                  className="font-bold text-[#4F46E5] hover:underline"
-                >
-                  Create Business Account
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* OFFICER TAB */}
-          {activeTab === "officer" && (
-            <form onSubmit={handleOfficerLogin} className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-start space-x-2">
-                <ShieldCheck className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                <span>
-                  <strong>Authorized Personnel Only:</strong> Access restricted to verified department officers (MIDC, MPCB, Fire, DISH, Energy).
-                </span>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="officerDept"
-                  className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
-                >
-                  Department / Authority
+            {/* Officer Dept Selector if Officer */}
+            {activeRole === "officer" && (
+              <div className="mt-5 p-3 rounded-xl bg-amber-50 border border-amber-200">
+                <label className="block text-[11px] font-bold text-amber-900 uppercase tracking-wider mb-1">
+                  Department Authority
                 </label>
                 <select
-                  id="officerDept"
                   value={officerDept}
                   onChange={(e) => setOfficerDept(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full bg-white text-xs font-bold text-slate-800 p-2 rounded-lg border border-amber-300 focus:outline-none"
                 >
-                  <option value="MIDC Industrial Clearances">MIDC - Industrial Land & Planning</option>
-                  <option value="MPCB Environmental Board">MPCB - Maharashtra Pollution Control Board</option>
-                  <option value="State Directorate of Fire Services">State Directorate of Fire & Emergency Services</option>
-                  <option value="DISH Directorate of Industrial Safety">DISH - Factory & Boiler Safety</option>
-                  <option value="MSEDCL Energy Distribution">MSEDCL - Power Feasibility</option>
+                  <option value="MIDC Industrial Clearances">MIDC (Land & Building Plan)</option>
+                  <option value="MPCB Environmental Cell">MPCB (Pollution Control Board)</option>
+                  <option value="Maharashtra Fire Directorate">State Fire Services</option>
+                  <option value="Directorate of Industrial Safety (DISH)">DISH (Factory Licensing)</option>
                 </select>
               </div>
+            )}
 
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              {/* Email Address */}
               <div>
-                <label
-                  htmlFor="officerEmail"
-                  className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
-                >
-                  Official Govt Email ID
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Email Address
                 </label>
-                <div className="relative rounded-lg shadow-xs">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Mail className="w-4 h-4" />
-                  </div>
+                <div className="relative">
                   <input
-                    id="officerEmail"
                     type="email"
                     required
-                    value={officerEmail}
-                    onChange={(e) => setOfficerEmail(e.target.value)}
-                    placeholder="officer.name@maharashtra.gov.in"
-                    className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@enterprise.com"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-[#00A859] focus:ring-2 focus:ring-[#00A859]/20 focus:outline-none transition-all"
                   />
                 </div>
               </div>
 
+              {/* Password with Eye Toggle */}
               <div>
-                <label
-                  htmlFor="officerPassword"
-                  className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
-                >
-                  Security Password
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Password
                 </label>
-                <div className="relative rounded-lg shadow-xs">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Lock className="w-4 h-4" />
-                  </div>
+                <div className="relative">
                   <input
-                    id="officerPassword"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
-                    value={officerPassword}
-                    onChange={(e) => setOfficerPassword(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-[#00A859] focus:ring-2 focus:ring-[#00A859]/20 focus:outline-none transition-all pr-10"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-sm shadow-md transition-all duration-150 cursor-pointer"
-              >
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Secure Officer Login</span>
-              </button>
+              {/* Action Buttons: Sign In (Orange) & Forgot Password */}
+              <div className="pt-2 flex items-center justify-between gap-4">
+                <button
+                  type="submit"
+                  className="px-8 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer"
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => alert("Password reset instructions have been sent to your registered email.")}
+                  className="text-xs font-bold text-[#1E40AF] hover:underline cursor-pointer"
+                >
+                  Forgot Password?
+                </button>
+              </div>
             </form>
-          )}
+
+            {/* Fast Track DigiLocker Option for Applicants */}
+            {activeRole === "applicant" && (
+              <div className="mt-6 pt-5 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={loginWithDigiLocker}
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                >
+                  <ShieldCheck className="w-4 h-4 text-[#006699]" />
+                  <span>Login with DigiLocker Account</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Cream Strip (Image 1) */}
+          <div className="mt-8 -mx-8 sm:-mx-12 -mb-8 sm:-mb-12 p-4 bg-[#FFFBEB] border-t border-amber-200/80 text-center">
+            <span className="text-xs text-slate-700">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="font-bold text-[#D97706] hover:underline ml-1">
+                Sign Up Now
+              </Link>
+            </span>
+          </div>
         </div>
 
-        {/* Card Footer Security Note */}
-        <div className="bg-slate-50 border-t border-slate-100 px-6 py-3.5 text-[11px] text-slate-500 flex items-center justify-between">
-          <span className="flex items-center space-x-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>256-Bit SSL Encrypted Session</span>
-          </span>
-          <span className="text-slate-400">Helpdesk unavailable in this demo</span>
+        {/* Right Side: Navy Showcase (Image 1: Ministries & State Regulatory Seals) */}
+        <div className="lg:col-span-7 bg-[#0E2038] bg-topo-pattern text-white p-8 sm:p-12 flex flex-col justify-between border-l border-slate-800">
+          <div>
+            <h2 className="text-3xl font-black text-white tracking-tight">
+              We have
+            </h2>
+            <div className="flex items-center space-x-2 mt-1 text-sm font-bold">
+              <span className="text-[#FFB800]">36 Districts</span>
+              <span className="text-slate-500">∿</span>
+              <span className="text-[#00A859]">18 State Regulatory Departments</span>
+            </div>
+
+            {/* Grid of Official Maharashtra Regulatory Authorities */}
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-[11px]">
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+                  MH
+                </div>
+                <div>
+                  <p className="font-bold text-white">Govt. of Maharashtra</p>
+                  <p className="text-[9px] text-slate-400">Industries Dept.</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">
+                  MIDC
+                </div>
+                <div>
+                  <p className="font-bold text-white">MIDC Corporation</p>
+                  <p className="text-[9px] text-slate-400">Land & Estate</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-xs">
+                  MPCB
+                </div>
+                <div>
+                  <p className="font-bold text-white">MPCB Pollution Board</p>
+                  <p className="text-[9px] text-slate-400">Environmental CTE/CTO</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center font-bold text-xs">
+                  FIRE
+                </div>
+                <div>
+                  <p className="font-bold text-white">Fire Services</p>
+                  <p className="text-[9px] text-slate-400">Provisional NOC</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs">
+                  DISH
+                </div>
+                <div>
+                  <p className="font-bold text-white">DISH Safety</p>
+                  <p className="text-[9px] text-slate-400">Factory License</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+                  MSEDCL
+                </div>
+                <div>
+                  <p className="font-bold text-white">MSEDCL Power</p>
+                  <p className="text-[9px] text-slate-400">Grid Connectivity</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-xs">
+                  WATER
+                </div>
+                <div>
+                  <p className="font-bold text-white">Water Resources</p>
+                  <p className="text-[9px] text-slate-400">Bulk Water Quota</p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/80 flex flex-col items-center text-center space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs">
+                  FDA
+                </div>
+                <div>
+                  <p className="font-bold text-white">FDA Maharashtra</p>
+                  <p className="text-[9px] text-slate-400">Pharma & Food</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Interlinked National Single Window Banner */}
+            <div className="mt-8 p-4 rounded-2xl bg-slate-900/90 border border-slate-700 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <ShieldCheck className="w-5 h-5 text-[#00A859] shrink-0" />
+                <p className="text-xs text-slate-300">
+                  Interlinked with <strong className="text-white">National Single Window System (NSWS)</strong> & DigiLocker for instant CIN/PAN pre-population.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Toll-Free Support: 1800-120-8040</span>
+            <span>Government of Maharashtra</span>
+          </div>
         </div>
       </div>
     </div>

@@ -4,266 +4,846 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Building2,
-  Mail,
-  Smartphone,
-  ShieldCheck,
-  ArrowRight,
-  UserCheck,
+  Handshake,
+  User,
+  Users,
+  Building,
   CreditCard,
-  FileBadge2,
+  MapPin,
   CheckCircle2,
+  ArrowRight,
+  ShieldCheck,
+  HelpCircle,
+  Sparkles,
+  Search,
+  Check,
+  ChevronDown,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+
+type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
 export default function SignupPage() {
   const { loginAsApplicant, loginWithDigiLocker } = useAuth();
 
-  const [enterpriseName, setEnterpriseName] = useState("");
-  const [signatoryName, setSignatoryName] = useState("");
-  const [panNumber, setPanNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [sector, setSector] = useState("Manufacturing & Engineering");
-  const [agreeTerms, setAgreeTerms] = useState(true);
+  // Current Step: 1 = Initial Credentials, 2 = Entity Type (Img 2), 3 = PAN Validation (Img 3), 4 = Address (Img 4)
+  const [currentStep, setCurrentStep] = useState<number>(2);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!enterpriseName || !signatoryName || !email) return;
+  // Form State
+  const [applicantName, setApplicantName] = useState("Sanjay Deshmukh");
+  const [email, setEmail] = useState("sanjay.deshmukh@smartelectronics.in");
+  const [mobile, setMobile] = useState("9823012345");
+  const [password, setPassword] = useState("password123");
 
-    loginAsApplicant(email, signatoryName, enterpriseName);
+  // Step 2 State
+  const [legalEntity, setLegalEntity] = useState<LegalEntityType>("proprietor");
+  const [businessName, setBusinessName] = useState("Smart Electronics");
+
+  // Step 3 State
+  const [panNumber, setPanNumber] = useState("AAECS8891M");
+  const [panVerified, setPanVerified] = useState(true);
+  const [panLoading, setPanLoading] = useState(false);
+  const [panModalOpen, setPanModalOpen] = useState(false);
+
+  // Step 4 State
+  const [addressLine1, setAddressLine1] = useState("Plot No. A-42, Sector 10");
+  const [addressLine2, setAddressLine2] = useState("MIDC Chakan Phase-II");
+  const [country, setCountry] = useState("India");
+  const [pinCode, setPinCode] = useState("410501");
+  const [stateName, setStateName] = useState("Maharashtra");
+  const [district, setDistrict] = useState("Pune");
+
+  // Verify PAN handler
+  const handleVerifyPan = () => {
+    if (!panNumber.trim()) return;
+    setPanLoading(true);
+    setTimeout(() => {
+      setPanLoading(false);
+      setPanVerified(true);
+    }, 600);
+  };
+
+  // Complete Registration
+  const handleCompleteRegistration = () => {
+    loginAsApplicant(email, applicantName, businessName);
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
-      {/* Top Identity Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-xl text-center mb-6">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#0F172A] border border-slate-700 text-white font-black text-2xl shadow-md mb-3 text-indigo-400">
-          आ
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-          New Investor Registration
-        </h2>
-        <p className="mt-1 text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-          Create your verified Single Window Common Investor Profile for seamless clearances in Maharashtra.
-        </p>
+    <div className="min-h-screen bg-[#0B1728] bg-topo-pattern py-8 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center relative overflow-hidden">
+      {/* Top Navbar Brand & Logout / Exit */}
+      <div className="w-full max-w-6xl mb-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="w-10 h-10 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner">
+            <div className="flex items-center space-x-1">
+              <span className="w-3 h-3 rounded-full bg-[#00A859]"></span>
+              <span className="w-3 h-3 rounded-full bg-white"></span>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-black tracking-tight text-white font-sans">
+              AARAMBH
+            </span>
+            <span className="text-[10px] font-semibold text-amber-300 uppercase tracking-wider">
+              Govt. of Maharashtra Single Window
+            </span>
+          </div>
+        </Link>
+
+        <Link
+          href="/login"
+          className="px-4 py-1.5 rounded-lg border border-amber-400/40 text-amber-300 hover:bg-amber-400/10 text-xs font-bold transition-all"
+        >
+          LOGOUT / SIGN IN
+        </Link>
       </div>
 
-      {/* Main Registration Card */}
-      <div className="w-full max-w-xl bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden">
-        {/* DigiLocker Fast Track Banner */}
-        <div className="p-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-blue-100">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-[#006699] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
-                DL
-              </div>
+      {/* Main Multi-Step Onboarding Container (Images 2, 3, 4) */}
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+        {/* Step Indicator Header */}
+        <div className="bg-slate-50 border-b border-slate-200 px-6 sm:px-10 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-xs font-bold text-[#00A859] uppercase tracking-wider">
+              Setup your profile
+            </span>
+            <span className="text-xs font-mono font-bold text-slate-500">
+              • Step {currentStep} of 4
+            </span>
+          </div>
+
+          {/* Progress Pills */}
+          <div className="flex items-center space-x-2">
+            {[1, 2, 3, 4].map((stepNum) => (
+              <button
+                key={stepNum}
+                onClick={() => setCurrentStep(stepNum)}
+                className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
+                  currentStep === stepNum
+                    ? "bg-[#00A859] text-white shadow-sm"
+                    : currentStep > stepNum
+                    ? "bg-emerald-100 text-[#00A859]"
+                    : "bg-slate-200 text-slate-500"
+                }`}
+              >
+                {currentStep > stepNum ? "✓" : stepNum}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* STEP 1: BASIC CREDENTIALS */}
+        {/* ========================================================================= */}
+        {currentStep === 1 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+            {/* Left Welcome Panel */}
+            <div className="lg:col-span-5 bg-slate-50 p-8 sm:p-12 border-r border-slate-200 flex flex-col justify-between">
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-blue-950">
-                  Fast-Track with DigiLocker
-                </h4>
-                <p className="text-[11px] text-blue-800">
-                  Auto-fill enterprise details, PAN, and Aadhaar identity in seconds.
+                <span className="text-xs font-bold text-[#00A859] uppercase tracking-wider block mb-1">
+                  Welcome to AARAMBH
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-[#0B1728] tracking-tight leading-snug">
+                  Create Investor Account
+                </h2>
+                <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                  Start your single-window journey for statutory industrial clearances, incentives, and utility connections in Maharashtra.
                 </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                // TODO: replace with real DigiLocker OAuth flow
-                loginWithDigiLocker();
-              }}
-              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#006699] hover:bg-[#005580] text-white text-xs font-bold transition-all shadow-xs cursor-pointer whitespace-nowrap"
-            >
-              Sign Up via DigiLocker
-            </button>
-          </div>
-        </div>
 
-        {/* Standard Manual Form */}
-        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Enterprise Name */}
-            <div className="sm:col-span-2">
-              <label
-                htmlFor="enterpriseName"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Enterprise / Company Legal Name *
-              </label>
-              <div className="relative rounded-lg">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Building2 className="w-4 h-4" />
+                {/* DigiLocker Button */}
+                <div className="mt-8 p-4 rounded-2xl bg-[#006699]/10 border border-[#006699]/30">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <ShieldCheck className="w-5 h-5 text-[#006699]" />
+                    <h4 className="text-xs font-bold text-[#006699]">
+                      Fast-Track with DigiLocker
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-slate-600">
+                    Instantly pull verified Aadhaar, PAN, and Company CIN without manual document entry.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={loginWithDigiLocker}
+                    className="mt-3 w-full py-2 rounded-xl bg-[#006699] hover:bg-[#005580] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    Connect DigiLocker
+                  </button>
                 </div>
-                <input
-                  id="enterpriseName"
-                  type="text"
-                  required
-                  value={enterpriseName}
-                  onChange={(e) => setEnterpriseName(e.target.value)}
-                  placeholder="e.g. Maharashtra Precision Auto Parts Pvt Ltd"
-                  className="block w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
+              </div>
+
+              <div className="text-[11px] text-slate-400 mt-6">
+                Already registered? <Link href="/login" className="text-[#00A859] font-bold hover:underline">Sign In</Link>
               </div>
             </div>
 
-            {/* Authorized Signatory */}
-            <div>
-              <label
-                htmlFor="signatoryName"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Authorized Signatory *
-              </label>
-              <div className="relative rounded-lg">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <UserCheck className="w-4 h-4" />
+            {/* Right Form Panel */}
+            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+              <div className="space-y-4 max-w-lg">
+                <h3 className="text-lg font-black text-[#0B1728]">
+                  Investor Contact Information
+                </h3>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Full Name of Authorized Signatory *
+                  </label>
+                  <input
+                    type="text"
+                    value={applicantName}
+                    onChange={(e) => setApplicantName(e.target.value)}
+                    placeholder="e.g. Sanjay Deshmukh"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                  />
                 </div>
-                <input
-                  id="signatoryName"
-                  type="text"
-                  required
-                  value={signatoryName}
-                  onChange={(e) => setSignatoryName(e.target.value)}
-                  placeholder="e.g. Rajesh Patil"
-                  className="block w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-            </div>
 
-            {/* Enterprise PAN */}
-            <div>
-              <label
-                htmlFor="panNumber"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Enterprise PAN *
-              </label>
-              <div className="relative rounded-lg">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <CreditCard className="w-4 h-4" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="sanjay@enterprise.in"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Mobile Number *
+                    </label>
+                    <input
+                      type="tel"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      placeholder="9823012345"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                    />
+                  </div>
                 </div>
-                <input
-                  id="panNumber"
-                  type="text"
-                  maxLength={10}
-                  required
-                  value={panNumber}
-                  onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                  placeholder="ABCDE1234F"
-                  className="block w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 uppercase font-mono placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-            </div>
 
-            {/* Official Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Official Email Address *
-              </label>
-              <div className="relative rounded-lg">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Set Portal Password *
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                  />
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="contact@enterprise.com"
-                  className="block w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
               </div>
-            </div>
 
-            {/* Mobile Number */}
-            <div>
-              <label
-                htmlFor="mobile"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Mobile Number (for OTP) *
-              </label>
-              <div className="relative rounded-lg">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Smartphone className="w-4 h-4" />
-                </div>
-                <input
-                  id="mobile"
-                  type="tel"
-                  maxLength={10}
-                  required
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  placeholder="9876543210"
-                  className="block w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
+              <div className="pt-6 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <span>NEXT</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-
-            {/* Sector / Industry */}
-            <div className="sm:col-span-2">
-              <label
-                htmlFor="sector"
-                className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1"
-              >
-                Industry Sector
-              </label>
-              <select
-                id="sector"
-                value={sector}
-                onChange={(e) => setSector(e.target.value)}
-                className="block w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="Manufacturing & Engineering">Manufacturing & Engineering</option>
-                <option value="Chemicals & Pharmaceuticals">Chemicals & Pharmaceuticals</option>
-                <option value="Information Technology & ITES">Information Technology & ITES</option>
-                <option value="Food Processing & Agro-tech">Food Processing & Agro-tech</option>
-                <option value="Textiles & Garments">Textiles & Garments</option>
-                <option value="Automobile & EV Components">Automobile & EV Components</option>
-                <option value="Renewable Energy & Power">Renewable Energy & Power</option>
-              </select>
             </div>
           </div>
+        )}
 
-          {/* Terms Checkbox */}
-          <div className="flex items-start space-x-2 pt-2">
-            <input
-              id="agreeTerms"
-              type="checkbox"
-              checked={agreeTerms}
-              onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="mt-0.5 h-4 w-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
-            />
-            <label htmlFor="agreeTerms" className="text-xs text-slate-600 leading-snug">
-              I agree to the{" "}
-              <span className="text-slate-600">Terms of Service</span>{" "}
-              and declare that all details provided are accurate under the Maharashtra Industrial Single Window Act.
-            </label>
+        {/* ========================================================================= */}
+        {/* STEP 2: SELECT LEGAL ENTITY TYPE (Exact Image 2: media_1788757377477.png) */}
+        {/* ========================================================================= */}
+        {currentStep === 2 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+            {/* Left Side: Welcome Illustration (Image 2) */}
+            <div className="lg:col-span-5 bg-slate-50/80 p-8 sm:p-12 border-r border-slate-200 flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-black text-[#0B1728]">
+                  Welcome {applicantName.split(" ")[0]}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  You have been successfully registered on AARAMBH
+                </p>
+
+                {/* Friendly SVG Illustration of Entrepreneur with Laptop */}
+                <div className="mt-8 flex justify-center">
+                  <div className="relative w-64 h-56 bg-gradient-to-tr from-emerald-100/60 to-blue-100/60 rounded-3xl p-6 flex flex-col items-center justify-center border border-slate-200 shadow-inner">
+                    {/* Character avatar */}
+                    <div className="w-20 h-20 rounded-full bg-[#00A859] text-white flex items-center justify-center shadow-md mb-3">
+                      <User className="w-10 h-10" />
+                    </div>
+                    {/* Laptop frame */}
+                    <div className="w-40 h-16 bg-[#0B1728] rounded-lg p-2 flex flex-col justify-between shadow-lg border border-slate-700">
+                      <div className="flex items-center justify-between">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span className="text-[8px] font-mono text-slate-300">AARAMBH SWS</span>
+                      </div>
+                      <div className="h-2 bg-slate-700 rounded-sm"></div>
+                    </div>
+                    <div className="w-48 h-2 bg-slate-400 rounded-b-md shadow-xs mt-0.5"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-400">
+                Step 2 of 4: Organization Structure
+              </div>
+            </div>
+
+            {/* Right Side: 4 Legal Entity Cards + Business Name Input (Image 2) */}
+            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-[#00A859] uppercase tracking-wider block mb-1">
+                  Setup your profile
+                </span>
+                <h2 className="text-2xl font-black text-[#0B1728] tracking-tight">
+                  Select your legal entity type
+                </h2>
+
+                {/* 4 Cards Grid (Image 2) */}
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* 1. Incorporated Company */}
+                  <button
+                    type="button"
+                    onClick={() => setLegalEntity("company")}
+                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      legalEntity === "company"
+                        ? "bg-gradient-to-r from-[#00A859] to-[#008F4C] text-white border-[#00A859] shadow-lg shadow-emerald-600/20"
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs text-slate-800"
+                    }`}
+                  >
+                    <Building className={`w-8 h-8 mb-2 ${legalEntity === "company" ? "text-white" : "text-slate-600"}`} />
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      INCORPORATED COMPANY
+                    </span>
+                    <span className={`text-[10px] mt-1 ${legalEntity === "company" ? "text-emerald-100" : "text-red-500 font-semibold"}`}>
+                      Select if you have a CIN
+                    </span>
+                  </button>
+
+                  {/* 2. Limited Liability Partnership */}
+                  <button
+                    type="button"
+                    onClick={() => setLegalEntity("llp")}
+                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      legalEntity === "llp"
+                        ? "bg-gradient-to-r from-[#00A859] to-[#008F4C] text-white border-[#00A859] shadow-lg shadow-emerald-600/20"
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs text-slate-800"
+                    }`}
+                  >
+                    <Handshake className={`w-8 h-8 mb-2 ${legalEntity === "llp" ? "text-white" : "text-slate-600"}`} />
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      LIMITED LIABILITY PARTNERSHIP
+                    </span>
+                    <span className={`text-[10px] mt-1 ${legalEntity === "llp" ? "text-emerald-100" : "text-red-500 font-semibold"}`}>
+                      Select if you have an LLPIN
+                    </span>
+                  </button>
+
+                  {/* 3. Sole Proprietor (Active Green in Screenshot) */}
+                  <button
+                    type="button"
+                    onClick={() => setLegalEntity("proprietor")}
+                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      legalEntity === "proprietor"
+                        ? "bg-gradient-to-r from-[#00A859] to-[#008F4C] text-white border-[#00A859] shadow-lg shadow-emerald-600/20"
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs text-slate-800"
+                    }`}
+                  >
+                    <User className={`w-8 h-8 mb-2 ${legalEntity === "proprietor" ? "text-white" : "text-slate-600"}`} />
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      SOLE PROPRIETOR
+                    </span>
+                    <span className={`text-[10px] mt-1 ${legalEntity === "proprietor" ? "text-emerald-100" : "text-slate-500"}`}>
+                      Individual enterprise / MSME
+                    </span>
+                  </button>
+
+                  {/* 4. Others */}
+                  <button
+                    type="button"
+                    onClick={() => setLegalEntity("others")}
+                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      legalEntity === "others"
+                        ? "bg-gradient-to-r from-[#00A859] to-[#008F4C] text-white border-[#00A859] shadow-lg shadow-emerald-600/20"
+                        : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs text-slate-800"
+                    }`}
+                  >
+                    <Users className={`w-8 h-8 mb-2 ${legalEntity === "others" ? "text-white" : "text-slate-600"}`} />
+                    <span className="text-xs font-black uppercase tracking-wider">
+                      OTHERS
+                    </span>
+                    <span className={`text-[10px] mt-1 ${legalEntity === "others" ? "text-emerald-100" : "text-slate-500"}`}>
+                      Trust / Society / Cooperative / PSU
+                    </span>
+                  </button>
+                </div>
+
+                {/* Secondary Option: None of these */}
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setLegalEntity("new")}
+                    className={`w-full py-3 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                      legalEntity === "new"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    NONE OF THESE, I&apos;M PLANNING TO REGISTER A NEW ENTITY
+                  </button>
+                </div>
+
+                {/* Enter Business Name Input (Image 2) */}
+                <div className="mt-6">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Enter Your Business Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="e.g. Smart Electronics"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:ring-2 focus:ring-[#00A859]/20 focus:outline-none transition-all font-semibold"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Nav: Go Back & NEXT */}
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
+                >
+                  ◀ GO BACK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(3)}
+                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <span>NEXT</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
+        )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!agreeTerms}
-            className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] disabled:bg-slate-300 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all duration-150 cursor-pointer"
-          >
-            <span>Register & Continue to Dashboard</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+        {/* ========================================================================= */}
+        {/* STEP 3: VALIDATE PAN (Exact Image 3: media_1788757394136.png) */}
+        {/* ========================================================================= */}
+        {currentStep === 3 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+            {/* Left Side: Realistic PAN Card Mockup (Image 3) */}
+            <div className="lg:col-span-5 bg-slate-50/80 p-8 sm:p-12 border-r border-slate-200 flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-black text-[#00A859]">
+                  {businessName || "Smart Electronics"}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  You have been successfully registered on AARAMBH
+                </p>
 
-        {/* Existing Account Footer */}
-        <div className="bg-slate-50 border-t border-slate-100 p-4 text-center text-xs text-slate-600">
-          Already registered on AARAMBH or NSWS?{" "}
-          <Link href="/login" className="font-bold text-[#4F46E5] hover:underline">
-            Login Here
-          </Link>
-        </div>
+                {/* Realistic PAN Card Render (Image 3) */}
+                <div className="mt-8 relative w-full max-w-sm aspect-[1.58/1] rounded-2xl bg-gradient-to-br from-sky-200 via-indigo-100 to-amber-100 p-4 border border-sky-300 shadow-xl overflow-hidden flex flex-col justify-between text-slate-800">
+                  {/* Subtle Ashok Stambh watermark overlay */}
+                  <div className="absolute right-4 top-4 opacity-15 text-6xl select-none pointer-events-none font-serif">
+                    🏛️
+                  </div>
+
+                  {/* PAN Header */}
+                  <div className="flex items-center justify-between border-b border-sky-300/60 pb-2">
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-800 tracking-wider uppercase">
+                        आयकर विभाग
+                      </p>
+                      <p className="text-[8px] font-semibold text-slate-600 uppercase">
+                        INCOME TAX DEPARTMENT
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-bold text-slate-800 uppercase">
+                        भारत सरकार
+                      </p>
+                      <p className="text-[8px] font-semibold text-slate-600 uppercase">
+                        GOVT. OF INDIA
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Gandhi / Face Silhouette and Masked Name */}
+                  <div className="flex items-center space-x-3 my-1">
+                    <div className="w-12 h-14 rounded-lg bg-slate-300/80 border border-slate-400 flex items-center justify-center text-xs font-bold text-slate-600">
+                      PHOTO
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs font-bold tracking-widest text-slate-800">
+                        {panVerified ? panNumber : "XXXX XXXX"}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-700 uppercase mt-0.5">
+                        {businessName || "SMART ELECTRONICS"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom: Hologram & Permanent Account Number */}
+                  <div className="flex items-end justify-between border-t border-sky-300/60 pt-2">
+                    <div>
+                      <span className="text-[8px] font-bold text-slate-500 uppercase block">
+                        Permanent Account Number
+                      </span>
+                      <span className="font-mono text-xs font-black tracking-wider text-slate-900">
+                        {panNumber}
+                      </span>
+                    </div>
+
+                    {/* Gold Hologram Sticker */}
+                    <div className="w-10 h-7 rounded-sm bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-amber-600 flex items-center justify-center shadow-xs">
+                      <span className="text-[7px] font-black text-amber-900 uppercase">
+                        भारत
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* "Why is PAN required?" link */}
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setPanModalOpen(true)}
+                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 hover:underline flex items-center space-x-1 cursor-pointer"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Why is PAN required?</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-400">
+                Step 3 of 4: Statutory Tax Identity
+              </div>
+            </div>
+
+            {/* Right Side: Validate PAN Form (Image 3) */}
+            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-[#00A859] uppercase tracking-wider block mb-1">
+                  Setup your profile
+                </span>
+                <h2 className="text-2xl font-black text-[#0B1728] tracking-tight">
+                  Validate your Permanent Account Number (PAN)
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  We use your PAN to authenticate enterprise credentials across state regulatory databases.
+                </p>
+
+                {/* Outlined Input & Orange "GET DETAILS" Button (Image 3) */}
+                <div className="mt-8 space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Enter Permanent Account Number *
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                      <input
+                        type="text"
+                        maxLength={10}
+                        value={panNumber}
+                        onChange={(e) => {
+                          setPanNumber(e.target.value.toUpperCase());
+                          setPanVerified(false);
+                        }}
+                        placeholder="ABCDE1234F"
+                        className="flex-1 px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-mono font-bold tracking-wider text-slate-900 uppercase focus:border-[#00A859] focus:ring-2 focus:ring-[#00A859]/20 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyPan}
+                        disabled={panLoading || !panNumber}
+                        className="px-6 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap disabled:opacity-50"
+                      >
+                        {panLoading ? "VALIDATING..." : "GET DETAILS"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Verification Status Feedback */}
+                  {panVerified && (
+                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle2 className="w-5 h-5 text-[#00A859] shrink-0" />
+                        <div>
+                          <p className="font-bold">PAN Validated Successfully</p>
+                          <p className="text-[11px] text-emerald-700">Matched with Income Tax Department records • Entity: {businessName}</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800">
+                        VERIFIED
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Nav: Go Back & NEXT */}
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
+                >
+                  ◀ GO BACK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(4)}
+                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <span>NEXT</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 4: ENTER ADDRESS (Exact Image 4: media_1788757432427.png) */}
+        {/* ========================================================================= */}
+        {currentStep === 4 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
+            {/* Left Side: 3D Map Vector Graphic (Image 4) */}
+            <div className="lg:col-span-5 bg-slate-50/80 p-8 sm:p-12 border-r border-slate-200 flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-black text-[#00A859]">
+                  {businessName || "Smart Electronics"}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  You have been successfully registered on AARAMBH
+                </p>
+
+                {/* 3D Map Vector with Location Marker Pins (Image 4) */}
+                <div className="mt-8 flex justify-center">
+                  <div className="relative w-64 h-56 bg-gradient-to-tr from-sky-100 to-emerald-100 rounded-3xl p-4 flex items-center justify-center border border-slate-200 shadow-inner">
+                    {/* Folded Map Canvas */}
+                    <div className="w-52 h-36 bg-white rounded-xl shadow-lg border border-slate-200 transform -rotate-3 p-3 flex flex-col justify-between relative overflow-hidden">
+                      <div className="h-full bg-emerald-50/70 rounded-lg p-2 border border-dashed border-emerald-300 flex items-center justify-center">
+                        <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest opacity-60">
+                          MAHARASHTRA INDUSTRIAL MAP
+                        </span>
+                      </div>
+
+                      {/* Main Magenta Location Pin */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/4 flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-rose-500 border-4 border-white shadow-xl flex items-center justify-center text-white">
+                          <MapPin className="w-5 h-5 fill-white text-rose-500" />
+                        </div>
+                        <div className="w-4 h-1.5 rounded-full bg-slate-400/50 -mt-0.5"></div>
+                      </div>
+
+                      {/* Secondary Yellow Pins */}
+                      <div className="absolute top-6 left-6 w-6 h-6 rounded-full bg-amber-400 border-2 border-white shadow-md flex items-center justify-center text-white">
+                        <MapPin className="w-3 h-3 fill-white text-amber-400" />
+                      </div>
+                      <div className="absolute bottom-6 right-6 w-6 h-6 rounded-full bg-amber-400 border-2 border-white shadow-md flex items-center justify-center text-white">
+                        <MapPin className="w-3 h-3 fill-white text-amber-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-400">
+                Step 4 of 4: Physical Industrial Location
+              </div>
+            </div>
+
+            {/* Right Side: Postal Address Form (Image 4) */}
+            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-[#00A859] uppercase tracking-wider block mb-1">
+                  Setup your profile
+                </span>
+                <h2 className="text-2xl font-black text-[#0B1728] tracking-tight">
+                  Enter your Address
+                </h2>
+
+                {/* Subheading tab */}
+                <div className="mt-4 pb-2 border-b border-slate-200">
+                  <span className="text-xs font-bold text-[#0B1728] border-b-2 border-[#00A859] pb-2.5">
+                    Add Postal Address *
+                  </span>
+                </div>
+
+                {/* Address Form Inputs (Image 4) */}
+                <div className="mt-5 space-y-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Address 1 *
+                    </label>
+                    <input
+                      type="text"
+                      value={addressLine1}
+                      onChange={(e) => setAddressLine1(e.target.value)}
+                      placeholder="Address lane 1"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Address 2
+                    </label>
+                    <input
+                      type="text"
+                      value={addressLine2}
+                      onChange={(e) => setAddressLine2(e.target.value)}
+                      placeholder="On Road 3 / Landmark"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#00A859] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Country *
+                      </label>
+                      <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#00A859] focus:outline-none"
+                      >
+                        <option value="India">India</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        PIN Code *
+                      </label>
+                      <input
+                        type="text"
+                        value={pinCode}
+                        onChange={(e) => setPinCode(e.target.value)}
+                        placeholder="110066 / 410501"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 font-mono focus:border-[#00A859] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        State *
+                      </label>
+                      <select
+                        value={stateName}
+                        onChange={(e) => setStateName(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#00A859] focus:outline-none"
+                      >
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Karnataka">Karnataka</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        District *
+                      </label>
+                      <select
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#00A859] focus:outline-none"
+                      >
+                        <option value="Pune">Pune</option>
+                        <option value="Thane">Thane</option>
+                        <option value="Mumbai Suburban">Mumbai Suburban</option>
+                        <option value="Chhatrapati Sambhajinagar">Chhatrapati Sambhajinagar</option>
+                        <option value="Nagpur">Nagpur</option>
+                        <option value="Nashik">Nashik</option>
+                        <option value="Raigad">Raigad</option>
+                        <option value="Kolhapur">Kolhapur</option>
+                        <option value="Solapur">Solapur</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Add Registered Address + Option */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      className="text-xs font-bold text-slate-700 hover:text-[#00A859] flex items-center space-x-1 cursor-pointer"
+                    >
+                      <span>Add Registered Address</span>
+                      <span className="text-[#00A859] font-black text-sm">+</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Nav: Go Back & NEXT / FINISH */}
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(3)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
+                >
+                  ◀ GO BACK
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCompleteRegistration}
+                  className="inline-flex items-center space-x-2 px-9 py-3.5 rounded-xl bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <span>COMPLETE REGISTRATION</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* "Why is PAN required?" Informational Modal */}
+      {panModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => setPanModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-2 text-xs font-bold text-[#00A859] uppercase tracking-wider mb-2">
+              <CreditCard className="w-4 h-4" />
+              <span>Statutory Requirement</span>
+            </div>
+            <h3 className="text-base font-black text-[#0B1728]">
+              Why is PAN required for AARAMBH?
+            </h3>
+            <div className="mt-3 space-y-2 text-xs text-slate-600 leading-relaxed">
+              <p>
+                1. <strong>Direct Regulatory Synchronization:</strong> Your Permanent Account Number (PAN) is used by MIDC, MPCB, and DISH to verify company registration without requiring redundant paper tax returns.
+              </p>
+              <p>
+                2. <strong>Incentive & Subsidy Tracking:</strong> Under the Package Scheme of Incentives (PSI 2019), industrial subsidies and electricity duty exemptions are credited against your PAN-linked corporate entity.
+              </p>
+              <p>
+                3. <strong>Anti-Fraud Compliance:</strong> Ensures all single-window applications originate from verified directors and authorized signatories.
+              </p>
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setPanModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-[#0B1728] text-white text-xs font-bold cursor-pointer"
+              >
+                Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
