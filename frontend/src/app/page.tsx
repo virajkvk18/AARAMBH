@@ -764,32 +764,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. FLOATING ACTION BUTTONS (Image 5 Bottom Right: Yellow Help Circle + Mitra Assistant) */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
-        {/* Yellow Help & FAQs Button */}
-        <button
-          onClick={() => setHelpDrawerOpen(true)}
-          title="Single Window Assistance & FAQs"
-          className="w-12 h-12 rounded-full bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] shadow-xl flex items-center justify-center font-black hover:scale-110 transition-transform duration-200 border-2 border-white cursor-pointer"
-        >
-          <HelpCircle className="w-6 h-6" />
-        </button>
 
-        {/* Navy/Green AI Mitra Assistant Floating Button */}
-        <Link
-          href="/dashboard/kya"
-          title="Launch Mitra AI Clearance Guide"
-          className="group flex items-center space-x-2.5 pl-4 pr-4 py-2.5 rounded-full bg-[#0B1728] hover:bg-[#0E2038] text-white shadow-2xl border border-slate-700 hover:scale-105 transition-transform duration-200"
-        >
-          <div className="relative">
-            <MessageCircle className="w-5 h-5 text-[#00A859]" />
-            <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 animate-ping"></span>
-          </div>
-          <span className="text-xs font-bold tracking-wide">
-            Ask <span className="text-[#FFB800]">Mitra AI</span>
-          </span>
-        </Link>
-      </div>
 
       {/* Video Modal */}
       {videoModalOpen && (

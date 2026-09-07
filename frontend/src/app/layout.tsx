@@ -4,6 +4,7 @@ import "./globals.css";
 import TopUtilityBar from "@/components/layout/TopUtilityBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import AskAarambhChatbot from "@/components/chat/AskAarambhChatbot";
 import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({
@@ -34,6 +35,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1 w-full">{children}</main>
           <Footer />
+          <AskAarambhChatbot />
         </AuthProvider>
       </body>
     </html>
