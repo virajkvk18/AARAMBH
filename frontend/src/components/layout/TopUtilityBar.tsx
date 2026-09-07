@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { PhoneCall, Globe, Landmark } from "lucide-react";
+import { Landmark } from "lucide-react";
 
 export default function TopUtilityBar() {
   const [fontSizeLevel, setFontSizeLevel] = useState<"sm" | "base" | "lg">("base");
@@ -30,50 +29,22 @@ export default function TopUtilityBar() {
 
   return (
     <div className="w-full bg-[#060D17] text-slate-300 text-[11px] border-b border-slate-800/80 z-50 select-none">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between">
-        {/* Left: Maharashtra Gov Department Identifier (Reference Image 1) */}
-        <div className="flex items-center space-x-3">
-          {/* Emblem representation */}
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-amber-400 font-bold shrink-0">
-              <Landmark className="w-3.5 h-3.5 text-amber-400" />
-            </div>
-            <div className="flex flex-col text-[10px] leading-tight text-slate-300">
-              <span className="font-semibold text-slate-200">
-                कौशल्य, रोजगार, उद्योजकता आणि नाविन्यता विभाग
-              </span>
-              <span className="text-slate-400 text-[9px] uppercase tracking-wider hidden sm:inline">
-                DEPT. OF SKILLS & INNOVATION, GOVT. OF MAHARASHTRA
-              </span>
-            </div>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
+        {/* Left: Government of Maharashtra Statement */}
+        <div className="flex items-center space-x-2">
+          <div className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-amber-400 font-bold shrink-0">
+            <Landmark className="w-3 h-3 text-amber-400" />
           </div>
+          <span className="font-semibold text-slate-200 text-xs tracking-wide">
+            महाराष्ट्र शासन • Government of Maharashtra
+          </span>
         </div>
 
-        {/* Center: Helpdesk Helpline (Golden Highlight like NSWS) */}
-        <div className="hidden md:flex items-center space-x-1.5 font-medium text-slate-300">
-          <span className="font-bold text-amber-400">Help |</span>
-          <span>Helpdesk-1800-120-8040 [Mon - Sat, 9AM- 6PM]</span>
-        </div>
-
-        {/* Right: NSWS Utility Links + Accessibility + Language */}
-        <div className="flex items-center space-x-4 sm:space-x-5 text-slate-300">
-          <div className="hidden lg:flex items-center space-x-4">
-            <Link href="/about" className="hover:text-white transition-colors">
-              About
-            </Link>
-            <Link href="/faqs" className="hover:text-white transition-colors">
-              FAQs
-            </Link>
-            <Link href="/user-guide" className="hover:text-white transition-colors">
-              Guide
-            </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
-              Contact
-            </Link>
-            <Link href="/tutorials" className="hover:text-white transition-colors">
-              Video Tutorials
-            </Link>
-          </div>
+        {/* Right: Accessibility & Language Controls */}
+        <div className="flex items-center space-x-3 sm:space-x-4 text-slate-300">
+          <span className="text-[10px] text-slate-400 hidden sm:inline">
+            Single Window Clearance Portal
+          </span>
 
           {/* Accessibility Font Size Toggle (↑A) */}
           <button
