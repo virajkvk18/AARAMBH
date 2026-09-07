@@ -2,14 +2,15 @@ import os
 import io
 import json
 import re
+from pathlib import Path
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv(dotenv_path="../.env")
+# Resolve the root environment file from this source file, not the launch directory.
+load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
 
 app = FastAPI(
     title="AARAMBH AI Document Extraction Microservice",
@@ -88,41 +89,42 @@ def extract_text_from_image(file_bytes: bytes) -> str:
 
 
 def extract_fields_with_groq_or_heuristics(raw_text: str) -> Dict[str, Dict[str, Any]]:
-    """Sends raw text to Groq API with structured prompt, with regex fallback."""
+    """Uses Groq for structured extraction; falls back only to text-backed regex matches."""
     groq_api_key = os.getenv("GROQ_API_KEY")
 
-    if groq_api_key:
-        try:
-            from groq import Groq
-            client = Groq(api_key=groq_api_key)
+    try:
+        from groq import Groq
+        client = Groq(api_key=groq_api_key)
 
-            system_prompt = (
-                "You are an expert Indian industrial document parser for the AARAMBH Single Window Portal in Maharashtra. "
-                "Analyze the provided document text and extract the following fields in JSON format:\n"
-                "- entity_name (Company/Enterprise legal name)\n"
-                "- pan (10-digit Permanent Account Number, format: 5 letters + 4 digits + 1 letter)\n"
-                "- gstin (15-character GST number)\n"
-                "- plot_area_sqm (Industrial plot size in square meters)\n"
-                "- power_load_kva (Sanctioned or required electricity load in kVA or KW)\n"
-                "- capex_amount (Total capital expenditure / project investment in INR or Crores)\n\n"
-                "Return a JSON object where each field has 'value' (string or null) and 'confidence_score' (float 0.0 to 1.0). "
-                "Only output valid JSON with no markdown backticks."
-            )
+        system_prompt = (
+            "You are an expert Indian industrial document parser for the AARAMBH Single Window Portal in Maharashtra. "
+            "Analyze the provided document text and extract the following fields in JSON format:\n"
+            "- entity_name (Company/Enterprise legal name)\n"
+            "- pan (10-digit Permanent Account Number, format: 5 letters + 4 digits + 1 letter)\n"
+            "- gstin (15-character GST number)\n"
+            "- plot_area_sqm (Industrial plot size in square meters)\n"
+            "- power_load_kva (Sanctioned or required electricity load in kVA or KW)\n"
+            "- capex_amount (Total capital expenditure / project investment in INR or Crores)\n\n"
+            "Return a JSON object where each field has 'value' (string or null) and 'confidence_score' (float 0.0 to 1.0). "
+            "Only output valid JSON with no markdown backticks."
+        )
 
-            completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Document text:\n{raw_text}"}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.1,
-            )
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Document text:\n{raw_text}"}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+        )
 
-            response_json = json.loads(completion.choices[0].message.content)
-            return response_json
-        except Exception as groq_err:
-            print(f"Groq extraction failed, applying heuristic fallback: {groq_err}")
+        response_json = json.loads(completion.choices[0].message.content)
+        return response_json
+    except Exception:
+        # Do not log credentials or return fabricated values. The fallback below
+        # can only return values actually matched in the uploaded document text.
+        print("Groq extraction failed; applying document-text regex fallback.")
 
     # Heuristic Regex & Rule Extraction Fallback
     results = {}
@@ -144,29 +146,29 @@ def extract_fields_with_groq_or_heuristics(raw_text: str) -> Dict[str, Dict[str,
     # Entity Name
     entity_match = re.search(r'(?:Enterprise|Company|M/s\.?|Name of Industrial Unit|Applicant)[:\s]+([^\n\r,]+(?:Pvt\.?\s*Ltd|Limited|LLP|Industries|Enterprises|Corp))', raw_text, re.IGNORECASE)
     results["entity_name"] = {
-        "value": entity_match.group(1).strip() if entity_match else "Maharashtra Solvents & Chemicals Pvt Ltd",
-        "confidence_score": 0.92 if entity_match else 0.85
+        "value": entity_match.group(1).strip() if entity_match else None,
+        "confidence_score": 0.92 if entity_match else 0.0
     }
 
     # Plot Area (sqm / sq.m / sq. meters)
     area_match = re.search(r'([0-9,.]+)\s*(?:sq\.?\s*m(?:eters)?|sqm|Square\s*Meters)', raw_text, re.IGNORECASE)
     results["plot_area_sqm"] = {
-        "value": f"{area_match.group(1)} sq.m" if area_match else "4,500 sq.m",
-        "confidence_score": 0.90 if area_match else 0.80
+        "value": f"{area_match.group(1)} sq.m" if area_match else None,
+        "confidence_score": 0.90 if area_match else 0.0
     }
 
     # Power Load (kVA / kW / HP)
     power_match = re.search(r'([0-9,.]+)\s*(?:kVA|kW|HP|Kilowatts)', raw_text, re.IGNORECASE)
     results["power_load_kva"] = {
-        "value": f"{power_match.group(1)} kVA" if power_match else "150 kVA",
-        "confidence_score": 0.88 if power_match else 0.82
+        "value": f"{power_match.group(1)} kVA" if power_match else None,
+        "confidence_score": 0.88 if power_match else 0.0
     }
 
     # Capex Amount (Cr / INR / Lakhs)
     capex_match = re.search(r'(?:₹|INR|Rs\.?)\s*([0-9,.]+\s*(?:Cr(?:ores)?|Lakhs)?)', raw_text, re.IGNORECASE)
     results["capex_amount"] = {
-        "value": f"₹{capex_match.group(1)}" if capex_match else "₹25.00 Cr",
-        "confidence_score": 0.89 if capex_match else 0.84
+        "value": f"₹{capex_match.group(1)}" if capex_match else None,
+        "confidence_score": 0.89 if capex_match else 0.0
     }
 
     return results
@@ -185,6 +187,12 @@ async def health_check():
 async def extract_document(file: UploadFile = File(...)):
     """Accepts uploaded PDF/Image and returns structured extracted fields."""
     try:
+        if not os.getenv("GROQ_API_KEY"):
+            raise HTTPException(
+                status_code=503,
+                detail="Document extraction is unavailable because GROQ_API_KEY is not configured.",
+            )
+
         contents = await file.read()
         file_name = file.filename or "uploaded_document"
         content_type = file.content_type or ""
@@ -196,9 +204,12 @@ async def extract_document(file: UploadFile = File(...)):
             raw_text = extract_text_from_image(contents)
             method = "EasyOCR + Groq Structured Extraction"
 
-        # If raw text is completely empty from binary, provide fallback text for processing
+        # Never substitute sample text for an unreadable upload.
         if not raw_text.strip():
-            raw_text = f"Sample Industrial Dossier: {file_name}\nM/s Maharashtra Solvents & Chemicals Pvt Ltd\nPAN: ABCDE1234F\nGSTIN: 27ABCDE1234F1Z5\nPlot: Chakan MIDC Plot #44 (5000 sqm)\nLoad: 250 kVA\nCapex: INR 35 Crores"
+            raise HTTPException(
+                status_code=422,
+                detail="No extractable text was found in the uploaded document.",
+            )
 
         extracted_raw = extract_fields_with_groq_or_heuristics(raw_text)
 
@@ -219,6 +230,8 @@ async def extract_document(file: UploadFile = File(...)):
             extracted_fields=typed_fields,
             extraction_method=method,
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Document extraction error: {str(e)}")
 

@@ -94,6 +94,7 @@ export default function DocumentVaultPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeFileName, setActiveFileName] = useState<string | null>(uploadedDocumentName);
   const [rawTextSnippet, setRawTextSnippet] = useState<string | null>(null);
   const [extractionMethod, setExtractionMethod] = useState<string | null>(null);
@@ -123,7 +124,8 @@ export default function DocumentVaultPage() {
       });
 
       if (!res.ok) {
-        throw new Error(`API extraction failed with status: ${res.status}`);
+        const errorBody = await res.json().catch(() => null);
+        throw new Error(errorBody?.error || errorBody?.detail || `API extraction failed with status: ${res.status}`);
       }
 
       const data = await res.json();
@@ -139,26 +141,7 @@ export default function DocumentVaultPage() {
 
         setExtractedFields(formatted, file.name);
         setRawTextSnippet(data.raw_text_snippet || null);
-        setExtractionMethod(data.extraction_method || "AARAMBH High-Speed Document Parser");
-
-        // Persist document metadata & extracted fields to Backend / Supabase
-        try {
-          await fetch(`${BACKEND_API_URL}/documents`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              enterprise_id: "ENT-MH-2026-8891",
-              file_name: file.name,
-              file_type: file.type,
-              source: "VAULT_UPLOAD",
-              verification_status: "AI_VERIFIED",
-              raw_text_snippet: data.raw_text_snippet || "",
-              extracted_fields: data.extracted_fields || {},
-            }),
-          });
-        } catch (e) {
-          console.warn("Could not sync document to backend persistence:", e);
-        }
+        setExtractionMethod(data.extraction_method || "AARAMBH AI Document Extraction");
       } else {
         throw new Error("No extracted fields returned from extraction engine");
       }
@@ -172,13 +155,19 @@ export default function DocumentVaultPage() {
     }
   };
 
+  const selectFile = (file: File) => {
+    setUploadError(null);
+    setSelectedFile(file);
+    setActiveFileName(file.name);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processUploadedFile(e.dataTransfer.files[0]);
+      selectFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -196,45 +185,8 @@ export default function DocumentVaultPage() {
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      processUploadedFile(e.target.files[0]);
+      selectFile(e.target.files[0]);
     }
-  };
-
-  // Helper to test pre-populating with mock verified data
-  const handleLoadSampleDossier = () => {
-    const sampleFields: Record<string, ExtractedFieldItem> = {
-      entity_name: {
-        value: "Maharashtra Solvents & Chemicals Pvt Ltd",
-        confidenceScore: 0.96,
-      },
-      pan: {
-        value: "ABCDE1234F",
-        confidenceScore: 0.99,
-      },
-      gstin: {
-        value: "27ABCDE1234F1Z5",
-        confidenceScore: 0.98,
-      },
-      plot_area_sqm: {
-        value: "5,000 sq.m",
-        confidenceScore: 0.94,
-      },
-      power_load_kva: {
-        value: "250 kVA",
-        confidenceScore: 0.92,
-      },
-      capex_amount: {
-        value: "₹35.00 Crores",
-        confidenceScore: 0.95,
-      },
-    };
-
-    setExtractedFields(sampleFields, "MIDC_Industrial_Dossier_Verified.pdf");
-    setActiveFileName("MIDC_Industrial_Dossier_Verified.pdf");
-    setRawTextSnippet(
-      "MAHARASHTRA INDUSTRIAL DEVELOPMENT CORPORATION (MIDC)\nPlot Allotment Letter: Plot No. A-42, Chakan Phase-II, Pune.\nApplicant: Maharashtra Solvents & Chemicals Pvt Ltd\nPAN: ABCDE1234F | GSTIN: 27ABCDE1234F1Z5\nPlot Area: 5,000 sq.meters\nSanctioned Power Load: 250 kVA\nEstimated Project Capex: INR 35.00 Crores"
-    );
-    setExtractionMethod("AARAMBH High-Speed Document Parser");
   };
 
   const hasExtractedData = Object.keys(extractedFields).length > 0;
@@ -381,6 +333,23 @@ export default function DocumentVaultPage() {
             <div className="mt-4 inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-indigo-600 shadow-xs hover:bg-indigo-50">
               <span>Select File from Computer</span>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <p className="text-xs text-slate-500 flex-1">
+              {selectedFile
+                ? `Selected: ${selectedFile.name}`
+                : "Select a PDF, JPG, or PNG document to begin."}
+            </p>
+            <button
+              type="button"
+              onClick={() => selectedFile && processUploadedFile(selectedFile)}
+              disabled={!selectedFile || isUploading}
+              className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed text-white text-xs font-bold shadow-xs transition-all"
+            >
+              <Cpu className="w-4 h-4" />
+              <span>{isUploading ? "Processing…" : "Process with AI"}</span>
+            </button>
           </div>
 
           {/* Loading Indicator */}

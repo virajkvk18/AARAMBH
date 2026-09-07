@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "node:path";
 import multer from "multer";
 import axios from "axios";
 import FormData from "form-data";
-const pdfParse = require("pdf-parse");
 
 import {
   supabase,
@@ -17,7 +17,7 @@ import {
   DbDagNode,
 } from "./supabase";
 
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: path.resolve(__dirname, "..", "..", ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,45 +31,6 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 }, // 30MB limit
 });
-
-/**
- * Heuristic fallback extraction function for parsing statutory fields
- */
-function extractHeuristicFields(rawText: string) {
-  const panMatch = rawText.match(/\b([A-Z]{5}[0-9]{4}[A-Z])\b/i);
-  const gstinMatch = rawText.match(/\b([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})\b/i);
-  const entityMatch = rawText.match(/(?:Enterprise|Company|M\/s\.?|Unit|Applicant)[:\s]+([^\n\r,]+(?:Pvt\.?\s*Ltd|Limited|LLP|Industries|Enterprises|Corp))/i);
-  const areaMatch = rawText.match(/([0-9,.]+)\s*(?:sq\.?\s*m(?:eters)?|sqm|Square\s*Meters)/i);
-  const powerMatch = rawText.match(/([0-9,.]+)\s*(?:kVA|kW|HP|Kilowatts)/i);
-  const capexMatch = rawText.match(/(?:₹|INR|Rs\.?)\s*([0-9,.]+\s*(?:Cr(?:ores)?|Lakhs)?)/i);
-
-  return {
-    entity_name: {
-      value: entityMatch ? entityMatch[1].trim() : "Maharashtra Solvents & Chemicals Pvt Ltd",
-      confidence_score: entityMatch ? 0.94 : 0.88,
-    },
-    pan: {
-      value: panMatch ? panMatch[1].toUpperCase() : "ABCDE1234F",
-      confidence_score: panMatch ? 0.98 : 0.85,
-    },
-    gstin: {
-      value: gstinMatch ? gstinMatch[1].toUpperCase() : "27ABCDE1234F1Z5",
-      confidence_score: gstinMatch ? 0.96 : 0.82,
-    },
-    plot_area_sqm: {
-      value: areaMatch ? `${areaMatch[1]} sq.m` : "5,000 sq.m",
-      confidence_score: areaMatch ? 0.91 : 0.80,
-    },
-    power_load_kva: {
-      value: powerMatch ? `${powerMatch[1]} kVA` : "250 kVA",
-      confidence_score: powerMatch ? 0.90 : 0.82,
-    },
-    capex_amount: {
-      value: capexMatch ? `₹${capexMatch[1]}` : "₹35.00 Cr",
-      confidence_score: capexMatch ? 0.93 : 0.85,
-    },
-  };
-}
 
 // Health check endpoint
 app.get("/health", (_req: Request, res: Response) => {
@@ -438,6 +399,51 @@ app.patch("/api/dag/:nodeId/approve", async (req: Request, res: Response): Promi
 // 4. VAULT EXTRACTION PROXY
 // ==========================================
 
+type AiExtractionResponse = {
+  status: string;
+  file_name: string;
+  file_type: string;
+  raw_text_snippet: string;
+  extracted_fields: Record<string, { value?: unknown; confidence_score?: unknown }>;
+  extraction_method: string;
+};
+
+function persistVaultExtraction(extraction: AiExtractionResponse): {
+  document: DbDocument;
+  extracted_fields: DbExtractedField[];
+} {
+  const enterpriseId = "ENT-MH-2026-8891";
+  const documentId = `DOC-${Date.now().toString(36).toUpperCase()}`;
+  const document: DbDocument = {
+    id: documentId,
+    enterprise_id: enterpriseId,
+    file_name: extraction.file_name,
+    file_type: extraction.file_type || "application/octet-stream",
+    source: "UPLOAD",
+    verification_status: "AI_EXTRACTED",
+    raw_text_snippet: extraction.raw_text_snippet || "",
+    created_at: new Date().toISOString(),
+  };
+  localDb.documents.set(documentId, document);
+
+  const extracted_fields = Object.entries(extraction.extracted_fields).map(([field_name, item]) => {
+    const confidence = typeof item.confidence_score === "number" ? item.confidence_score : 0;
+    const record: DbExtractedField = {
+      id: `EF-${documentId}-${field_name}`,
+      enterprise_id: enterpriseId,
+      document_id: documentId,
+      field_name,
+      field_value: item.value == null ? "" : String(item.value),
+      confidence_score: confidence,
+      created_at: new Date().toISOString(),
+    };
+    localDb.extractedFields.set(`${enterpriseId}:${field_name}`, record);
+    return record;
+  });
+
+  return { document, extracted_fields };
+}
+
 /**
  * Proxy route POST /api/vault/extract
  */
@@ -449,8 +455,13 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
     }
 
     const { originalname, mimetype, buffer } = req.file;
+    const isPdf = mimetype === "application/pdf" || originalname.toLowerCase().endsWith(".pdf");
+    const isSupportedImage = ["image/jpeg", "image/png"].includes(mimetype);
+    if (!isPdf && !isSupportedImage) {
+      res.status(415).json({ error: "Unsupported file type. Upload a PDF, JPG, or PNG document." });
+      return;
+    }
 
-    // 1. Forward to AI service
     try {
       const formData = new FormData();
       formData.append("file", buffer, {
@@ -462,43 +473,41 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
         headers: {
           ...formData.getHeaders(),
         },
-        timeout: 8000,
+        timeout: 120000,
       });
 
-      res.json(aiResponse.data);
-      return;
-    } catch (aiErr: any) {
-      console.warn("AI Service /extract unreachable. Using backend gateway parser.");
-    }
-
-    // 2. Resilient Direct Fallback Parser in Node.js
-    let rawText = "";
-    if (mimetype.includes("pdf") || originalname.toLowerCase().endsWith(".pdf")) {
-      try {
-        const parsed = await pdfParse(buffer);
-        rawText = parsed.text;
-      } catch (e) {
-        console.warn("PDF parse error:", e);
+      const extraction = aiResponse.data as AiExtractionResponse;
+      if (
+        extraction?.status !== "success" ||
+        !extraction.file_name ||
+        !extraction.extracted_fields ||
+        typeof extraction.extracted_fields !== "object"
+      ) {
+        res.status(502).json({ error: "AI service returned an invalid extraction response." });
+        return;
       }
+
+      const persisted = persistVaultExtraction(extraction);
+      res.status(200).json({ ...extraction, document: persisted.document });
+    } catch (aiErr: any) {
+      const aiStatus = aiErr.response?.status;
+      const aiDetail = aiErr.response?.data?.detail || aiErr.response?.data?.error;
+      if (aiStatus) {
+        console.warn(`AI extraction rejected the document with status ${aiStatus}.`);
+        res.status(aiStatus).json({ error: aiDetail || "AI service could not extract this document." });
+        return;
+      }
+
+      console.warn("AI extraction service is unavailable or timed out.");
+      res.status(aiErr.code === "ECONNABORTED" ? 504 : 503).json({
+        error: aiErr.code === "ECONNABORTED"
+          ? "AI extraction timed out. Please try again with a smaller or clearer document."
+          : "AI extraction service is unavailable. Please try again shortly.",
+      });
     }
-
-    if (!rawText.trim()) {
-      rawText = `Document: ${originalname}\nApplicant: Maharashtra Solvents & Chemicals Pvt Ltd\nPAN: ABCDE1234F\nGSTIN: 27ABCDE1234F1Z5\nPlot Area: 5000 sq.m (Chakan MIDC Phase 2)\nPower Demand: 250 kVA\nEstimated Capex: ₹35.00 Crores`;
-    }
-
-    const extractedFields = extractHeuristicFields(rawText);
-
-    res.json({
-      status: "success",
-      file_name: originalname,
-      file_type: mimetype || "application/pdf",
-      raw_text_snippet: rawText.slice(0, 300) + "...",
-      extracted_fields: extractedFields,
-      extraction_method: "AARAMBH High-Speed Parsing Engine",
-    });
   } catch (error: any) {
-    console.error("Vault extraction error:", error);
-    res.status(500).json({ error: error.message || "Failed to process document" });
+    console.error("Vault extraction request failed.");
+    res.status(500).json({ error: "Failed to process the document." });
   }
 });
 
