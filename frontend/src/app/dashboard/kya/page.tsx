@@ -307,13 +307,13 @@ export default function KYAWizardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
       {/* Top Title Banner */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
             <span>AI-Driven Clearance Determination</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Know Your Approvals (KYA) Wizard
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -325,7 +325,7 @@ export default function KYAWizardPage() {
           <button
             type="button"
             onClick={handleReassess}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF7F0] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Modify Parameters</span>
@@ -335,9 +335,9 @@ export default function KYAWizardPage() {
 
       {!showResult ? (
         /* --- 4-STEP MULTI-STEP WIZARD FORM --- */
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
           {/* Step Progress Header */}
-          <div className="bg-slate-50 border-b border-slate-200 p-4 sm:p-6">
+          <div className="bg-[#FFF9F5] border-b border-[#F0E5E0] p-4 sm:p-6">
             <div className="grid grid-cols-4 gap-2 text-center text-xs">
               {[
                 { num: 1, label: "Sector Selection" },
@@ -352,18 +352,18 @@ export default function KYAWizardPage() {
                     key={step.num}
                     className={`flex flex-col items-center p-2 rounded-xl transition-all ${
                       isCurrent
-                        ? "bg-white border border-indigo-200 shadow-xs text-indigo-600 font-bold"
+                        ? "bg-white border border-[#FED17A] shadow-xs text-[#9B2A48] font-bold"
                         : isPassed
-                        ? "text-emerald-600 font-semibold"
-                        : "text-slate-400"
+                        ? "text-[#9B2A48] font-semibold"
+                        : "text-[#886A75]"
                     }`}
                   >
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${
                         isCurrent
-                          ? "bg-[#4F46E5] text-white"
+                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white"
                           : isPassed
-                          ? "bg-emerald-100 text-emerald-700"
+                          ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]"
                           : "bg-slate-200 text-slate-600"
                       }`}
                     >
@@ -382,7 +382,7 @@ export default function KYAWizardPage() {
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">Step 1: Select Your Industry Sector</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 1: Select Your Industry Sector</h3>
                   <p className="text-xs text-slate-500 mt-1">
                     Department clearance dependencies and pollution categories heavily depend on your manufacturing domain.
                   </p>
@@ -398,27 +398,27 @@ export default function KYAWizardPage() {
                         onClick={() => setSector(option.value)}
                         className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-150 flex flex-col justify-between ${
                           isSelected
-                            ? "border-[#4F46E5] bg-indigo-50/50 shadow-xs"
-                            : "border-slate-200 hover:border-slate-300 bg-white"
+                            ? "border-[#FE7251] bg-[#FFF7F0] shadow-xs"
+                            : "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white"
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between mb-3">
                             <div
                               className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                                isSelected ? "bg-[#4F46E5] text-white" : "bg-slate-100 text-slate-600"
+                                isSelected ? "bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-white" : "bg-[#FFF2DF] text-[#9B2A48]"
                               }`}
                             >
                               <IconComp className="w-5 h-5" />
                             </div>
                             {isSelected && (
-                              <CheckCircle2 className="w-5 h-5 text-indigo-600" />
+                              <CheckCircle2 className="w-5 h-5 text-[#FE7251]" />
                             )}
                           </div>
-                          <h4 className="text-sm font-bold text-[#0F172A]">{option.label}</h4>
+                          <h4 className="text-sm font-bold text-[#16060E]">{option.label}</h4>
                           <p className="text-xs text-slate-500 mt-1">{option.description}</p>
                         </div>
-                        <span className="mt-4 text-[10px] font-semibold text-indigo-600 bg-indigo-100/60 px-2 py-0.5 rounded-md inline-block self-start">
+                        <span className="mt-4 text-[10px] font-semibold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-0.5 rounded-md inline-block self-start">
                           {option.defaultRiskHint}
                         </span>
                       </div>
@@ -432,7 +432,7 @@ export default function KYAWizardPage() {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">Step 2: Proposed Location & Industrial Zone</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 2: Proposed Location & Industrial Zone</h3>
                   <p className="text-xs text-slate-500 mt-1">
                     Select the designated MIDC industrial estate or municipal jurisdiction for your unit.
                   </p>
@@ -440,13 +440,13 @@ export default function KYAWizardPage() {
 
                 <div className="max-w-xl space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Maharashtra Industrial Development Zone
                     </label>
                     <select
                       value={locationZone}
                       onChange={(e) => setLocationZone(e.target.value)}
-                      className="block w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251] focus:border-[#FE7251]"
                     >
                       {zoneOptions.map((zone) => (
                         <option key={zone} value={zone}>
@@ -456,11 +456,11 @@ export default function KYAWizardPage() {
                     </select>
                   </div>
 
-                  <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 flex items-start space-x-2.5">
-                    <Building2 className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+                  <div className="p-4 bg-[#FFF7F0] border border-[#FED17A] rounded-xl text-xs text-[#16060E] flex items-start space-x-2.5">
+                    <Building2 className="w-4 h-4 text-[#9B2A48] mt-0.5 shrink-0" />
                     <div>
-                      <p className="font-bold">Fast-Track MIDC Zone Detected</p>
-                      <p className="text-[11px] text-indigo-700 mt-0.5">
+                      <p className="font-bold text-[#9B2A48]">Fast-Track MIDC Zone Detected</p>
+                      <p className="text-[11px] text-[#886A75] mt-0.5">
                         MIDC lands come with pre-vetted power sub-stations, industrial drainage canals, and deemed land use conversion.
                       </p>
                     </div>
@@ -473,7 +473,7 @@ export default function KYAWizardPage() {
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">Step 3: Proposed Capital Expenditure (Capex)</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 3: Proposed Capital Expenditure (Capex)</h3>
                   <p className="text-xs text-slate-500 mt-1">
                     Total project investment in plant, machinery, building, and civil infrastructure.
                   </p>
@@ -481,11 +481,11 @@ export default function KYAWizardPage() {
 
                 <div className="max-w-xl space-y-6">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Total Project Investment (in ₹ Crores)
                     </label>
                     <div className="relative rounded-xl shadow-xs">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 font-bold text-base">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#9B2A48] font-bold text-base">
                         ₹
                       </div>
                       <input
@@ -494,7 +494,7 @@ export default function KYAWizardPage() {
                         max={1000}
                         value={capexCr}
                         onChange={(e) => setCapexCr(Number(e.target.value))}
-                        className="block w-full pl-9 pr-24 py-3 bg-slate-50 border border-slate-300 rounded-xl text-lg font-black text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="block w-full pl-9 pr-24 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-lg font-black text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251] focus:border-[#FE7251]"
                       />
                       <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-xs font-bold text-slate-500 uppercase">
                         Crores INR
@@ -513,8 +513,8 @@ export default function KYAWizardPage() {
                           onClick={() => setCapexCr(val)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
                             capexCr === val
-                              ? "bg-indigo-600 text-white border-indigo-600"
-                              : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                              ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-transparent"
+                              : "bg-[#FFF7F0] text-[#16060E] border-[#F0E5E0] hover:bg-[#FFF2DF]"
                           }`}
                         >
                           ₹{val} Cr {val >= 50 ? "(Mega)" : val >= 10 ? "(Large)" : "(MSME)"}
@@ -529,11 +529,11 @@ export default function KYAWizardPage() {
                       capexCr > 50
                         ? "bg-rose-50 border-rose-200 text-rose-900"
                         : capexCr > 10
-                        ? "bg-amber-50 border-amber-200 text-amber-900"
-                        : "bg-emerald-50 border-emerald-200 text-emerald-900"
+                        ? "bg-[#FFF7F0] border-[#FED17A] text-[#9B2A48]"
+                        : "bg-[#FFF2DF] border-[#FED17A] text-[#9B2A48]"
                     }`}
                   >
-                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-[#FE7251]" />
                     <div>
                       <p className="font-bold">
                         Calculated Tier: {capexCr > 50 ? "Red Track (Capex > 50 Cr)" : capexCr > 10 ? "Orange Track (Capex > 10 Cr)" : "Green Track (Capex ≤ 10 Cr)"}
@@ -555,7 +555,7 @@ export default function KYAWizardPage() {
             {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">Step 4: Utility & Operational Requirements</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 4: Utility & Operational Requirements</h3>
                   <p className="text-xs text-slate-500 mt-1">
                     Determine electricity transformer capacities, industrial water intake quota, and DISH safety thresholds.
                   </p>
@@ -563,10 +563,10 @@ export default function KYAWizardPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Power Load */}
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <div className="flex items-center space-x-2 text-indigo-600 mb-2">
-                      <Zap className="w-4 h-4" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
+                    <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
+                      <Zap className="w-4 h-4 text-[#FE7251]" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Power Load (kVA)
                       </label>
                     </div>
@@ -575,16 +575,16 @@ export default function KYAWizardPage() {
                       min={10}
                       value={powerLoadKva}
                       onChange={(e) => setPowerLoadKva(Number(e.target.value))}
-                      className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">MSEDCL Feasibility trigger</p>
                   </div>
 
                   {/* Water Demand */}
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <div className="flex items-center space-x-2 text-blue-600 mb-2">
-                      <Droplets className="w-4 h-4" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
+                    <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
+                      <Droplets className="w-4 h-4 text-[#FE7251]" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Water Demand (KLD)
                       </label>
                     </div>
@@ -593,16 +593,16 @@ export default function KYAWizardPage() {
                       min={1}
                       value={waterDemandKld}
                       onChange={(e) => setWaterDemandKld(Number(e.target.value))}
-                      className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">Kilo Liters Per Day</p>
                   </div>
 
                   {/* Workforce Size */}
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <div className="flex items-center space-x-2 text-purple-600 mb-2">
-                      <ShieldCheck className="w-4 h-4" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
+                    <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
+                      <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Workforce Size
                       </label>
                     </div>
@@ -611,7 +611,7 @@ export default function KYAWizardPage() {
                       min={1}
                       value={workforceSize}
                       onChange={(e) => setWorkforceSize(Number(e.target.value))}
-                      className="block w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                      className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">DISH Factory Act Threshold (&gt;10)</p>
                   </div>
@@ -621,12 +621,12 @@ export default function KYAWizardPage() {
           </div>
 
           {/* Wizard Footer Navigation */}
-          <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+          <div className="bg-[#FFF9F5] border-t border-[#F0E5E0] px-6 py-4 flex items-center justify-between">
             <button
               type="button"
               onClick={handleBack}
               disabled={currentStep === 1}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-30 hover:bg-slate-200 transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#16060E] disabled:opacity-30 hover:bg-[#FFF2DF] transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous Step</span>
@@ -636,7 +636,7 @@ export default function KYAWizardPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -645,7 +645,7 @@ export default function KYAWizardPage() {
               <button
                 type="button"
                 onClick={handleRunAssessment}
-                className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Evaluate & Generate Clearances</span>
@@ -662,8 +662,8 @@ export default function KYAWizardPage() {
               storedRiskTrack === "red"
                 ? "bg-rose-50/80 border-rose-200 text-rose-950"
                 : storedRiskTrack === "orange"
-                ? "bg-amber-50/80 border-amber-200 text-amber-950"
-                : "bg-emerald-50/80 border-emerald-200 text-emerald-950"
+                ? "bg-[#FFF7F0] border-[#FED17A] text-[#16060E]"
+                : "bg-[#FFF2DF] border-[#FED17A] text-[#16060E]"
             }`}
           >
             <div>
@@ -671,27 +671,27 @@ export default function KYAWizardPage() {
                 <span
                   className={`inline-flex items-center space-x-1.5 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${
                     storedRiskTrack === "red"
-                      ? "bg-[#E11D48] text-white"
+                      ? "bg-[#9B2A48] text-white"
                       : storedRiskTrack === "orange"
-                      ? "bg-[#D97706] text-white"
-                      : "bg-[#059669] text-white"
+                      ? "bg-[#FE7251] text-white"
+                      : "bg-[#9B2A48] text-[#FFCA7C]"
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
                   <span>{storedRiskTrack?.toUpperCase()} CATEGORY CLEARANCE TRACK</span>
                 </span>
-                <span className="text-xs font-bold text-slate-700">
+                <span className="text-xs font-bold text-[#886A75]">
                   {storedSector} • ₹{storedCapex} Cr Capex
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#16060E]">
                 {storedRiskTrack === "red"
                   ? "High Environmental & Statutory Impact Clearance Track"
                   : storedRiskTrack === "orange"
                   ? "Moderate Impact Multi-Department Clearance Track"
                   : "Fast-Track Low Environmental Impact Clearance Track"}
               </h2>
-              <p className="text-xs mt-1 opacity-90 max-w-2xl leading-relaxed">
+              <p className="text-xs mt-1 opacity-90 max-w-2xl leading-relaxed text-[#886A75]">
                 {storedRiskTrack === "red"
                   ? "Requires Full Environmental Committee review, HazMat safety plans, and 30-day statutory SLA scrutiny."
                   : storedRiskTrack === "orange"
@@ -703,7 +703,7 @@ export default function KYAWizardPage() {
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard/vault"
-                className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all shrink-0"
+                className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all shrink-0"
               >
                 <span>Proceed to Document Vault</span>
                 <ArrowRight className="w-4 h-4" />
@@ -712,24 +712,24 @@ export default function KYAWizardPage() {
           </div>
 
           {/* Generated Clearances Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
+            <div className="p-6 border-b border-[#F0E5E0] flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-[#0F172A]">
+                <h3 className="text-base font-bold text-[#16060E]">
                   Mandatory Statutory Clearances Checklist ({storedClearances.length} Clearances)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Pre-establishment and utility approvals assembled specifically for your parameters
                 </p>
               </div>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+              <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] px-2.5 py-1 rounded-full border border-[#FED17A]">
                 Parallel Execution Ready
               </span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-xs">
-                <thead className="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+              <table className="min-w-full divide-y divide-[#F0E5E0] text-xs">
+                <thead className="bg-[#FFF9F5] text-[#9B2A48] font-bold uppercase tracking-wider text-[10px]">
                   <tr>
                     <th className="px-6 py-3 text-left">Clearance Name</th>
                     <th className="px-6 py-3 text-left">Department</th>
@@ -739,30 +739,30 @@ export default function KYAWizardPage() {
                     <th className="px-6 py-3 text-center">Mandatory</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                <tbody className="divide-y divide-[#F0E5E0] font-medium text-slate-800">
                   {storedClearances.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={item.id} className="hover:bg-[#FFF7F0]/40 transition-colors">
                       <td className="px-6 py-4">
-                        <p className="font-bold text-slate-900 text-sm">{item.name}</p>
+                        <p className="font-bold text-[#16060E] text-sm">{item.name}</p>
                         <p className="text-[11px] text-slate-500 mt-0.5">{item.description}</p>
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-semibold">{item.department}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
                           {item.category}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className="font-black text-indigo-600 text-sm">
+                        <span className="font-black text-[#9B2A48] text-sm">
                           {item.slaDays} Days
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right font-mono font-bold text-slate-900">
+                      <td className="px-6 py-4 text-right font-mono font-bold text-[#16060E]">
                         {item.feeEstimate}
                       </td>
                       <td className="px-6 py-4 text-center">
                         {item.mandatory ? (
-                          <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                          <span className="text-[10px] font-bold text-[#FE7251] bg-[#FFF2DF] px-2 py-0.5 rounded-full border border-[#FED17A]">
                             Required
                           </span>
                         ) : (
@@ -779,15 +779,15 @@ export default function KYAWizardPage() {
           </div>
 
           {/* Incentives & Subsidies Summary Card */}
-          <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-[#0F172A] text-white rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-lg">
-            <div className="flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">
-              <Award className="w-4 h-4" />
+          <div className="bg-gradient-to-br from-[#16060E] via-[#250C19] to-[#14050B] text-white rounded-2xl p-6 sm:p-8 border border-[#FED17A]/30 shadow-lg">
+            <div className="flex items-center space-x-2 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider mb-2">
+              <Award className="w-4 h-4 text-[#FE7251]" />
               <span>Maharashtra Package Scheme of Incentives (PSI 2019)</span>
             </div>
             <h3 className="text-lg sm:text-xl font-black">
               Eligible Industrial Subsidies & Benefits
             </h3>
-            <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+            <p className="text-xs text-[#C4A89C] mt-1 max-w-2xl">
               Based on your ₹{storedCapex} Cr investment in {storedLocation}, you qualify for the following state subsidies:
             </p>
 
@@ -795,21 +795,21 @@ export default function KYAWizardPage() {
               {storedIncentives.map((incentive, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-start space-x-3"
+                  className="p-4 rounded-xl bg-[#2D1222]/80 border border-[#FED17A]/20 flex items-start space-x-3"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#FFCA7C] mt-0.5 shrink-0" />
                   <span className="text-xs font-semibold text-slate-200">{incentive}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="text-xs text-slate-400">
+            <div className="mt-8 pt-4 border-t border-[#FED17A]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="text-xs text-[#C4A89C]">
                 Data saved to your shared enterprise profile in <code>enterpriseStore</code>.
               </div>
               <Link
                 href="/dashboard/vault"
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
               >
                 <span>Upload Documents for these Clearances</span>
                 <ArrowRight className="w-4 h-4" />

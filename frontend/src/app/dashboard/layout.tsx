@@ -211,17 +211,17 @@ export default function DashboardLayout({
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Mobile Bar */}
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+        <div className="lg:hidden bg-white border-b border-[#F0E5E0] px-4 py-2.5 flex items-center justify-between">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 flex items-center space-x-2"
+            className="p-2 rounded-lg text-[#9B2A48] hover:bg-[#FFF7F0] flex items-center space-x-2"
           >
-            <Menu className="w-5 h-5 text-indigo-600" />
-            <span className="text-xs font-bold text-slate-800">Workspace Menu</span>
+            <Menu className="w-5 h-5 text-[#9B2A48]" />
+            <span className="text-xs font-bold text-[#16060E]">Workspace Menu</span>
           </button>
 
-          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded cursor-pointer" title="Toggle demo role (Business/Ministry)" onClick={() => setDemoIsOfficer(!demoIsOfficer)}>
+          <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded-full cursor-pointer" title="Toggle demo role (Business/Ministry)" onClick={() => setDemoIsOfficer(!demoIsOfficer)}>
             {user?.role === "officer" ? "Officer View" : "Investor View"}
           </span>
         </div>

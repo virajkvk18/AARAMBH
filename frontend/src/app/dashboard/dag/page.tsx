@@ -301,19 +301,19 @@ export default function DAGWorkflowPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-16">
       {/* 1. Header Banner */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-100 text-[#9333EA] text-xs font-bold uppercase tracking-wider">
-              <GitFork className="w-3.5 h-3.5 text-[#9333EA]" />
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider">
+              <GitFork className="w-3.5 h-3.5 text-[#FE7251]" />
               <span>Parallel Clearance Engine</span>
             </span>
-            <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#059669] text-xs font-bold border border-emerald-200">
-              <Radio className="w-3 h-3 animate-pulse text-emerald-500" />
+            <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#FFF7F0] text-[#9B2A48] text-xs font-bold border border-[#FED17A]">
+              <Radio className="w-3 h-3 animate-pulse text-[#FE7251]" />
               <span>Realtime Persistence Active</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Directed Acyclic Graph (DAG) Workflow
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
@@ -325,7 +325,7 @@ export default function DAGWorkflowPage() {
           <button
             type="button"
             onClick={handleReset}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[#FFF7F0] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Simulation</span>
@@ -333,7 +333,7 @@ export default function DAGWorkflowPage() {
 
           <Link
             href="/dashboard/sla"
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold shadow-xs transition-all"
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all"
           >
             <span>Open SLA Tracker</span>
             <ArrowRight className="w-4 h-4" />
@@ -343,30 +343,30 @@ export default function DAGWorkflowPage() {
 
       {/* 2. Pitch Metric Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#F0E5E0] shadow-xs">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sequential Lead Time</p>
           <p className="text-2xl font-black text-slate-400 mt-1 line-through">72 Days</p>
           <p className="text-[11px] text-slate-400 mt-0.5">Sum of all sequential SLA days</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-indigo-200 bg-indigo-50/20 shadow-xs">
-          <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">AARAMBH Parallel Lead Time</p>
-          <p className="text-2xl font-black text-[#4F46E5] mt-1">36 Days</p>
-          <p className="text-[11px] text-indigo-700 mt-0.5">Max(Stage 2 SLAs) + Stage 1 + Stage 3</p>
+        <div className="bg-white p-5 rounded-2xl border border-[#FED17A] bg-[#FFF9F5] shadow-xs">
+          <p className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider">AARAMBH Parallel Lead Time</p>
+          <p className="text-2xl font-black text-[#9B2A48] mt-1">36 Days</p>
+          <p className="text-[11px] text-[#886A75] mt-0.5">Max(Stage 2 SLAs) + Stage 1 + Stage 3</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-emerald-200 bg-emerald-50/20 shadow-xs">
-          <p className="text-xs font-bold text-[#059669] uppercase tracking-wider">Lead Time Reduction</p>
-          <p className="text-2xl font-black text-[#059669] mt-1">36 Days (50% Saved)</p>
-          <p className="text-[11px] text-emerald-700 mt-0.5">Zero idle queue waiting time</p>
+        <div className="bg-white p-5 rounded-2xl border border-[#FED17A] bg-[#FFF2DF] shadow-xs">
+          <p className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider">Lead Time Reduction</p>
+          <p className="text-2xl font-black text-[#9B2A48] mt-1">36 Days (50% Saved)</p>
+          <p className="text-[11px] text-[#886A75] mt-0.5">Zero idle queue waiting time</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#F0E5E0] shadow-xs">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pipeline Progress</p>
-          <p className="text-2xl font-black text-[#0F172A] mt-1">{approvedCount} of 5 Approved</p>
+          <p className="text-2xl font-black text-[#16060E] mt-1">{approvedCount} of 5 Approved</p>
           <div className="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
             <div
-              className="bg-emerald-500 h-full transition-all duration-300"
+              className="bg-gradient-to-r from-[#9B2A48] to-[#FE7251] h-full transition-all duration-300"
               style={{ width: `${(approvedCount / 5) * 100}%` }}
             ></div>
           </div>
@@ -374,13 +374,13 @@ export default function DAGWorkflowPage() {
       </div>
 
       {/* 3. VISUAL INTERACTIVE DAG GRAPH CANVAS */}
-      <div className="bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#818cf8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+      <div className="bg-[#16060E] rounded-3xl p-6 sm:p-10 border border-[#FED17A]/30 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#FE7251_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
 
         {/* Graph Legend */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-8 text-xs">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[#2D1222] pb-4 mb-8 text-xs">
           <div className="flex items-center space-x-2 text-white font-bold">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <Sparkles className="w-4 h-4 text-[#FFCA7C]" />
             <span>Interactive Clearance Orchestration DAG</span>
           </div>
 
@@ -389,12 +389,12 @@ export default function DAGWorkflowPage() {
               <span className="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
               <span>Locked</span>
             </span>
-            <span className="flex items-center space-x-1.5 text-indigo-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span className="flex items-center space-x-1.5 text-[#FFCA7C]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse"></span>
               <span>Active (Click Approve)</span>
             </span>
-            <span className="flex items-center space-x-1.5 text-emerald-400">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span className="flex items-center space-x-1.5 text-[#FE7251]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#9B2A48] border border-[#FED17A]"></span>
               <span>Approved</span>
             </span>
           </div>
@@ -405,7 +405,7 @@ export default function DAGWorkflowPage() {
           {/* STAGE 1: ROOT NODE */}
           <div className="flex flex-col justify-center space-y-4">
             <div className="text-center lg:text-left">
-              <span className="text-[10px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-800/60">
+              <span className="text-[10px] font-bold tracking-widest text-[#FFCA7C] uppercase bg-[#250C19] px-2.5 py-1 rounded-full border border-[#FED17A]/40">
                 STAGE 1: ROOT DEPENDENCY
               </span>
             </div>
@@ -420,7 +420,7 @@ export default function DAGWorkflowPage() {
           {/* STAGE 2: 3 PARALLEL CHILD NODES */}
           <div className="flex flex-col justify-center space-y-4">
             <div className="text-center lg:text-left">
-              <span className="text-[10px] font-bold tracking-widest text-purple-400 uppercase bg-purple-950/80 px-2.5 py-1 rounded-full border border-purple-800/60">
+              <span className="text-[10px] font-bold tracking-widest text-[#FE7251] uppercase bg-[#250C19] px-2.5 py-1 rounded-full border border-[#FE7251]/40">
                 STAGE 2: PARALLEL PROCESSING (3 STREAMS)
               </span>
             </div>
@@ -440,7 +440,7 @@ export default function DAGWorkflowPage() {
           {/* STAGE 3: GRANDCHILD NODE */}
           <div className="flex flex-col justify-center space-y-4">
             <div className="text-center lg:text-left">
-              <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-800/60">
+              <span className="text-[10px] font-bold tracking-widest text-[#FFCA7C] uppercase bg-[#250C19] px-2.5 py-1 rounded-full border border-[#FED17A]/40">
                 STAGE 3: CONSOLIDATED GRANDCHILD
               </span>
             </div>
@@ -459,22 +459,22 @@ export default function DAGWorkflowPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-10 p-5 rounded-2xl bg-emerald-900/60 border-2 border-emerald-500 text-white flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10"
+            className="mt-10 p-5 rounded-2xl bg-gradient-to-r from-[#250C19] to-[#16060E] border-2 border-[#FED17A] text-white flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10"
           >
             <div className="flex items-center space-x-3">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-8 h-8 text-[#FFCA7C] shrink-0" />
               <div>
                 <h4 className="text-base font-bold text-white">
                   Industrial Clearance Workflow 100% Completed!
                 </h4>
-                <p className="text-xs text-emerald-200">
+                <p className="text-xs text-[#C4A89C]">
                   All 5 pre-establishment, utility, and factory sign-off certificates have been granted within statutory SLA.
                 </p>
               </div>
             </div>
             <Link
               href="/dashboard/sla"
-              className="px-5 py-2.5 rounded-xl bg-white text-emerald-950 font-bold text-xs hover:bg-emerald-50 transition-colors shadow-md whitespace-nowrap"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-bold text-xs hover:opacity-95 transition-opacity shadow-md whitespace-nowrap"
             >
               View Deemed SLA Certifications
             </Link>
@@ -483,9 +483,9 @@ export default function DAGWorkflowPage() {
       </div>
 
       {/* 4. Live Event Log */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
-        <h3 className="text-sm font-bold text-[#0F172A] mb-3 flex items-center space-x-2">
-          <Clock className="w-4 h-4 text-indigo-600" />
+      <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs p-6">
+        <h3 className="text-sm font-bold text-[#16060E] mb-3 flex items-center space-x-2">
+          <Clock className="w-4 h-4 text-[#9B2A48]" />
           <span>Live DAG State Transitions & Event Log</span>
         </h3>
 
@@ -495,8 +495,8 @@ export default function DAGWorkflowPage() {
               key={idx}
               className={`p-2.5 rounded-xl border text-[11px] ${
                 idx === 0
-                  ? "bg-indigo-50 border-indigo-200 text-indigo-900 font-bold"
-                  : "bg-slate-50 border-slate-200 text-slate-600"
+                  ? "bg-[#FFF2DF] border-[#FED17A] text-[#9B2A48] font-bold"
+                  : "bg-[#FFF9F5] border-[#F0E5E0] text-slate-600"
               }`}
             >
               {log}
@@ -530,16 +530,16 @@ function NodeCard({
       initial={false}
       animate={{
         scale: isActive ? 1.02 : 1,
-        borderColor: isApproved ? "#059669" : isActive ? "#4F46E5" : "#334155",
+        borderColor: isApproved ? "#9B2A48" : isActive ? "#FE7251" : "#2D1222",
         backgroundColor: isApproved
-          ? "rgba(6, 78, 59, 0.4)"
+          ? "rgba(37, 12, 25, 0.9)"
           : isActive
-          ? "rgba(30, 41, 59, 0.95)"
-          : "rgba(15, 23, 42, 0.6)",
+          ? "rgba(45, 18, 34, 0.95)"
+          : "rgba(22, 6, 14, 0.6)",
       }}
       transition={{ duration: 0.25, ease: "easeOut" }}
       className={`rounded-2xl p-5 border-2 shadow-lg backdrop-blur-md flex flex-col justify-between transition-colors relative overflow-hidden ${
-        isActive ? "ring-2 ring-indigo-500/40 shadow-indigo-500/10" : ""
+        isActive ? "ring-2 ring-[#FE7251]/40 shadow-[#FE7251]/10" : ""
       }`}
     >
       <div>
@@ -547,10 +547,10 @@ function NodeCard({
           <div
             className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold transition-colors duration-200 ${
               isApproved
-                ? "bg-emerald-500 text-white shadow-emerald-500/30"
+                ? "bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-white shadow-sm"
                 : isActive
-                ? "bg-indigo-600 text-white shadow-indigo-500/30"
-                : "bg-slate-800 text-slate-500"
+                ? "bg-[#FE7251] text-white shadow-sm"
+                : "bg-[#250C19] text-[#886A75]"
             }`}
           >
             <IconComp className="w-4 h-4" />
@@ -559,10 +559,10 @@ function NodeCard({
           <span
             className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
               isApproved
-                ? "bg-emerald-900/80 text-emerald-300 border border-emerald-600"
+                ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]"
                 : isActive
-                ? "bg-indigo-900/80 text-indigo-200 border border-indigo-600 animate-pulse"
-                : "bg-slate-800 text-slate-500 border border-slate-700"
+                ? "bg-[#FE7251] text-white border border-[#FE7251] animate-pulse"
+                : "bg-[#250C19] text-[#886A75] border border-[#2D1222]"
             }`}
           >
             {isApproved ? "Approved ✓" : isActive ? "Active • In Review" : "Locked 🔒"}
@@ -571,22 +571,22 @@ function NodeCard({
 
         <h4
           className={`text-xs sm:text-sm font-bold leading-snug transition-colors ${
-            isApproved ? "text-emerald-300" : isActive ? "text-white" : "text-slate-400"
+            isApproved ? "text-[#FFCA7C]" : isActive ? "text-white" : "text-[#886A75]"
           }`}
         >
           {node.name}
         </h4>
-        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{node.department}</p>
-        <p className="text-[11px] text-slate-400/90 mt-2 leading-relaxed">{node.description}</p>
+        <p className="text-[10px] text-[#C4A89C] mt-0.5 line-clamp-1">{node.department}</p>
+        <p className="text-[11px] text-[#C4A89C]/80 mt-2 leading-relaxed">{node.description}</p>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-        <span className="text-[10px] font-mono font-semibold text-slate-400">
-          SLA: <strong className="text-slate-200">{node.slaDays} Days</strong>
+      <div className="mt-4 pt-3 border-t border-[#2D1222] flex items-center justify-between">
+        <span className="text-[10px] font-mono font-semibold text-[#886A75]">
+          SLA: <strong className="text-[#FFCA7C]">{node.slaDays} Days</strong>
         </span>
 
         {isApproved ? (
-          <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-400">
+          <span className="inline-flex items-center space-x-1 text-xs font-bold text-[#FFCA7C]">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Passed</span>
           </span>
@@ -594,13 +594,13 @@ function NodeCard({
           <button
             type="button"
             onClick={onApprove}
-            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-[11px] font-bold shadow-md shadow-emerald-700/30 hover:scale-105 transition-all cursor-pointer"
+            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-[11px] font-bold shadow-md shadow-[#FE7251]/20 hover:scale-105 transition-all cursor-pointer"
           >
             <Play className="w-3 h-3 fill-white" />
             <span>Approve Node</span>
           </button>
         ) : (
-          <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-slate-500">
+          <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-[#886A75]">
             <Lock className="w-3 h-3" />
             <span>Waiting on Parent</span>
           </span>

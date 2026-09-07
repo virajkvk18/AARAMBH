@@ -145,13 +145,13 @@ export default function PreValidationPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
       {/* Top Header */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[#059669] text-xs font-bold uppercase tracking-wider mb-2">
-            <FileCheck2 className="w-3.5 h-3.5 text-[#059669]" />
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
+            <FileCheck2 className="w-3.5 h-3.5 text-[#FE7251]" />
             <span>AI Automated Scrutiny & Cross-Verification Gate</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Pre-Validation & Document Comparison
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -163,18 +163,18 @@ export default function PreValidationPage() {
           <span
             className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${
               isMismatch
-                ? "bg-rose-50 text-[#E11D48] border-rose-200"
-                : "bg-emerald-50 text-[#059669] border-emerald-200"
+                ? "bg-rose-50 text-[#9B2A48] border-rose-300"
+                : "bg-[#FFF2DF] text-[#9B2A48] border-[#FED17A]"
             }`}
           >
             {isMismatch ? (
               <>
-                <Lock className="w-3.5 h-3.5" />
+                <Lock className="w-3.5 h-3.5 text-[#FE7251]" />
                 <span>Quality Gate Locked</span>
               </>
             ) : (
               <>
-                <Unlock className="w-3.5 h-3.5" />
+                <Unlock className="w-3.5 h-3.5 text-[#9B2A48]" />
                 <span>Quality Gate Passed</span>
               </>
             )}
@@ -184,11 +184,11 @@ export default function PreValidationPage() {
 
       {/* 1. BLOCKING ALERT BANNER IF MISMATCH DETECTED */}
       {isMismatch ? (
-        <div className="p-5 rounded-2xl bg-rose-50 border-2 border-[#E11D48] text-rose-950 shadow-sm animate-pulse flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-5 rounded-2xl bg-rose-50 border-2 border-rose-400 text-rose-950 shadow-sm animate-pulse flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start space-x-3">
-            <AlertTriangle className="w-6 h-6 text-[#E11D48] shrink-0 mt-0.5" />
+            <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-extrabold text-[#E11D48] tracking-tight">
+              <h3 className="text-sm font-extrabold text-rose-900 tracking-tight">
                 ⚠️ Discrepancy Detected Between Uploaded Statutory Filings
               </h3>
               <p className="text-xs text-rose-900 mt-1 leading-relaxed">
@@ -198,7 +198,7 @@ export default function PreValidationPage() {
                 <span className="font-mono font-bold bg-rose-200/60 px-1 rounded">{docBValue} sq.m</span>{" "}
                 (Difference: <strong>{comparisonResult.diffPercent.toFixed(1)}%</strong> &gt; 2.0% tolerance).
               </p>
-              <p className="text-[11px] font-bold text-[#E11D48] mt-1.5">
+              <p className="text-[11px] font-bold text-rose-700 mt-1.5">
                 Submission is locked until resolved to prevent statutory rejection by department officers.
               </p>
             </div>
@@ -208,38 +208,38 @@ export default function PreValidationPage() {
             <button
               type="button"
               onClick={() => handleAutoAlign(docAValue)}
-              className="px-3.5 py-2 rounded-xl bg-[#E11D48] text-white text-xs font-bold shadow-xs hover:bg-[#BE123C] transition-colors cursor-pointer whitespace-nowrap"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity cursor-pointer whitespace-nowrap"
             >
               Align to {docAValue} sq.m
             </button>
           </div>
         </div>
       ) : (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] text-[#16060E] flex items-center justify-between">
           <div className="flex items-center space-x-3 text-xs">
-            <CheckCircle2 className="w-5 h-5 text-[#059669] shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-[#9B2A48] shrink-0" />
             <div>
-              <p className="font-bold text-[#059669]">All Cross-Document Consistency Checks Passed</p>
-              <p className="text-emerald-800 text-[11px]">
+              <p className="font-bold text-[#9B2A48]">All Cross-Document Consistency Checks Passed</p>
+              <p className="text-[#886A75] text-[11px]">
                 Plot area ({docAValue} sq.m), PAN, and GSTIN are 100% synchronized across MIDC and DPR dossiers.
               </p>
             </div>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 uppercase">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#9B2A48] text-[#FFCA7C] uppercase">
             Ready to Submit
           </span>
         </div>
       )}
 
       {/* 2. REAL CROSS-DOCUMENT COMPARISON CARD */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
+        <div className="p-6 border-b border-[#F0E5E0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold shrink-0">
-              <Scale className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center justify-center font-bold shrink-0">
+              <Scale className="w-5 h-5 text-[#FE7251]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#0F172A]">
+              <h2 className="text-base font-bold text-[#16060E]">
                 Cross-Document Verification & Tolerance Scrutiny
               </h2>
               <p className="text-xs text-slate-500">
@@ -256,7 +256,7 @@ export default function PreValidationPage() {
                 setDocAValue("5000");
                 setDocBValue("4800");
               }}
-              className="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+              className="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-[#FED17A] bg-[#FFF7F0] hover:bg-[#FFF2DF] text-[#9B2A48] transition-colors cursor-pointer"
             >
               Simulate Mismatch (5000 vs 4800)
             </button>
@@ -266,7 +266,7 @@ export default function PreValidationPage() {
                 setDocAValue("5000");
                 setDocBValue("5000");
               }}
-              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer"
+              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:opacity-95 text-white transition-opacity cursor-pointer"
             >
               Simulate Match (5000 vs 5000)
             </button>
@@ -279,25 +279,25 @@ export default function PreValidationPage() {
             <div
               className={`p-5 rounded-2xl border-2 transition-all ${
                 isMismatch
-                  ? "border-[#E11D48] bg-rose-50/40"
-                  : "border-emerald-300 bg-emerald-50/20"
+                  ? "border-rose-400 bg-rose-50/40"
+                  : "border-[#FED17A] bg-[#FFF9F5]"
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-indigo-600" />
-                  <span className="text-xs font-bold text-slate-800">Source Dossier A</span>
+                  <FileText className="w-4 h-4 text-[#9B2A48]" />
+                  <span className="text-xs font-bold text-[#16060E]">Source Dossier A</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
                   DigiLocker Verified
                 </span>
               </div>
-              <p className="text-xs font-mono font-bold text-slate-900 truncate mb-4">
+              <p className="text-xs font-mono font-bold text-[#16060E] truncate mb-4">
                 {docAName}
               </p>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1.5">
                   Industrial Plot Area (sq.m)
                 </label>
                 <div className="relative">
@@ -307,8 +307,8 @@ export default function PreValidationPage() {
                     onChange={(e) => setDocAValue(e.target.value)}
                     className={`block w-full px-3.5 py-2.5 rounded-xl text-base font-black font-mono transition-colors focus:outline-hidden ${
                       isMismatch
-                        ? "bg-white border-2 border-[#E11D48] text-rose-900 focus:ring-2 focus:ring-rose-400"
-                        : "bg-white border-2 border-emerald-500 text-emerald-900 focus:ring-2 focus:ring-emerald-400"
+                        ? "bg-white border-2 border-rose-400 text-rose-900 focus:ring-2 focus:ring-rose-400"
+                        : "bg-white border-2 border-[#FED17A] text-[#9B2A48] focus:ring-2 focus:ring-[#FE7251]"
                     }`}
                   />
                   <span className="absolute right-3.5 top-3 text-xs font-bold text-slate-400">
@@ -325,25 +325,25 @@ export default function PreValidationPage() {
             <div
               className={`p-5 rounded-2xl border-2 transition-all ${
                 isMismatch
-                  ? "border-[#E11D48] bg-rose-50/40"
-                  : "border-emerald-300 bg-emerald-50/20"
+                  ? "border-rose-400 bg-rose-50/40"
+                  : "border-[#FED17A] bg-[#FFF9F5]"
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-purple-600" />
-                  <span className="text-xs font-bold text-slate-800">Source Dossier B</span>
+                  <FileText className="w-4 h-4 text-[#FE7251]" />
+                  <span className="text-xs font-bold text-[#16060E]">Source Dossier B</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
                   AI OCR Extracted
                 </span>
               </div>
-              <p className="text-xs font-mono font-bold text-slate-900 truncate mb-4">
+              <p className="text-xs font-mono font-bold text-[#16060E] truncate mb-4">
                 {docBName}
               </p>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1.5">
                   Industrial Plot Area (sq.m)
                 </label>
                 <div className="relative">
@@ -353,8 +353,8 @@ export default function PreValidationPage() {
                     onChange={(e) => setDocBValue(e.target.value)}
                     className={`block w-full px-3.5 py-2.5 rounded-xl text-base font-black font-mono transition-colors focus:outline-hidden ${
                       isMismatch
-                        ? "bg-white border-2 border-[#E11D48] text-rose-900 focus:ring-2 focus:ring-rose-400"
-                        : "bg-white border-2 border-emerald-500 text-emerald-900 focus:ring-2 focus:ring-emerald-400"
+                        ? "bg-white border-2 border-rose-400 text-rose-900 focus:ring-2 focus:ring-rose-400"
+                        : "bg-white border-2 border-[#FED17A] text-[#9B2A48] focus:ring-2 focus:ring-[#FE7251]"
                     }`}
                   />
                   <span className="absolute right-3.5 top-3 text-xs font-bold text-slate-400">
@@ -369,12 +369,12 @@ export default function PreValidationPage() {
           </div>
 
           {/* Scrutiny Status Summary Strip */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+          <div className="p-4 bg-[#FFF9F5] border border-[#F0E5E0] rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
             <div className="flex items-center space-x-2 text-slate-700">
-              <Info className="w-4 h-4 text-indigo-500 shrink-0" />
+              <Info className="w-4 h-4 text-[#FE7251] shrink-0" />
               <span>
                 <strong>Tolerance Rule:</strong> Difference &le; 2.0% allowed for survey margin; current difference is{" "}
-                <strong className={isMismatch ? "text-[#E11D48]" : "text-[#059669]"}>
+                <strong className={isMismatch ? "text-rose-600" : "text-[#9B2A48]"}>
                   {comparisonResult.diffPercent.toFixed(2)}%
                 </strong>.
               </span>
@@ -384,7 +384,7 @@ export default function PreValidationPage() {
               <button
                 type="button"
                 onClick={() => setDocBValue(docAValue)}
-                className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer"
+                className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] underline cursor-pointer"
               >
                 Resolve Mismatch (Sync B to A)
               </button>
@@ -394,13 +394,13 @@ export default function PreValidationPage() {
       </div>
 
       {/* 3. AUTO-FILLED APPLICATION FORM (MPCB Consent to Establish) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
+        <div className="p-6 border-b border-[#F0E5E0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 uppercase">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] uppercase">
               Application Form Preview
             </span>
-            <h2 className="text-base font-bold text-[#0F172A] mt-1">
+            <h2 className="text-base font-bold text-[#16060E] mt-1">
               MPCB Consent to Establish (CTE) Form • Pre-Populated
             </h2>
             <p className="text-xs text-slate-500">
@@ -410,7 +410,7 @@ export default function PreValidationPage() {
 
           <div className="flex items-center space-x-2">
             <span className="text-xs text-slate-400">Source:</span>
-            <span className="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+            <span className="text-xs font-mono font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded-md">
               Zustand enterpriseStore
             </span>
           </div>
@@ -420,7 +420,7 @@ export default function PreValidationPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Entity Name */}
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Enterprise Legal Name
               </label>
               <div className="relative">
@@ -428,9 +428,9 @@ export default function PreValidationPage() {
                   type="text"
                   value={formData.entityName}
                   onChange={(e) => setFormData({ ...formData, entityName: e.target.value })}
-                  className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                 />
-                <span className="absolute right-3 top-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">
+                <span className="absolute right-3 top-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
                   AI Synced
                 </span>
               </div>
@@ -438,59 +438,59 @@ export default function PreValidationPage() {
 
             {/* Sector */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Industry Sector
               </label>
               <input
                 type="text"
                 value={formData.sector}
                 readOnly
-                className="block w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold text-slate-700 cursor-not-allowed"
+                className="block w-full px-3.5 py-2.5 bg-[#FFF9F5] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-700 cursor-not-allowed"
               />
             </div>
 
             {/* PAN */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Enterprise PAN
               </label>
               <input
                 type="text"
                 value={formData.pan}
                 onChange={(e) => setFormData({ ...formData, pan: e.target.value.toUpperCase() })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
             </div>
 
             {/* GSTIN */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Maharashtra GSTIN
               </label>
               <input
                 type="text"
                 value={formData.gstin}
                 onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
             </div>
 
             {/* Industrial Zone */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Location / Zone
               </label>
               <input
                 type="text"
                 value={formData.locationZone}
                 readOnly
-                className="block w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold text-slate-700 cursor-not-allowed"
+                className="block w-full px-3.5 py-2.5 bg-[#FFF9F5] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-700 cursor-not-allowed"
               />
             </div>
 
             {/* Verified Plot Area */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Cross-Verified Plot Area (sq.m)
               </label>
               <div className="relative">
@@ -500,15 +500,15 @@ export default function PreValidationPage() {
                   readOnly
                   className={`block w-full px-3.5 py-2.5 rounded-xl text-sm font-mono font-bold transition-colors ${
                     isMismatch
-                      ? "bg-rose-50 border-2 border-[#E11D48] text-rose-900"
-                      : "bg-emerald-50 border-2 border-emerald-500 text-emerald-900"
+                      ? "bg-rose-50 border-2 border-rose-400 text-rose-900"
+                      : "bg-[#FFF2DF] border-2 border-[#FED17A] text-[#9B2A48]"
                   }`}
                 />
                 <span
                   className={`absolute right-3 top-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md ${
                     isMismatch
                       ? "bg-rose-200 text-rose-900"
-                      : "bg-emerald-200 text-emerald-900"
+                      : "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]"
                   }`}
                 >
                   {isMismatch ? "Conflicting" : "Verified"}
@@ -518,38 +518,38 @@ export default function PreValidationPage() {
 
             {/* Power Load */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Connected Power Load (kVA)
               </label>
               <input
                 type="number"
                 value={formData.powerLoadKva}
                 onChange={(e) => setFormData({ ...formData, powerLoadKva: Number(e.target.value) })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
             </div>
 
             {/* Capex */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-1">
                 Project Capex (₹ Crores)
               </label>
               <input
                 type="number"
                 value={formData.capexCr}
                 onChange={(e) => setFormData({ ...formData, capexCr: Number(e.target.value) })}
-                className="block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
               />
             </div>
           </div>
 
           {/* Submission Feedback */}
           {submissionSuccess && (
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center space-x-3 text-xs text-emerald-900">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div className="p-4 rounded-xl bg-[#FFF2DF] border border-[#FED17A] flex items-center space-x-3 text-xs text-[#16060E]">
+              <CheckCircle2 className="w-5 h-5 text-[#9B2A48] shrink-0" />
               <div>
-                <p className="font-bold">Application Successfully Pre-Validated & Queued!</p>
-                <p className="text-emerald-700 mt-0.5">
+                <p className="font-bold text-[#9B2A48]">Application Successfully Pre-Validated & Queued!</p>
+                <p className="text-[#886A75] mt-0.5">
                   Dossier MH-CAF-2026-00412 has passed quality gate and is ready for DAG Parallel Routing.
                 </p>
               </div>
@@ -557,9 +557,9 @@ export default function PreValidationPage() {
           )}
 
           {/* Form Actions */}
-          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-slate-500 flex items-center space-x-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="pt-4 border-t border-[#F0E5E0] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-xs text-[#886A75] flex items-center space-x-1">
+              <ShieldCheck className="w-4 h-4 text-[#9B2A48]" />
               <span>Statutory Scrutiny pre-checks completed</span>
             </div>
 
@@ -570,7 +570,7 @@ export default function PreValidationPage() {
                 className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-bold text-xs shadow-md transition-all ${
                   isMismatch
                     ? "bg-slate-300 text-slate-500 cursor-not-allowed opacity-75"
-                    : "bg-[#059669] hover:bg-[#047857] text-white shadow-emerald-600/20 cursor-pointer"
+                    : "bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white shadow-[#FE7251]/20 cursor-pointer"
                 }`}
               >
                 {isMismatch ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
