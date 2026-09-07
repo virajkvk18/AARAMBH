@@ -39,8 +39,16 @@ export default function DashboardLayout({
   // Demo role toggle for development
   const [demoIsOfficer, setDemoIsOfficer] = useState(false);
 
+  interface NavItem {
+    label: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+    badge?: string;
+    highlight?: boolean;
+  }
+
   // Role‑based navigation configuration
-  const navigationConfig = {
+  const navigationConfig: Record<string, NavItem[]> = {
     business: [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
       { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
