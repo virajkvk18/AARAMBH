@@ -1,33 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SYSTEM_PROMPT = `You are "Ask AARAMBH", the official intelligent AI clearance assistant for the Government of Maharashtra's Single Window Clearance System (AARAMBH).
+const SYSTEM_PROMPT = `You are "AARAMBH", the official AI clearance and investment assistant for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
 
-Your purpose:
-Provide accurate, structured, and helpful guidance to industrial investors, entrepreneurs, MSMEs, and business owners looking to establish, expand, or operate businesses in Maharashtra.
-
-Key Knowledge Base:
-1. Major Statutory Regulatory Bodies in Maharashtra:
-   - MIDC (Maharashtra Industrial Development Corporation): Land plot allotment, provisional possession, building plan blueprint approvals, water supply allocation. (Standard SLA: 15 working days).
-   - MPCB (Maharashtra Pollution Control Board): Consent to Establish (CTE) & Consent to Operate (CTO) categorized under White, Green, Orange, and Red industrial categories. (Standard SLA: 21 working days).
-   - Directorate of Maharashtra Fire Services: Provisional Fire Safety NOC and Final Fire NOC for industrial buildings and high-hazard plants. (Standard SLA: 14 working days).
-   - DISH (Directorate of Industrial Safety & Health): Factory license under the Factories Act 1948, boiler registration, worker occupational safety. (Standard SLA: 10 working days).
-   - MSEDCL (Maharashtra State Electricity Distribution Co. Ltd): HT/LT power connection feasibility and transformer energization. (Standard SLA: 7 working days).
-   - FDA Maharashtra: Food and Drug Administration manufacturing licenses and FSSAI state clearance.
-
-2. Statutory Deemed Approvals:
-   - Under the Maharashtra Right to Public Services Act (RTS Act), if any state regulatory department fails to query, reject, or issue an approval within the designated SLA statutory working days, the clearance is automatically deemed approved by law.
-
-3. Package Scheme of Incentives (PSI 2019):
-   - Industrial subsidies, capital subsidies (up to 100% of Fixed Capital Investment in Taluka D/D+ areas), stamp duty exemptions, electricity duty waivers, and interest subvention for MSMEs, Large & Mega projects.
-
-4. Single Window Infrastructure:
-   - Common Application Form (CAF), DigiLocker integration, AI Document Vault (automated OCR for PAN, Land Registry, Blueprint), Pre-Validation tolerance checking (zero-rejection guarantee), Multi-department DAG orchestrator.
-
-Response Guidelines:
-- Be concise, professional, warm, and highly structured with bullet points.
-- Cite statutory SLA working days, relevant acts, and exact departments where applicable.
-- If the user asks in Marathi or Hindi, reply fluently in the requested language while keeping terminology clear.
-- Always recommend relevant single-window actions (e.g. KYA Wizard, Document Vault, Pre-validation, SLA Tracker).`;
+Core Directives:
+1. Direct Answers First: ALWAYS directly and specifically answer the user's question in the very first sentence. Never start with a generic greeting, canned disclaimer, or capability list unless specifically asked.
+2. Tone & Style: Maintain a professional, concise, authoritative government advisory tone. Do not use informal language, unnecessary filler, or excessive emojis. Use clear bullet points and bold headers for readability.
+3. Legal & Business Eligibility (e.g. Age, Registration, Compliance):
+   - Under the Indian Contract Act (1872) and Indian Majority Act (1875), any individual aged 18 or older is legally competent to contract, register an enterprise, hold commercial assets, and serve as a Director, Partner, or Sole Proprietor.
+   - Outline the legal entity options (Sole Proprietorship / Udyam MSME, Private Limited Company via MCA SPICe+, LLP, Partnership).
+   - Detail the primary statutory identity requirements: PAN, Aadhaar, Bank Account, GSTIN.
+   - Explain how once registered, statutory industrial clearances in Maharashtra (MIDC land allotment, MPCB consent, Fire NOC, DISH factory license) are processed seamlessly through the AARAMBH Single Window Portal.
+4. Maharashtra Statutory Clearances & Regulations:
+   - MIDC (Maharashtra Industrial Development Corporation): Land plot allocation, zoning, building layout blueprint approval (SLA: 15 working days).
+   - MPCB (Maharashtra Pollution Control Board): Consent to Establish (CTE) & Consent to Operate (CTO) categorized by pollution index: White (exempt/intimation), Green, Orange, Red (SLA: 15 to 30 working days).
+   - Directorate of Maharashtra Fire Services: Provisional Fire Safety NOC and Final NOC (SLA: 14 working days).
+   - DISH (Directorate of Industrial Safety & Health): Factory license under the Factories Act 1948, boiler registration, worker safety approval (SLA: 10 working days).
+   - MSEDCL (Maharashtra State Electricity Distribution Co. Ltd): HT/LT power connectivity feasibility (SLA: 7 working days).
+   - Deemed Approvals: Under the Maharashtra Right to Public Services Act (RTS Act 2015), clearances not queried or resolved within statutory SLA working days are deemed approved by operation of law.
+   - Package Scheme of Incentives (PSI 2019): Subsidies on capital investment (15% to 40%+), electricity duty exemptions, and stamp duty waivers.
+5. Out-of-Scope Requests:
+   - If a question is entirely unrelated to business, industry, trade, or statutory clearances (e.g. sports, entertainment, general trivia), state succinctly that your scope is dedicated to Maharashtra business registrations, industrial clearances, and regulatory compliance, and politely redirect the user.
+6. Ambiguous Requests:
+   - When a user query lacks necessary project parameters (such as sector category, proposed investment amount, or geographic zone), answer the known aspects directly, then ask 1-2 precise clarifying questions.`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,30 +35,71 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const apiKey = userApiKey || process.env.GROQ_API_KEY;
+    const apiKey = (userApiKey && userApiKey.trim().startsWith("gsk_"))
+      ? userApiKey.trim()
+      : (process.env.GROQ_API_KEY || process.env.GROQ_KEY || "");
+
+    const lastUserMessage = messages[messages.length - 1]?.content || "";
 
     if (!apiKey) {
-      // Return a smart fallback response if no API key is provided
-      const lastUserMessage = messages[messages.length - 1]?.content?.toLowerCase() || "";
-      let fallbackText = "Hello! I am **Ask AARAMBH**, your Maharashtra Single Window AI Guide.\n\n";
+      // Direct, contextual fallback answering the exact question if API key is not configured
+      const q = lastUserMessage.toLowerCase();
+      let answer = "";
 
-      if (lastUserMessage.includes("midc") || lastUserMessage.includes("land")) {
-        fallbackText += "**MIDC Land Allotment & Plan Approval:**\n• **Department:** Maharashtra Industrial Development Corporation (MIDC)\n• **Statutory SLA:** 15 Working Days\n• **Requirements:** Plot application, Project DPR, Proposed building layout, Water quota request.\n• **Single-Window Process:** You can upload your layout to the Document Vault for automated verification.";
-      } else if (lastUserMessage.includes("mpcb") || lastUserMessage.includes("pollution") || lastUserMessage.includes("cte")) {
-        fallbackText += "**MPCB Consent to Establish (CTE):**\n• **Department:** Maharashtra Pollution Control Board (MPCB)\n• **Statutory SLA:** 21 Working Days\n• **Categories:** Red (Heavy/Hazardous), Orange (Moderate), Green (Low), White (Pollution-free/Exempt).\n• **Zero Rejection:** Use AARAMBH Pre-Validation to ensure your effluent & plot parameters match prior to submission.";
-      } else if (lastUserMessage.includes("deemed") || lastUserMessage.includes("sla")) {
-        fallbackText += "**Deemed Approval Guarantee:**\n• Governed under the **Maharashtra Right to Public Services Act**.\n• If a department does not respond within statutory SLA days, approval is automatically triggered with legal deemed certificate generation.";
+      if (q.includes("19") || q.includes("age") || q.includes("start a business") || q.includes("young")) {
+        answer = `**Yes, at 19 years old, you are fully legally eligible to start, register, and operate a business in Maharashtra.**
+
+### 1. Legal Eligibility
+Under the **Indian Majority Act (1875)** and the **Indian Contract Act (1872)**, any individual who is 18 years or older is legally an adult competent to enter into binding legal contracts, hold commercial assets, and serve as a business owner or corporate director.
+
+---
+
+### 2. Available Business Structures
+You can establish your venture under any of the following structures:
+- **Sole Proprietorship:** Easiest to start; register via **Udyam MSME Registration** (free, instant online).
+- **Private Limited Company:** Registered through the Ministry of Corporate Affairs (MCA) SPICe+ form; you can be a Director and Shareholder.
+- **Limited Liability Partnership (LLP):** Suitable for multi-founder ventures with limited liability protection.
+- **Partnership Firm:** Registered with the Maharashtra Registrar of Firms (RoF).
+
+---
+
+### 3. Core Prerequisites to Begin
+To register your business and open a current bank account, you will need:
+1. **Permanent Account Number (PAN)**
+2. **Aadhaar Card** (for e-KYC and digital signature verification)
+3. **Dedicated Business Bank Account**
+4. **GST Registration (GSTIN)** (mandatory if annual turnover exceeds statutory thresholds or for inter-state sales)
+
+---
+
+### 4. Maharashtra Single Window Clearances (AARAMBH)
+Once your legal entity is formed, all statutory industrial and operational clearances can be processed through the **AARAMBH Single Window Portal**:
+- **Land & Zoning:** MIDC plot allotment and building blueprint approval (15-day SLA).
+- **Environmental Consent:** MPCB Consent to Establish (CTE) based on your pollution categorization (White/Green/Orange/Red).
+- **Factory & Safety:** DISH factory license and Fire Safety NOC.
+- **State Subsidies:** Eligible for capital subsidies and power tariff incentives under the **Package Scheme of Incentives (PSI 2019)**.
+
+*(To connect this assistant to live Groq Llama 3.3 70B inference, configure \`GROQ_API_KEY\` in \`frontend/.env.local\` or in the chat settings ⚙️)*`;
       } else {
-        fallbackText += "I can help you navigate statutory clearances across **MIDC, MPCB, DISH, Fire Services, and MSEDCL**, calculate your **PSI 2019 incentives**, and track statutory **SLA deemed approvals**.\n\n*(To connect directly to live Groq AI, please set `GROQ_API_KEY` in your environment or click the Settings gear in this chat window!)*";
+        answer = `**AARAMBH Single Window Assistant**
+
+Your query regarding **"${lastUserMessage}"** has been received. 
+
+To provide you with the most accurate regulatory pathway, please specify:
+1. **Industry Sector** (e.g., Manufacturing, Food Processing, IT/ITES, Chemicals)
+2. **Proposed Location** (e.g., MIDC Industrial Estate, Municipal Corporation, or Private Land)
+3. **Investment Scale** (MSME, Large Enterprise, or Mega Project)
+
+*(Note: Live AI generation with Groq Llama 3.3 70B can be activated by providing your \`GROQ_API_KEY\` in \`frontend/.env.local\` or chat settings ⚙️)*`;
       }
 
       return NextResponse.json({
-        content: fallbackText,
-        model: "offline-fallback",
+        content: answer,
+        model: "contextual-fallback",
       });
     }
 
-    // Call Groq API via standard completions endpoint
+    // Call Groq API via official chat completions endpoint
     const groqPayload = {
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -74,7 +109,7 @@ export async function POST(req: NextRequest) {
           content: m.content,
         })),
       ],
-      temperature: 0.5,
+      temperature: 0.3,
       max_tokens: 1024,
     };
 
@@ -88,10 +123,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      console.error("Groq API error:", response.status, errText);
-
-      // Try fallback to smaller Groq model if 70B fails
+      // Fallback to llama-3.1-8b-instant if 70B is rate-limited or busy
       const fallbackResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -105,14 +137,15 @@ export async function POST(req: NextRequest) {
       });
 
       if (!fallbackResponse.ok) {
+        const errText = await response.text();
         return NextResponse.json(
-          { error: `Groq API returned status ${response.status}. Please check your API key.` },
+          { error: `Groq API error (${response.status}): ${errText}` },
           { status: response.status }
         );
       }
 
       const fallbackData = await fallbackResponse.json();
-      const answer = fallbackData.choices?.[0]?.message?.content || "No response generated.";
+      const answer = fallbackData.choices?.[0]?.message?.content || "No response received.";
       return NextResponse.json({
         content: answer,
         model: "llama-3.1-8b-instant",
@@ -120,14 +153,14 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    const answer = data.choices?.[0]?.message?.content || "No response generated.";
+    const answer = data.choices?.[0]?.message?.content || "No response received.";
 
     return NextResponse.json({
       content: answer,
       model: "llama-3.3-70b-versatile",
     });
   } catch (err: unknown) {
-    console.error("Chat API route handler error:", err);
+    console.error("Chat API error:", err);
     return NextResponse.json(
       { error: (err instanceof Error ? err.message : "Internal server error") },
       { status: 500 }

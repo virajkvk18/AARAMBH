@@ -28,25 +28,25 @@ interface Message {
 }
 
 const INITIAL_SUGGESTIONS = [
+  "I'm 19 years old, can I start a business?",
   "How do I apply for MIDC Land in Pune?",
   "What is the statutory SLA for MPCB Consent?",
-  "How does Deemed Approval work in Maharashtra?",
-  "What incentives are available under PSI 2019?",
-  "What documents are required for Fire Safety NOC?",
+  "How does Deemed Approval work under the RTS Act?",
+  "What subsidies are offered in PSI 2019 scheme?",
 ];
+
+const INITIAL_GREETING: Message = {
+  id: "welcome-msg",
+  role: "assistant",
+  content:
+    "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about MIDC, MPCB, Fire NOC, DISH licensing, PSI 2019 incentives, or SLA timelines for your application.",
+  timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+};
 
 export default function AskAarambhChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome-msg",
-      role: "assistant",
-      content:
-        "Namaskar! 🙏 I am **Ask AARAMBH**, your intelligent AI guide for the Government of Maharashtra's Single Window Clearance System.\n\nAsk me anything about **MIDC Land Allotments**, **MPCB Pollution Consents**, **Fire & DISH Licenses**, **PSI 2019 Incentives**, or **Deemed Approvals**!",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -141,7 +141,7 @@ export default function AskAarambhChatbot() {
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: `⚠️ ${(err instanceof Error ? err.message : "Error connecting to AI service.")}\n\n*Tip: You can add your Groq API key in the settings icon (⚙️) above to activate direct Llama 3.3 70B inference.*`,
+        content: `⚠️ ${(err instanceof Error ? err.message : "Error connecting to AI service.")}\n\n*Tip: You can add your Groq API key in the settings icon (⚙️) above or in \`frontend/.env.local\`.*`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -158,23 +158,34 @@ export default function AskAarambhChatbot() {
   };
 
   const handleResetChat = () => {
-    setMessages([
-      {
-        id: "welcome-msg",
-        role: "assistant",
-        content:
-          "Namaskar! 🙏 I am **Ask AARAMBH**, your intelligent AI guide for the Government of Maharashtra's Single Window Clearance System.\n\nAsk me anything about **MIDC Land Allotments**, **MPCB Pollution Consents**, **Fire & DISH Licenses**, **PSI 2019 Incentives**, or **Deemed Approvals**!",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+    setMessages([INITIAL_GREETING]);
   };
 
-  // Render markdown-like bold and lists cleanly
+  // Render markdown-like bold, headers, and lists cleanly
   const renderMessageContent = (content: string) => {
     const lines = content.split("\n");
     return lines.map((line, idx) => {
-      // Bold formatter
-      const parts = line.split(/(\*\*.*?\*\*)/g);
+      // Header formatters
+      if (line.startsWith("### ")) {
+        return (
+          <h4 key={idx} className="font-bold text-slate-900 text-xs mt-2 mb-1">
+            {line.replace("### ", "")}
+          </h4>
+        );
+      }
+      if (line.startsWith("## ")) {
+        return (
+          <h3 key={idx} className="font-black text-slate-900 text-sm mt-2 mb-1">
+            {line.replace("## ", "")}
+          </h3>
+        );
+      }
+      if (line.startsWith("---")) {
+        return <hr key={idx} className="my-2 border-slate-200" />;
+      }
+
+      // Bold & Italic formatter
+      const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
       const formattedLine = parts.map((part, pIdx) => {
         if (part.startsWith("**") && part.endsWith("**")) {
           return (
@@ -184,7 +195,11 @@ export default function AskAarambhChatbot() {
           );
         }
         if (part.startsWith("*") && part.endsWith("*")) {
-          return <em key={pIdx} className="italic text-slate-600">{part.slice(1, -1)}</em>;
+          return (
+            <em key={pIdx} className="italic text-slate-700">
+              {part.slice(1, -1)}
+            </em>
+          );
         }
         return part;
       });
@@ -229,14 +244,14 @@ export default function AskAarambhChatbot() {
             <div className="flex flex-col text-left">
               <div className="flex items-center space-x-1.5">
                 <span className="text-xs font-black tracking-wider text-white">
-                  Ask <span className="text-[#FFB800]">AARAMBH</span>
+                  AARAMBH
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
                   AI
                 </span>
               </div>
               <span className="text-[10px] text-slate-300">
-                Govt. of Maharashtra Single Window
+                Single Window Clearance Assistant
               </span>
             </div>
           </button>
@@ -259,14 +274,14 @@ export default function AskAarambhChatbot() {
               <div>
                 <div className="flex items-center space-x-1.5">
                   <h3 className="text-sm font-black text-white tracking-wide">
-                    Ask <span className="text-[#FFB800]">AARAMBH</span>
+                    AARAMBH
                   </h3>
                   <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                    Groq AI
+                    Groq Llama 3.3
                   </span>
                 </div>
                 <p className="text-[10px] text-slate-300">
-                  Govt. of Maharashtra Clearance Assistant
+                  Govt. of Maharashtra Single Window Assistant
                 </p>
               </div>
             </div>
@@ -326,7 +341,7 @@ export default function AskAarambhChatbot() {
                     </button>
                   </div>
                   <p className="text-[11px] text-amber-800 leading-tight mb-2.5">
-                    Connect directly to Groq Cloud (Llama 3.3 70B) for instant, high-speed single-window clearance responses.
+                    Enter your Groq API key to power real-time Llama 3.3 70B inference. (Also loads automatically from <code>frontend/.env.local</code> or root <code>.env</code>).
                   </p>
                   <form onSubmit={handleSaveApiKey} className="flex gap-2">
                     <input
@@ -346,7 +361,7 @@ export default function AskAarambhChatbot() {
                   {savedKeyNotification && (
                     <p className="text-[10px] text-emerald-700 font-bold mt-1.5 flex items-center space-x-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                      <span>API key saved locally!</span>
+                      <span>API key saved successfully!</span>
                     </p>
                   )}
                 </div>
@@ -374,7 +389,7 @@ export default function AskAarambhChatbot() {
 
                     {/* Bubble */}
                     <div
-                      className={`max-w-[82%] rounded-2xl p-3.5 text-xs shadow-xs ${
+                      className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs ${
                         msg.role === "user"
                           ? "bg-[#0B1728] text-white rounded-tr-none"
                           : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
@@ -405,7 +420,7 @@ export default function AskAarambhChatbot() {
                       <span className="w-2 h-2 rounded-full bg-[#00A859] animate-bounce [animation-delay:0.2s]"></span>
                       <span className="w-2 h-2 rounded-full bg-[#00A859] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[11px] text-slate-500 font-medium ml-1">
-                        Consulting Maharashtra SWS Knowledge Base...
+                        AARAMBH is processing your query...
                       </span>
                     </div>
                   </div>
@@ -414,8 +429,8 @@ export default function AskAarambhChatbot() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Quick Prompt Chips (Visible when only 1 message exists) */}
-              {messages.length <= 2 && (
+              {/* Quick Prompt Chips (Visible when only initial greeting exists) */}
+              {messages.length <= 1 && (
                 <div className="px-4 py-2 bg-slate-100/70 border-t border-slate-200 flex flex-nowrap overflow-x-auto gap-1.5 shrink-0 scrollbar-none">
                   {INITIAL_SUGGESTIONS.map((suggestion) => (
                     <button
@@ -437,7 +452,7 @@ export default function AskAarambhChatbot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask about MIDC, MPCB CTE, Fire NOC, PSI 2019..."
+                    placeholder="Ask about age eligibility, MIDC, MPCB CTE, Fire NOC..."
                     className="flex-1 max-h-24 min-h-[40px] px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#00A859] focus:ring-1 focus:ring-[#00A859] focus:outline-none resize-none"
                   />
                   <button
