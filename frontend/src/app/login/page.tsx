@@ -49,12 +49,7 @@ export default function LoginPage() {
       {/* Top Left Branding */}
       <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner">
-            <div className="flex items-center space-x-1">
-              <span className="w-3 h-3 rounded-full bg-[#00A859]"></span>
-              <span className="w-3 h-3 rounded-full bg-white"></span>
-            </div>
-          </div>
+          <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-10 h-10 object-contain" />
           <div className="flex flex-col">
             <span className="text-lg font-black tracking-tight text-white font-sans">
               AARAMBH

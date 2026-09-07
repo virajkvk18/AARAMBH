@@ -39,12 +39,7 @@ export default function Footer() {
           {/* Column 1: AARAMBH Single Window Portal Identity */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner">
-                <div className="flex items-center space-x-1">
-                  <span className="w-3 h-3 rounded-full bg-[#00A859]"></span>
-                  <span className="w-3 h-3 rounded-full bg-white"></span>
-                </div>
-              </div>
+              <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-10 h-10 object-contain" />
               <div>
                 <span className="text-lg font-black tracking-tight text-white block">
                   AARAMBH

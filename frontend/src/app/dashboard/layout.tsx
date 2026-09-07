@@ -104,6 +104,12 @@ export default function DashboardLayout({
               </div>
             </div>
 
+            {collapsed && (
+              <div className="hidden lg:flex items-center justify-center">
+                <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-8 h-8 object-contain" />
+              </div>
+            )}
+
             {/* Collapse / Expand Toggle button (Desktop) */}
             <button
               type="button"
