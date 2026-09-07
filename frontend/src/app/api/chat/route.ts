@@ -59,13 +59,12 @@ function getRuntimeApiKey(userKey?: string): string {
   return "";
 }
 
-// Order of priority models supported by Groq API
+// Order of priority models officially supported by Groq API
 const CANDIDATE_MODELS = [
-  "openai/gpt-oss-120b",
-  "qwen/qwen3.8-27b",
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "groq/compound",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it",
 ];
 
 export async function POST(req: NextRequest) {
@@ -109,6 +108,9 @@ export async function POST(req: NextRequest) {
           max_tokens: 1024,
         };
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -116,7 +118,10 @@ export async function POST(req: NextRequest) {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify(groqPayload),
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
@@ -130,12 +135,13 @@ export async function POST(req: NextRequest) {
         lastErrorText = await response.text();
         console.warn(`[AARAMBH Chat API] Model ${model} returned ${response.status}: ${lastErrorText}`);
       } catch (modelErr) {
+        lastErrorText = (modelErr instanceof Error ? modelErr.message : String(modelErr));
         console.warn(`[AARAMBH Chat API] Model ${model} fetch failed:`, modelErr);
       }
     }
 
     return NextResponse.json(
-      { error: `Groq API Error: ${lastErrorText || "Unable to reach any Groq models."}` },
+      { error: `Groq API Error: ${lastErrorText || "Unable to reach Groq models."}` },
       { status: 502 }
     );
   } catch (err: unknown) {
