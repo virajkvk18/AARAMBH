@@ -59,12 +59,13 @@ function getRuntimeApiKey(userKey?: string): string {
   return "";
 }
 
-// Order of priority models officially active on Groq API
+// Order of priority models currently active and supported on Groq API
 const CANDIDATE_MODELS = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "llama3-70b-8192",
-  "llama3-8b-8192",
+  "llama-3.2-3b-preview",
+  "llama-3.2-1b-preview",
+  "llama-3.2-11b-vision-preview",
 ];
 
 export async function POST(req: NextRequest) {
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
 
     // Iterate through supported Groq models with automated fallback
     let lastErrorText = "";
+    let rateLimitHit = false;
     const attemptedErrors: Record<string, string> = {};
 
     for (const model of CANDIDATE_MODELS) {
@@ -145,8 +147,22 @@ export async function POST(req: NextRequest) {
           // use rawErr
         }
 
+        // Check for specific auth or rate limit errors
+        if (response.status === 401) {
+          return NextResponse.json(
+            { error: "Invalid or expired Groq API key. Please check your GROQ_API_KEY." },
+            { status: 401 }
+          );
+        }
+
+        if (response.status === 429) {
+          rateLimitHit = true;
+        }
+
         attemptedErrors[model] = `[${response.status}] ${parsedMessage}`;
-        lastErrorText = parsedMessage;
+        if (!parsedMessage.includes("decommissioned")) {
+          lastErrorText = parsedMessage;
+        }
         console.warn(`[AARAMBH Chat API] Model ${model} returned ${response.status}: ${parsedMessage}`);
       } catch (modelErr) {
         const errMsg = modelErr instanceof Error ? modelErr.message : String(modelErr);
@@ -158,8 +174,15 @@ export async function POST(req: NextRequest) {
 
     console.error("[AARAMBH Chat API] All models exhausted. Failures:", attemptedErrors);
 
+    if (rateLimitHit) {
+      return NextResponse.json(
+        { error: "Groq API rate limit reached. Please wait a few seconds and try again." },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
-      { error: `Groq Advisory Error: ${lastErrorText || "Service temporarily unavailable. Please retry."}` },
+      { error: `Groq Advisory Error: ${lastErrorText || "Service temporarily unavailable. Please retry in a moment."}` },
       { status: 502 }
     );
   } catch (err: unknown) {
