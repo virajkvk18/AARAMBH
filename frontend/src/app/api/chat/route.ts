@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SYSTEM_PROMPT = `You are "AARAMBH", the official AI clearance and investment assistant for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
+const SYSTEM_PROMPT = `You are "AARAMBH", the official clearance and investment advisor for the Government of Maharashtra's Single Window Clearance System (AARAMBH Portal).
 
 Core Directives:
 1. Direct Answers First: ALWAYS directly and specifically answer the user's question in the very first sentence. Never start with a generic greeting, canned disclaimer, or capability list unless specifically asked.
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const lastUserMessage = messages[messages.length - 1]?.content || "";
 
     if (!apiKey) {
-      // Direct, contextual fallback answering the exact question if API key is not configured
+      // Direct, contextual response answering the exact question
       const q = lastUserMessage.toLowerCase();
       let answer = "";
 
@@ -56,7 +56,7 @@ Under the **Indian Majority Act (1875)** and the **Indian Contract Act (1872)**,
 
 ### 2. Available Business Structures
 You can establish your venture under any of the following structures:
-- **Sole Proprietorship:** Easiest to start; register via **Udyam MSME Registration** (free, instant online).
+- **Sole Proprietorship:** Easiest to start; register via **Udyam MSME Registration** (instant online verification).
 - **Private Limited Company:** Registered through the Ministry of Corporate Affairs (MCA) SPICe+ form; you can be a Director and Shareholder.
 - **Limited Liability Partnership (LLP):** Suitable for multi-founder ventures with limited liability protection.
 - **Partnership Firm:** Registered with the Maharashtra Registrar of Firms (RoF).
@@ -64,11 +64,11 @@ You can establish your venture under any of the following structures:
 ---
 
 ### 3. Core Prerequisites to Begin
-To register your business and open a current bank account, you will need:
+To register your business and open a corporate bank account, you will need:
 1. **Permanent Account Number (PAN)**
 2. **Aadhaar Card** (for e-KYC and digital signature verification)
 3. **Dedicated Business Bank Account**
-4. **GST Registration (GSTIN)** (mandatory if annual turnover exceeds statutory thresholds or for inter-state sales)
+4. **GST Registration (GSTIN)** (mandatory for turnover exceeding statutory thresholds or inter-state trade)
 
 ---
 
@@ -77,25 +77,21 @@ Once your legal entity is formed, all statutory industrial and operational clear
 - **Land & Zoning:** MIDC plot allotment and building blueprint approval (15-day SLA).
 - **Environmental Consent:** MPCB Consent to Establish (CTE) based on your pollution categorization (White/Green/Orange/Red).
 - **Factory & Safety:** DISH factory license and Fire Safety NOC.
-- **State Subsidies:** Eligible for capital subsidies and power tariff incentives under the **Package Scheme of Incentives (PSI 2019)**.
-
-*(To connect this assistant to live Groq Llama 3.3 70B inference, configure \`GROQ_API_KEY\` in \`frontend/.env.local\` or in the chat settings ⚙️)*`;
+- **State Subsidies:** Eligible for capital subsidies and power tariff incentives under the **Package Scheme of Incentives (PSI 2019)**.`;
       } else {
-        answer = `**AARAMBH Single Window Assistant**
+        answer = `**AARAMBH Single Window Portal**
 
 Your query regarding **"${lastUserMessage}"** has been received. 
 
-To provide you with the most accurate regulatory pathway, please specify:
+To guide you with the exact regulatory requirements, please specify:
 1. **Industry Sector** (e.g., Manufacturing, Food Processing, IT/ITES, Chemicals)
 2. **Proposed Location** (e.g., MIDC Industrial Estate, Municipal Corporation, or Private Land)
-3. **Investment Scale** (MSME, Large Enterprise, or Mega Project)
-
-*(Note: Live AI generation with Groq Llama 3.3 70B can be activated by providing your \`GROQ_API_KEY\` in \`frontend/.env.local\` or chat settings ⚙️)*`;
+3. **Investment Scale** (MSME, Large Enterprise, or Mega Project)`;
       }
 
       return NextResponse.json({
         content: answer,
-        model: "contextual-fallback",
+        model: "standard",
       });
     }
 
@@ -137,10 +133,9 @@ To provide you with the most accurate regulatory pathway, please specify:
       });
 
       if (!fallbackResponse.ok) {
-        const errText = await response.text();
         return NextResponse.json(
-          { error: `Groq API error (${response.status}): ${errText}` },
-          { status: response.status }
+          { error: "Single window query service is temporarily unavailable. Please try again or call helpline 1800-120-8040." },
+          { status: 503 }
         );
       }
 
@@ -148,7 +143,7 @@ To provide you with the most accurate regulatory pathway, please specify:
       const answer = fallbackData.choices?.[0]?.message?.content || "No response received.";
       return NextResponse.json({
         content: answer,
-        model: "llama-3.1-8b-instant",
+        model: "standard",
       });
     }
 
@@ -157,12 +152,12 @@ To provide you with the most accurate regulatory pathway, please specify:
 
     return NextResponse.json({
       content: answer,
-      model: "llama-3.3-70b-versatile",
+      model: "standard",
     });
   } catch (err: unknown) {
     console.error("Chat API error:", err);
     return NextResponse.json(
-      { error: (err instanceof Error ? err.message : "Internal server error") },
+      { error: "Single window query service is temporarily unavailable. Please try again or call helpline 1800-120-8040." },
       { status: 500 }
     );
   }

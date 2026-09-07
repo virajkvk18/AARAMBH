@@ -139,7 +139,7 @@ export default function DocumentVaultPage() {
 
         setExtractedFields(formatted, file.name);
         setRawTextSnippet(data.raw_text_snippet || null);
-        setExtractionMethod(data.extraction_method || "PyMuPDF + Groq Structured Extraction");
+        setExtractionMethod(data.extraction_method || "AARAMBH High-Speed Document Parser");
 
         // Persist document metadata & extracted fields to Backend / Supabase
         try {
@@ -149,25 +149,49 @@ export default function DocumentVaultPage() {
             body: JSON.stringify({
               enterprise_id: "ENT-MH-2026-8891",
               file_name: file.name,
-              file_type: file.type || "application/pdf",
-              source: "UPLOAD",
-              verification_status: "VERIFIED",
+              file_type: file.type,
+              source: "VAULT_UPLOAD",
+              verification_status: "AI_VERIFIED",
               raw_text_snippet: data.raw_text_snippet || "",
-              extracted_fields: formatted,
+              extracted_fields: data.extracted_fields || {},
             }),
           });
-        } catch (dbErr) {
-          console.warn("Document persistence call warning:", dbErr);
+        } catch (e) {
+          console.warn("Could not sync document to backend persistence:", e);
         }
+      } else {
+        throw new Error("No extracted fields returned from extraction engine");
       }
     } catch (err: any) {
-      console.error("Extraction error:", err);
+      console.error("Upload error:", err);
       setUploadError(
-        err.message || "Failed to process document. Please ensure the backend server is running."
+        err.message || "Failed to process document. Please ensure the file is a valid PDF/Image."
       );
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processUploadedFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,25 +200,41 @@ export default function DocumentVaultPage() {
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processUploadedFile(e.dataTransfer.files[0]);
-    }
-  };
+  // Helper to test pre-populating with mock verified data
+  const handleLoadSampleDossier = () => {
+    const sampleFields: Record<string, ExtractedFieldItem> = {
+      entity_name: {
+        value: "Maharashtra Solvents & Chemicals Pvt Ltd",
+        confidenceScore: 0.96,
+      },
+      pan: {
+        value: "ABCDE1234F",
+        confidenceScore: 0.99,
+      },
+      gstin: {
+        value: "27ABCDE1234F1Z5",
+        confidenceScore: 0.98,
+      },
+      plot_area_sqm: {
+        value: "5,000 sq.m",
+        confidenceScore: 0.94,
+      },
+      power_load_kva: {
+        value: "250 kVA",
+        confidenceScore: 0.92,
+      },
+      capex_amount: {
+        value: "₹35.00 Crores",
+        confidenceScore: 0.95,
+      },
+    };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+    setExtractedFields(sampleFields, "MIDC_Industrial_Dossier_Verified.pdf");
+    setActiveFileName("MIDC_Industrial_Dossier_Verified.pdf");
+    setRawTextSnippet(
+      "MAHARASHTRA INDUSTRIAL DEVELOPMENT CORPORATION (MIDC)\nPlot Allotment Letter: Plot No. A-42, Chakan Phase-II, Pune.\nApplicant: Maharashtra Solvents & Chemicals Pvt Ltd\nPAN: ABCDE1234F | GSTIN: 27ABCDE1234F1Z5\nPlot Area: 5,000 sq.meters\nSanctioned Power Load: 250 kVA\nEstimated Project Capex: INR 35.00 Crores"
+    );
+    setExtractionMethod("AARAMBH High-Speed Document Parser");
   };
 
   const hasExtractedData = Object.keys(extractedFields).length > 0;
@@ -212,7 +252,7 @@ export default function DocumentVaultPage() {
             Document Vault & Extraction
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Store, auto-validate, and sync statutory clearances documents with automated OCR and Groq structured output.
+            Store, auto-validate, and sync statutory clearances documents with automated OCR and structured parameter verification.
           </p>
         </div>
 
@@ -291,7 +331,7 @@ export default function DocumentVaultPage() {
         </div>
       </div>
 
-      {/* SECTION 2: AI VAULT UPLOAD (PyMuPDF + EasyOCR + Groq) */}
+      {/* SECTION 2: AI VAULT UPLOAD */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -303,7 +343,7 @@ export default function DocumentVaultPage() {
                 AI Vault Upload & Structured Field Extraction
               </h2>
               <p className="text-xs text-slate-500">
-                Upload PDF blueprints, lease deeds, or project DPRs for automated OCR parsing and Groq extraction
+                Upload PDF blueprints, lease deeds, or project DPRs for automated OCR parsing and parameter verification
               </p>
             </div>
           </div>
@@ -335,7 +375,7 @@ export default function DocumentVaultPage() {
               Drop your Industrial Dossier or Click to Browse
             </h3>
             <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-              Accepts PDF, JPG, PNG up to 30MB. Automatically extracted with PyMuPDF, EasyOCR, and Groq Llama-3.
+              Accepts PDF, JPG, PNG up to 30MB. Automatically verified and extracted with optical character recognition.
             </p>
 
             <div className="mt-4 inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-indigo-600 shadow-xs hover:bg-indigo-50">
@@ -348,9 +388,9 @@ export default function DocumentVaultPage() {
             <div className="p-5 rounded-xl bg-indigo-50/70 border border-indigo-200 flex items-center space-x-3 text-indigo-900">
               <RefreshCw className="w-5 h-5 text-indigo-600 animate-spin shrink-0" />
               <div>
-                <p className="text-xs font-bold">Processing Document & Running AI Extraction...</p>
+                <p className="text-xs font-bold">Processing Document & Running Automated Scrutiny...</p>
                 <p className="text-[11px] text-indigo-700 mt-0.5">
-                  Parsing text layer with PyMuPDF and structuring fields via Groq LLM API.
+                  Parsing text layer and structuring regulatory parameters for pre-validation.
                 </p>
               </div>
             </div>

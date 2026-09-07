@@ -8,15 +8,12 @@ import {
   Sparkles,
   Bot,
   User,
-  Settings,
-  Key,
   Minimize2,
   Maximize2,
   RefreshCw,
   Building2,
   ShieldCheck,
   CheckCircle2,
-  AlertCircle,
   HelpCircle,
 } from "lucide-react";
 
@@ -49,23 +46,8 @@ export default function AskAarambhChatbot() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [customApiKey, setCustomApiKey] = useState("");
-  const [savedKeyNotification, setSavedKeyNotification] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Load custom API key from localStorage if present
-  useEffect(() => {
-    try {
-      const savedKey = localStorage.getItem("aarambh_groq_api_key");
-      if (savedKey) {
-        setCustomApiKey(savedKey);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -73,24 +55,6 @@ export default function AskAarambhChatbot() {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen, isMinimized]);
-
-  const handleSaveApiKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (customApiKey.trim()) {
-        localStorage.setItem("aarambh_groq_api_key", customApiKey.trim());
-      } else {
-        localStorage.removeItem("aarambh_groq_api_key");
-      }
-      setSavedKeyNotification(true);
-      setTimeout(() => {
-        setSavedKeyNotification(false);
-        setShowSettings(false);
-      }, 1000);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = textToSend || input;
@@ -118,20 +82,19 @@ export default function AskAarambhChatbot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: history,
-          userApiKey: customApiKey || undefined,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to fetch AI response");
+        throw new Error(data.error || "Failed to fetch response");
       }
 
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         role: "assistant",
-        content: data.content || "I couldn't process your request right now. Please try again.",
+        content: data.content || "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
@@ -141,7 +104,7 @@ export default function AskAarambhChatbot() {
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: `⚠️ ${(err instanceof Error ? err.message : "Error connecting to AI service.")}\n\n*Tip: You can add your Groq API key in the settings icon (⚙️) above or in \`frontend/.env.local\`.*`,
+        content: "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at **1800-120-8040**.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -161,7 +124,7 @@ export default function AskAarambhChatbot() {
     setMessages([INITIAL_GREETING]);
   };
 
-  // Render markdown-like bold, headers, and lists cleanly
+  // Render clean formatting (headers, bold, lists)
   const renderMessageContent = (content: string) => {
     const lines = content.split("\n");
     return lines.map((line, idx) => {
@@ -233,7 +196,7 @@ export default function AskAarambhChatbot() {
             onClick={() => setIsOpen(true)}
             className="group flex items-center space-x-3 px-5 py-3 rounded-full bg-[#0B1728] hover:bg-[#0E2038] text-white shadow-2xl border-2 border-amber-400/80 hover:border-amber-400 hover:scale-105 transition-all duration-200 cursor-pointer"
           >
-            {/* Dual node / Robot pulse icon */}
+            {/* Pulse icon */}
             <div className="relative flex items-center justify-center">
               <div className="w-8 h-8 rounded-full bg-[#00A859] flex items-center justify-center text-white shadow-sm">
                 <Sparkles className="w-4 h-4" />
@@ -247,7 +210,7 @@ export default function AskAarambhChatbot() {
                   AARAMBH
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
-                  AI
+                  Online
                 </span>
               </div>
               <span className="text-[10px] text-slate-300">
@@ -277,25 +240,17 @@ export default function AskAarambhChatbot() {
                     AARAMBH
                   </h3>
                   <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                    Groq Llama 3.3
+                    Live Assistant
                   </span>
                 </div>
                 <p className="text-[10px] text-slate-300">
-                  Govt. of Maharashtra Single Window Assistant
+                  Govt. of Maharashtra Single Window Portal
                 </p>
               </div>
             </div>
 
             {/* Header Action Controls */}
             <div className="flex items-center space-x-1">
-              <button
-                type="button"
-                onClick={() => setShowSettings(!showSettings)}
-                title="Groq API Key Settings"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
               <button
                 type="button"
                 onClick={handleResetChat}
@@ -325,48 +280,6 @@ export default function AskAarambhChatbot() {
 
           {!isMinimized && (
             <>
-              {/* Settings Drawer (API Key Config) */}
-              {showSettings && (
-                <div className="p-4 bg-amber-50/95 border-b border-amber-200 text-xs shrink-0 animate-in slide-in-from-top-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-1.5 text-amber-900 font-bold">
-                      <Key className="w-3.5 h-3.5" />
-                      <span>Groq API Key Configuration</span>
-                    </div>
-                    <button
-                      onClick={() => setShowSettings(false)}
-                      className="text-slate-400 hover:text-slate-700 cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-amber-800 leading-tight mb-2.5">
-                    Enter your Groq API key to power real-time Llama 3.3 70B inference. (Also loads automatically from <code>frontend/.env.local</code> or root <code>.env</code>).
-                  </p>
-                  <form onSubmit={handleSaveApiKey} className="flex gap-2">
-                    <input
-                      type="password"
-                      value={customApiKey}
-                      onChange={(e) => setCustomApiKey(e.target.value)}
-                      placeholder="gsk_..."
-                      className="flex-1 px-3 py-1.5 rounded-lg border border-amber-300 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono"
-                    />
-                    <button
-                      type="submit"
-                      className="px-3 py-1.5 rounded-lg bg-[#0B1728] hover:bg-[#0E2038] text-white font-bold text-xs cursor-pointer"
-                    >
-                      Save Key
-                    </button>
-                  </form>
-                  {savedKeyNotification && (
-                    <p className="text-[10px] text-emerald-700 font-bold mt-1.5 flex items-center space-x-1">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                      <span>API key saved successfully!</span>
-                    </p>
-                  )}
-                </div>
-              )}
-
               {/* Messages Body */}
               <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/50">
                 {messages.map((msg) => (
@@ -420,7 +333,7 @@ export default function AskAarambhChatbot() {
                       <span className="w-2 h-2 rounded-full bg-[#00A859] animate-bounce [animation-delay:0.2s]"></span>
                       <span className="w-2 h-2 rounded-full bg-[#00A859] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[11px] text-slate-500 font-medium ml-1">
-                        AARAMBH is processing your query...
+                        AARAMBH is consulting statutory records...
                       </span>
                     </div>
                   </div>
@@ -465,7 +378,7 @@ export default function AskAarambhChatbot() {
                   </button>
                 </div>
                 <div className="mt-2 flex items-center justify-between text-[9px] text-slate-400 px-1">
-                  <span>Powered by Groq Cloud & Llama 3.3</span>
+                  <span>Single Window Clearance Portal</span>
                   <span>Govt. of Maharashtra</span>
                 </div>
               </div>
