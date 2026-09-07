@@ -1,40 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  --color-slate-dark: #0F172A;
-  --color-slate-dark-900: #0F172A;
-  --color-slate-dark-800: #1E293B;
-  --color-slate-dark-700: #334155;
+  --color-nsws-navy-950: #060D17;
+  --color-nsws-navy-900: #0B1728;
+  --color-nsws-navy-800: #0E2038;
+  --color-nsws-navy-700: #162A45;
+  --color-nsws-blue-accent: #1E40AF;
+  --color-nsws-gold: #FFB800;
+  --color-nsws-gold-hover: #E5A600;
+  --color-nsws-amber: #F59E0B;
+  --color-nsws-green: #00A859;
+  --color-nsws-green-hover: #008F4C;
+  --color-nsws-green-light: #ECFDF5;
+  --color-nsws-canvas: #F8FAFC;
+  --color-nsws-surface: #FFFFFF;
+  --color-nsws-border: #E2E8F0;
+
+  --color-slate-dark: #0B1728;
+  --color-slate-dark-900: #0B1728;
+  --color-slate-dark-800: #0E2038;
   --color-canvas: #F8FAFC;
-  --color-canvas-50: #F8FAFC;
-  --color-canvas-100: #F1F5F9;
-  --color-canvas-200: #E2E8F0;
-  --color-indigo-accent: #4F46E5;
-  --color-indigo-accent-hover: #4338CA;
-  --color-indigo-accent-light: #EEF2FF;
-  --color-status-green: #059669;
-  --color-status-amber: #D97706;
+  --color-indigo-accent: #1E40AF;
+  --color-status-green: #00A859;
+  --color-status-amber: #F59E0B;
   --color-status-rose: #E11D48;
   --color-status-purple: #9333EA;
+
   --font-inter: var(--font-inter), sans-serif;
 }
 
 :root {
   --background: #F8FAFC;
-  --foreground: #0F172A;
+  --foreground: #0B1728;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbars */
+/* Custom NSWS-like scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: #F1F5F9;
@@ -45,4 +55,18 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
+}
+
+/* Background Topographic Pattern for Hero */
+.bg-topo-pattern {
+  background-color: #0B1728;
+  background-image: radial-gradient(circle at 50% 50%, rgba(30, 64, 175, 0.15) 0%, transparent 60%),
+    radial-gradient(rgba(255, 184, 0, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px;
+}
+
+/* Cross pattern watermark for approval cards */
+.bg-cross-pattern {
+  background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+  background-size: 16px 16px;
 }

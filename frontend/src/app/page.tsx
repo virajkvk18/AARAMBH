@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   Compass,
@@ -17,15 +17,140 @@ import {
   Flame,
   Droplets,
   Zap,
-  FileCheck2,
   CheckCircle2,
   ChevronRight,
   Landmark,
   BadgeCheck,
+  Play,
+  PhoneCall,
+  HelpCircle,
+  MessageCircle,
+  Cpu,
+  Car,
+  Pill,
+  Shirt,
+  Wheat,
+  Sun,
+  FlaskConical,
+  Truck,
+  Dna,
+  Hotel,
+  X,
+  ExternalLink,
+  FileCheck,
+  ChevronDown,
 } from "lucide-react";
 
-// --- Mock Data Arrays ---
+// --- Sector Data (12 Sectors from Image 5) ---
+interface SectorItem {
+  id: string;
+  name: string;
+  approvalsCount: number;
+  icon: React.ComponentType<{ className?: string }>;
+  tag: string;
+  categoryKey: string;
+}
 
+const sectorsData: SectorItem[] = [
+  {
+    id: "manufacturing",
+    name: "Manufacturing & Heavy Engineering",
+    approvalsCount: 14,
+    icon: Factory,
+    tag: "MIDC / MPCB / DISH",
+    categoryKey: "manufacturing",
+  },
+  {
+    id: "automobile",
+    name: "Automobile & Auto Components",
+    approvalsCount: 12,
+    icon: Car,
+    tag: "Pune / Chakan / Aurangabad",
+    categoryKey: "automotive",
+  },
+  {
+    id: "pharma",
+    name: "Pharmaceuticals & Healthcare",
+    approvalsCount: 16,
+    icon: Pill,
+    tag: "FDA / MPCB / Toxic Clearance",
+    categoryKey: "pharma",
+  },
+  {
+    id: "food-agro",
+    name: "Food Processing & Agro Industries",
+    approvalsCount: 11,
+    icon: Wheat,
+    tag: "FSSAI / Pollution / Water",
+    categoryKey: "food",
+  },
+  {
+    id: "textile",
+    name: "Textile, Apparel & Technical Garments",
+    approvalsCount: 10,
+    icon: Shirt,
+    tag: "Solapur / Ichalkaranji / MIDC",
+    categoryKey: "textile",
+  },
+  {
+    id: "chemical",
+    name: "Chemicals & Petrochemicals",
+    approvalsCount: 18,
+    icon: FlaskConical,
+    tag: "Taloja / Roha / Hazardous",
+    categoryKey: "chemical",
+  },
+  {
+    id: "renewable-ev",
+    name: "Renewable Energy & EV Ecosystem",
+    approvalsCount: 9,
+    icon: Sun,
+    tag: "MEDA / MSEDCL / Battery",
+    categoryKey: "energy",
+  },
+  {
+    id: "it-ites",
+    name: "IT, ITES & Data Centers",
+    approvalsCount: 8,
+    icon: Cpu,
+    tag: "Navi Mumbai / Hinjewadi",
+    categoryKey: "it",
+  },
+  {
+    id: "logistics",
+    name: "Logistics, Warehousing & Cold Chain",
+    approvalsCount: 11,
+    icon: Truck,
+    tag: "JNPT / Bhiwandi / MIHAN",
+    categoryKey: "logistics",
+  },
+  {
+    id: "biotech",
+    name: "Biotechnology & Life Sciences",
+    approvalsCount: 15,
+    icon: Dna,
+    tag: "Bio-Safety / Environmental",
+    categoryKey: "biotech",
+  },
+  {
+    id: "electronics",
+    name: "Electronics System Design (ESDM)",
+    approvalsCount: 10,
+    icon: Zap,
+    tag: "EMC / Semiconductor Hub",
+    categoryKey: "electronics",
+  },
+  {
+    id: "tourism",
+    name: "Tourism, Hospitality & Eco-Resorts",
+    approvalsCount: 12,
+    icon: Hotel,
+    tag: "MTDC / CRZ / Local Body",
+    categoryKey: "hospitality",
+  },
+];
+
+// --- Benefits Data (6 items matching Image 2) ---
 interface BenefitItem {
   id: string;
   title: string;
@@ -47,23 +172,23 @@ const benefitsData: BenefitItem[] = [
     id: "status-tracking",
     title: "Real-Time Status Tracking",
     description:
-      "Stage-by-stage transparent milestone tracking with SLA timers and instant SMS/Email notifications on application progress.",
+      "Stage-by-stage transparent milestone tracking with statutory SLA countdown timers and automated SMS/Email notifications.",
     icon: Clock,
     tag: "100% Transparent",
   },
   {
     id: "secure-vault",
-    title: "Secure Document Repository (AI-Verified)",
+    title: "Secure Document Repository",
     description:
-      "DigiLocker-integrated digital locker with automated OCR pre-validation, eliminating duplicate uploads and document errors.",
+      "DigiLocker-integrated digital locker with automated AI extraction and pre-validation, eliminating duplicate uploads.",
     icon: ShieldCheck,
-    tag: "DigiLocker & OCR",
+    tag: "DigiLocker & AI OCR",
   },
   {
     id: "easy-renewals",
     title: "Easy Renewals",
     description:
-      "Automated advance alerts 90 days before clearance expiry with pre-populated one-click renewal applications.",
+      "Automated advance alerts 90 days prior to license expiry with one-click pre-populated renewal submissions.",
     icon: RefreshCw,
     tag: "Zero Downtime",
   },
@@ -71,7 +196,7 @@ const benefitsData: BenefitItem[] = [
     id: "fast-resolution",
     title: "Fast Query & Grievance Resolution",
     description:
-      "Direct interactive query response desk with time-bound statutory redressal under the Maharashtra Right to Public Services Act.",
+      "Direct interactive query desk with time-bound statutory redressal under the Maharashtra Right to Public Services Act.",
     icon: MessageSquareCheck,
     tag: "Time-Bound SLA",
   },
@@ -79,54 +204,13 @@ const benefitsData: BenefitItem[] = [
     id: "ai-kya",
     title: "AI-Powered Know Your Approvals",
     description:
-      "Intelligent rule engine dynamically determines the exact pre-establishment, pre-operational clearances and incentives tailored to your enterprise.",
+      "Intelligent rule engine dynamically determines the exact pre-establishment, operational clearances and incentives.",
     icon: Sparkles,
     tag: "Smart Clearance Wizard",
   },
 ];
 
-interface StatCounter {
-  id: string;
-  targetValue: number;
-  prefix?: string;
-  suffix?: string;
-  label: string;
-  sublabel: string;
-}
-
-const statsData: StatCounter[] = [
-  {
-    id: "avg-clearance",
-    targetValue: 28,
-    suffix: " Days",
-    label: "28-Day Avg Clearance",
-    sublabel: "Across all statutory industrial clearances",
-  },
-  {
-    id: "depts-integrated",
-    targetValue: 6,
-    suffix: " Key Departments",
-    label: "6 Departments Integrated",
-    sublabel: "MIDC, MPCB, Fire, DISH, Energy & Water",
-  },
-  {
-    id: "pre-validation",
-    targetValue: 100,
-    prefix: "",
-    suffix: "%",
-    label: "Zero-Rejection Pre-Validation",
-    sublabel: "AI pre-checks eliminate form errors upfront",
-  },
-  {
-    id: "investments",
-    targetValue: 14000,
-    prefix: "₹",
-    suffix: " Cr+",
-    label: "Investments Facilitated",
-    sublabel: "Fast-tracked projects across industrial zones",
-  },
-];
-
+// --- Key Approvals Data (Matching Image 3) ---
 interface KeyApproval {
   id: string;
   name: string;
@@ -135,48 +219,42 @@ interface KeyApproval {
   slaDays: number;
   category: "Pre-Establishment" | "Pre-Operation" | "Utility";
   description: string;
+  href: string;
 }
 
 const keyApprovalsData: KeyApproval[] = [
   {
     id: "midc-land",
-    name: "MIDC Land Allotment & Plan Approval",
+    name: "MIDC Land Allotment & Building Plan Approval",
     department: "Maharashtra Industrial Development Corporation (MIDC)",
     icon: Building2,
     slaDays: 15,
     category: "Pre-Establishment",
     description:
-      "Direct plot allotment, building layout approval, and provisional possession across Maharashtra industrial estates.",
+      "Direct plot allotment, building blueprint approval, and provisional possession across Maharashtra industrial estates.",
+    href: "/dashboard/prevalidation",
   },
   {
     id: "mpcb-cte",
-    name: "MPCB Consent to Establish (CTE)",
+    name: "MPCB Consent to Establish (CTE) & Operate (CTO)",
     department: "Maharashtra Pollution Control Board (MPCB)",
     icon: Factory,
     slaDays: 21,
     category: "Pre-Establishment",
     description:
       "Statutory environmental consent categorization (Red/Orange/Green/White) before commencement of industrial construction.",
+    href: "/dashboard/prevalidation",
   },
   {
     id: "fire-noc",
-    name: "Provisional Fire Safety NOC",
-    department: "State Directorate of Fire & Emergency Services",
+    name: "Provisional Fire Safety & Prevention NOC",
+    department: "Directorate of Maharashtra Fire Services",
     icon: Flame,
     slaDays: 14,
     category: "Pre-Establishment",
     description:
-      "Fire system compliance inspection, high-rise clearance, and provisional firefighting system installation certificate.",
-  },
-  {
-    id: "water-supply",
-    name: "Bulk Industrial Water Supply Allocation",
-    department: "MIDC / Water Resources Department",
-    icon: Droplets,
-    slaDays: 7,
-    category: "Utility",
-    description:
-      "Pipeline connectivity feasibility, raw & treated water volume quota reservation for industrial production.",
+      "Fire safety system compliance inspection, high-hazard factory clearance, and provisional firefighting certificate.",
+    href: "/dashboard/prevalidation",
   },
   {
     id: "dish-license",
@@ -187,168 +265,200 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Operation",
     description:
       "Industrial factory license approval, boiler registration, and occupational worker safety compliance sign-off.",
-  },
-  {
-    id: "power-feasi",
-    name: "HT/LT Power Sanction Feasibility",
-    department: "MSEDCL / Maharashtra State Electricity Distribution",
-    icon: Zap,
-    slaDays: 7,
-    category: "Utility",
-    description:
-      "High Tension / Low Tension electrical grid load feasibility, transformer installation NOC, and energized meter connection.",
+    href: "/dashboard/prevalidation",
   },
 ];
 
-// --- Count-Up Animation Component ---
-function AnimatedStat({ stat }: { stat: StatCounter }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTimestamp: number | null = null;
-    const duration = 1600; // 1.6 seconds count-up duration
-
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // Ease out cubic
-      const easeOutProgress = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easeOutProgress * stat.targetValue));
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        setCount(stat.targetValue);
-      }
-    };
-
-    requestAnimationFrame(step);
-  }, [stat.targetValue]);
-
-  return (
-    <div className="p-6 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
-      <div>
-        <div className="text-3xl sm:text-4xl font-black text-[#0F172A] tracking-tight">
-          {stat.prefix}
-          {count.toLocaleString()}
-          {stat.suffix}
-        </div>
-        <div className="mt-2 text-sm font-bold text-slate-800">{stat.label}</div>
-      </div>
-      <p className="mt-2 text-xs text-slate-500 leading-normal">{stat.sublabel}</p>
-    </div>
-  );
-}
+// --- Industrial Zones Data (Matching Image 4) ---
+const industrialZones = [
+  {
+    id: "pune",
+    name: "Pune Industrial Belt",
+    hubs: "Chakan, Ranjangaon, Talegaon, Hinjewadi",
+    focus: "Auto, EV, Engineering & IT Hub",
+    plotsAvailable: "1,240+ Acres",
+  },
+  {
+    id: "mmr",
+    name: "Mumbai Metropolitan Region",
+    hubs: "TTC, Taloja, Thane-Belapur, JNPT SEZ",
+    focus: "Chemicals, Pharma, Data Centers & Logistics",
+    plotsAvailable: "850+ Acres",
+  },
+  {
+    id: "aurangabad",
+    name: "AURIC Smart City (Chh. Sambhajinagar)",
+    hubs: "Shendra & Bidkin DMIC Nodes",
+    focus: "Smart Manufacturing, Electronics & Defense",
+    plotsAvailable: "2,100+ Acres",
+  },
+  {
+    id: "nagpur",
+    name: "Nagpur & Vidarbha Zone",
+    hubs: "MIHAN SEZ, Butibori Industrial Area",
+    focus: "Aviation, Defense, Logistics & Textiles",
+    plotsAvailable: "1,600+ Acres",
+  },
+];
 
 export default function HomePage() {
-  return (
-    <div className="w-full bg-[#F8FAFC]">
-      {/* 1. HERO SECTION */}
-      <section className="relative bg-gradient-to-b from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white py-16 sm:py-24 overflow-hidden border-b border-slate-800">
-        {/* Subtle grid pattern overlay */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4F46E5_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+  // State for search filter dropdown
+  const [searchCategory, setSearchCategory] = useState("All Approvals");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSector, setSelectedSector] = useState<SectorItem | null>(null);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [helpDrawerOpen, setHelpDrawerOpen] = useState(false);
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            {/* Gov Badge */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 text-xs font-semibold mb-6 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Maharashtra Single Window Clearance System (AARAMBH)</span>
+  return (
+    <div className="w-full bg-[#F8FAFC] min-h-screen">
+      {/* 1. HERO SECTION (NSWS Image 1 Style: Topo Navy Background, Bold Headlines, Unified Search & Gold CTA) */}
+      <section className="relative bg-[#0B1728] bg-topo-pattern text-white pt-12 pb-20 overflow-hidden border-b border-slate-800">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Maharashtra Gov Single Window Badge */}
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#0E2038] border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-[#00A859] animate-pulse"></span>
+              <span>AARAMBH • Government of Maharashtra Single Window Portal</span>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Explore, Apply and Get all Industrial Approvals Required in Maharashtra
+            {/* Main Hero Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+              Explore, Apply and Get all Approvals Required to Start your Business in{" "}
+              <span className="text-[#FFB800] underline decoration-amber-400/40 decoration-4 underline-offset-8">
+                Maharashtra
+              </span>
             </h1>
 
-            {/* Subheadline */}
-            <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
-              AARAMBH unifies and orchestrates end-to-end statutory clearances across Maharashtra state departments. Experience parallel departmental reviews, AI-verified document handling, and statutory SLA-backed deemed approvals in one transparent window.
+            {/* Sub-headline */}
+            <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto font-normal">
+              Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.
             </p>
 
-            {/* CTAs */}
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            {/* Unified Search Bar (Image 1 Style: White Card with Category Selector + Input + Green CTA Button) */}
+            <div className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800">
+              {/* Category Dropdown */}
+              <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-3">
+                <select
+                  value={searchCategory}
+                  onChange={(e) => setSearchCategory(e.target.value)}
+                  className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 px-3 py-2.5 rounded-xl border-0 focus:ring-2 focus:ring-[#00A859] cursor-pointer appearance-none pr-8"
+                >
+                  <option value="All Approvals">All Approvals</option>
+                  <option value="State Approvals">State Approvals (MH)</option>
+                  <option value="Central Approvals">Central Approvals</option>
+                  <option value="Government Schemes">Govt. Schemes & Subsidies</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* Search Text Input */}
+              <div className="flex-1 flex items-center px-3">
+                <Search className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search for approvals, licences, registrations, services e.g. MIDC, MPCB CTE..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-xs sm:text-sm text-slate-900 placeholder-slate-400 bg-transparent border-0 focus:outline-none focus:ring-0"
+                />
+              </div>
+
+              {/* Green Explore All Button */}
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition-all duration-150 hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs sm:text-sm tracking-wide shadow-md transition-all duration-150 shrink-0 hover:scale-[1.02]"
               >
-                <Compass className="w-4 h-4" />
-                <span>Know Your Approvals</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
+                <span>EXPLORE ALL</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
+            </div>
 
+            {/* Secondary Gold Callout Bar (Image 1: "Click Here & Know Your Approvals") */}
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
-                href="/dashboard/sla"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 font-semibold text-sm border border-slate-700 hover:border-slate-600 transition-all duration-150"
+                href="/dashboard/kya"
+                className="inline-flex items-center space-x-2.5 px-6 py-3 rounded-xl bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] font-black text-xs sm:text-sm tracking-wider uppercase shadow-lg shadow-amber-500/20 transition-all duration-150 hover:-translate-y-0.5"
               >
-                <Search className="w-4 h-4 text-slate-400" />
-                <span>Track Application Status</span>
+                <Compass className="w-4 h-4 text-[#0B1728]" />
+                <span>Click Here & Know Your Approvals</span>
+                <Sparkles className="w-4 h-4 text-[#0B1728]" />
               </Link>
+              <span className="text-xs text-slate-400 font-medium">
+                Get a customized list of clearances in under 3 minutes
+              </span>
             </div>
 
-            {/* Trust highlights */}
-            <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-wrap items-center gap-6 text-xs text-slate-400">
-              <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Zero Form Re-filing</span>
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Deemed Approval Guarantee</span>
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>DigiLocker Integrated Vault</span>
-              </div>
+            {/* Popular Search Chips */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-300">
+              <span className="text-slate-400 font-semibold">Popular Clearances:</span>
+              {[
+                { name: "MIDC Land Allotment", href: "/dashboard/prevalidation" },
+                { name: "MPCB CTE", href: "/dashboard/prevalidation" },
+                { name: "Fire NOC", href: "/dashboard/prevalidation" },
+                { name: "DISH Factory License", href: "/dashboard/prevalidation" },
+                { name: "HT Power Sanction", href: "/dashboard/dag" },
+              ].map((chip) => (
+                <Link
+                  key={chip.name}
+                  href={chip.href}
+                  className="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/80 hover:text-white transition-colors"
+                >
+                  {chip.name}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. STATS COUNTER ROW */}
-      <section className="relative -mt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {statsData.map((stat) => (
-            <AnimatedStat key={stat.id} stat={stat} />
-          ))}
-        </div>
-      </section>
-
-      {/* 3. BENEFITS GRID (How AARAMBH Accelerates Your Enterprise) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-3">
-            <BadgeCheck className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Single Window Advantages</span>
+      {/* 2. BENEFITS SECTION (Image 2 Style: Green BENEFITS Pill, "How does AARAMBH help you?", Orange Video Button, 6 Green Icon Cards & Assistance Box) */}
+      <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div>
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#ECFDF5] border border-emerald-200 text-[#00A859] text-xs font-black uppercase tracking-widest mb-3">
+              <BadgeCheck className="w-3.5 h-3.5 text-[#00A859]" />
+              <span>BENEFITS</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0B1728] tracking-tight">
+              How does AARAMBH help you?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
+              Eliminating procedural hurdles with an intelligent digital infrastructure engineered specifically for Maharashtra&apos;s industrial ecosystem.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            How does AARAMBH help you?
-          </h2>
-          <p className="text-sm text-slate-600 mt-3 leading-relaxed">
-            Eliminating procedural hurdles with an intelligent digital infrastructure engineered specifically for Maharashtra&apos;s industrial ecosystem.
-          </p>
+
+          {/* Orange "Play Video to Know More" CTA */}
+          <button
+            onClick={() => setVideoModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-5 py-3 rounded-full bg-[#F59E0B] hover:bg-[#D97706] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 self-start md:self-auto cursor-pointer"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>PLAY VIDEO TO KNOW MORE</span>
+          </button>
         </div>
 
-        {/* 6 Icon Cards in Responsive Grid (3 cols desktop, 1 col mobile) */}
+        {/* 6 Feature Cards with Green Circle Icons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {benefitsData.map((benefit) => {
             const IconComp = benefit.icon;
             return (
               <div
                 key={benefit.id}
-                className="bg-white rounded-2xl p-7 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-indigo-200 transition-all duration-200 flex flex-col justify-between group"
+                className="bg-white rounded-2xl p-7 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#4F46E5] group-hover:bg-[#4F46E5] group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-xs">
+                    {/* Green NSWS-Style Icon Circle */}
+                    <div className="w-13 h-13 rounded-2xl bg-[#ECFDF5] border border-emerald-100 text-[#00A859] group-hover:bg-[#00A859] group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-xs">
                       <IconComp className="w-6 h-6" />
                     </div>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors">
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-[#00A859] transition-colors">
                       {benefit.tag}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-[#0F172A] group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-[#0B1728] group-hover:text-[#00A859] transition-colors">
                     {benefit.title}
                   </h3>
 
@@ -357,123 +467,415 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center text-xs font-semibold text-indigo-600 group-hover:text-indigo-800">
-                  <span>Learn more</span>
-                  <ChevronRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center text-xs font-bold text-[#00A859] group-hover:text-[#008F4C]">
+                  <span>Explore Feature</span>
+                  <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
             );
           })}
         </div>
-      </section>
 
-      {/* 4. "KEY APPROVALS" PREVIEW GRID */}
-      <section className="bg-white border-y border-slate-200 py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        {/* Bottom Assistance Banner (Matching Image 2 helpline box) */}
+        <div className="mt-10 bg-[#0E2038] rounded-2xl p-6 sm:p-8 text-white border border-slate-700 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-400/20 border border-amber-400/40 text-amber-400 flex items-center justify-center shrink-0">
+              <PhoneCall className="w-7 h-7" />
+            </div>
             <div>
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider mb-2">
-                <Landmark className="w-3.5 h-3.5 text-slate-600" />
-                <span>Statutory Clearances Directory</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-                Key Industrial Approvals
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                Apply directly to major Maharashtra regulatory bodies through the common gateway.
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                Need Dedicated Single-Window Assistance?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                Call Toll-Free Investor Helpline <strong className="text-amber-300 font-mono">1800-120-8040</strong> (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.
               </p>
             </div>
-
-            <span className="inline-flex items-center space-x-1.5 text-sm font-semibold text-slate-400 cursor-not-allowed" aria-disabled="true">
-              <span>Approval directory unavailable in this demo</span>
-            </span>
           </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {keyApprovalsData.map((approval) => {
-              const IconComp = approval.icon;
-              return (
-                <div
-                  key={approval.id}
-                  className="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 hover:border-indigo-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Header: Icon + Category Badge + SLA */}
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-indigo-600 flex items-center justify-center shrink-0 shadow-xs">
-                        <IconComp className="w-5 h-5" />
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          {approval.category}
-                        </span>
-                        <span className="text-[11px] font-semibold text-[#059669]">
-                          SLA: {approval.slaDays} Working Days
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Title & Dept */}
-                    <h3 className="text-base font-bold text-[#0F172A] leading-snug">
-                      {approval.name}
-                    </h3>
-                    <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                      {approval.department}
-                    </p>
-
-                    {/* Description */}
-                    <p className="text-xs text-slate-600 mt-3 leading-relaxed">
-                      {approval.description}
-                    </p>
-                  </div>
-
-                  {/* Footer Link */}
-                  <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
-                    <span className="text-[11px] font-medium text-slate-400">
-                      Online Application
-                    </span>
-                    <span className="text-xs font-semibold text-slate-400" aria-disabled="true">
-                      Details unavailable in this demo
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="flex items-center space-x-3 shrink-0">
+            <Link
+              href="/dashboard/workflows"
+              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-600"
+            >
+              Raise a Query
+            </Link>
+            <Link
+              href="/dashboard/kya"
+              className="px-5 py-2.5 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs shadow-sm"
+            >
+              KYA Wizard →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 5. CALL TO ACTION / WIZARD BANNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] rounded-3xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl relative overflow-hidden">
-          <div className="absolute right-0 bottom-0 opacity-10 translate-x-12 translate-y-12 pointer-events-none">
-            <Compass className="w-96 h-96 text-indigo-400" />
-          </div>
+      {/* 3. KEY APPROVALS SECTION (Image 3 Style: Dark Slanted Left Container with "VIEW ALL APPROVALS" + 4 White Watermarked Approval Cards) */}
+      <section className="bg-white border-y border-slate-200 py-16 sm:py-20">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Left Dark Slanted Hero Container (Image 3) */}
+            <div className="lg:col-span-4 bg-[#0B1728] bg-topo-pattern text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xl border border-slate-800 relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold uppercase tracking-wider mb-4">
+                  <Landmark className="w-3.5 h-3.5" />
+                  <span>Statutory Clearances</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
+                  Key Approvals
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-300 mt-3 leading-relaxed">
+                  Fast-track your statutory compliance lifecycle across Maharashtra regulatory departments with standardized single-window processing.
+                </p>
+              </div>
 
-          <div className="max-w-2xl relative z-10">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">
-              Unsure which approvals you need?
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 text-white">
-              Launch the Intelligent Know Your Approvals (KYA) Wizard
-            </h2>
-            <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-              Answer 7 simple questions about your project scope, investment, plot dimensions, and utilities to generate your customized compliance roadmap and eligible subsidies.
-            </p>
-            <div className="mt-8">
+              {/* View All Approvals Orange CTA */}
+              <div className="mt-8 relative z-10">
+                <Link
+                  href="/dashboard/workflows"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:-translate-y-0.5"
+                >
+                  <span>VIEW ALL APPROVALS</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Side: 4 Elevated White Approval Cards (Image 3) */}
+            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {keyApprovalsData.map((approval) => {
+                const IconComp = approval.icon;
+                return (
+                  <div
+                    key={approval.id}
+                    className="bg-white bg-cross-pattern rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between group"
+                  >
+                    <div>
+                      {/* Header: Icon + Category + SLA */}
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 text-[#00A859] group-hover:bg-[#00A859] group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                            {approval.category}
+                          </span>
+                          <span className="text-[11px] font-bold text-[#00A859]">
+                            SLA: {approval.slaDays} Working Days
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Title & Department */}
+                      <h3 className="text-sm sm:text-base font-bold text-[#0B1728] leading-snug group-hover:text-[#00A859] transition-colors">
+                        {approval.name}
+                      </h3>
+                      <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
+                        {approval.department}
+                      </p>
+
+                      {/* Description */}
+                      <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">
+                        {approval.description}
+                      </p>
+                    </div>
+
+                    {/* Footer Action */}
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] font-medium text-slate-400">
+                        Online Application
+                      </span>
+                      <Link
+                        href={approval.href}
+                        className="inline-flex items-center text-xs font-bold text-[#00A859] group-hover:text-[#008F4C]"
+                      >
+                        <span>Apply Online</span>
+                        <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. 12-SECTOR APPROVAL EXPLORER (Image 5 Style: "Which approvals are required to start my business in Select Sectors ▾") */}
+      <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold uppercase tracking-wider mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>SECTOR SPECIFIC DIRECTORY</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0B1728] tracking-tight">
+            Which approvals are required to start my business in{" "}
+            <span className="text-[#00A859]">Maharashtra</span>?
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 mt-2">
+            Select your industry sector below to discover the exact statutory clearances, licenses, and applicable state incentives under Package Scheme of Incentives (PSI 2019).
+          </p>
+        </div>
+
+        {/* 12 Sector Cards Grid (Image 5) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {sectorsData.map((sector) => {
+            const IconComp = sector.icon;
+            const isSelected = selectedSector?.id === sector.id;
+            return (
+              <button
+                key={sector.id}
+                onClick={() => setSelectedSector(sector)}
+                className={`p-4 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+                  isSelected
+                    ? "bg-[#0B1728] text-white border-amber-400 shadow-lg scale-[1.02]"
+                    : "bg-white text-slate-800 border-slate-200 hover:border-emerald-300 hover:shadow-md"
+                }`}
+              >
+                <div>
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                      isSelected
+                        ? "bg-[#FFB800] text-[#0B1728]"
+                        : "bg-slate-50 text-[#00A859]"
+                    }`}
+                  >
+                    <IconComp className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-xs font-bold leading-tight">
+                    {sector.name}
+                  </h3>
+                </div>
+
+                <div className="mt-4 pt-2 border-t border-slate-100/40 flex items-center justify-between text-[11px]">
+                  <span className={isSelected ? "text-amber-300 font-bold" : "text-[#00A859] font-bold"}>
+                    {sector.approvalsCount} Approvals
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 ${isSelected ? "text-amber-300" : "text-slate-400"}`} />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sector Details Modal / Drawer when a sector is selected */}
+        {selectedSector && (
+          <div className="mt-8 bg-white rounded-2xl p-6 sm:p-8 border border-emerald-200 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#ECFDF5] border border-emerald-200 text-[#00A859] flex items-center justify-center shrink-0">
+                <selectedSector.icon className="w-7 h-7" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-black text-[#0B1728]">
+                    {selectedSector.name}
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#00A859]">
+                    {selectedSector.approvalsCount} Clearances Required
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-1">
+                  Key regulatory nodes: <strong className="text-slate-800">{selectedSector.tag}</strong>. Includes environmental categorization, factory safety, building approval, and utility connections.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3 shrink-0">
+              <button
+                onClick={() => setSelectedSector(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+              >
+                Close
+              </button>
               <Link
                 href="/dashboard/kya"
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm shadow-md transition-all duration-150"
+                className="px-5 py-2.5 rounded-xl bg-[#00A859] hover:bg-[#008F4C] text-white font-bold text-xs shadow-md"
               >
-                <Sparkles className="w-4 h-4 text-indigo-200" />
-                <span>Start Free KYA Assessment</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
+                Launch KYA for {selectedSector.name.split(" ")[0]} →
               </Link>
             </div>
           </div>
+        )}
+      </section>
+
+      {/* 5. MAHARASHTRA INDUSTRIAL ZONES & DISTRICTS (Image 4 Style) */}
+      <section className="bg-slate-50 border-t border-slate-200 py-16 sm:py-20">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div>
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider mb-2">
+                <Building2 className="w-3.5 h-3.5 text-slate-700" />
+                <span>STATE CLUSTERS</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0B1728] tracking-tight">
+                Explore Maharashtra Industrial Zones
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                Plug-and-play industrial infrastructure across prime MIDC estates and DMIC corridors.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/workflows"
+              className="inline-flex items-center space-x-2 text-xs font-bold text-[#00A859] hover:text-[#008F4C]"
+            >
+              <span>View All 36 Districts</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {industrialZones.map((zone) => (
+              <div
+                key={zone.id}
+                className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 uppercase">
+                    MIDC Zone
+                  </span>
+                  <h3 className="text-base font-bold text-[#0B1728] mt-3">
+                    {zone.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {zone.hubs}
+                  </p>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span>Primary Sectors:</span>
+                      <strong className="text-slate-800 text-right">{zone.focus}</strong>
+                    </div>
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span>Available Land:</span>
+                      <strong className="text-[#00A859]">{zone.plotsAvailable}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-100">
+                  <Link
+                    href="/dashboard/kya"
+                    className="text-xs font-bold text-[#00A859] hover:underline flex items-center justify-between"
+                  >
+                    <span>Check Approvals for this Zone</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* 6. FLOATING ACTION BUTTONS (Image 5 Bottom Right: Yellow Help Circle + Mitra Assistant) */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
+        {/* Yellow Help & FAQs Button */}
+        <button
+          onClick={() => setHelpDrawerOpen(true)}
+          title="Single Window Assistance & FAQs"
+          className="w-12 h-12 rounded-full bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] shadow-xl flex items-center justify-center font-black hover:scale-110 transition-transform duration-200 border-2 border-white cursor-pointer"
+        >
+          <HelpCircle className="w-6 h-6" />
+        </button>
+
+        {/* Navy/Green AI Mitra Assistant Floating Button */}
+        <Link
+          href="/dashboard/kya"
+          title="Launch Mitra AI Clearance Guide"
+          className="group flex items-center space-x-2.5 pl-4 pr-4 py-2.5 rounded-full bg-[#0B1728] hover:bg-[#0E2038] text-white shadow-2xl border border-slate-700 hover:scale-105 transition-transform duration-200"
+        >
+          <div className="relative">
+            <MessageCircle className="w-5 h-5 text-[#00A859]" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 animate-ping"></span>
+          </div>
+          <span className="text-xs font-bold tracking-wide">
+            Ask <span className="text-[#FFB800]">Mitra AI</span>
+          </span>
+        </Link>
+      </div>
+
+      {/* Video Modal */}
+      {videoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => setVideoModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-2 text-xs font-bold text-[#00A859] uppercase tracking-wider mb-2">
+              <Play className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+              <span>AARAMBH Walkthrough Video</span>
+            </div>
+            <h3 className="text-lg font-black text-[#0B1728]">
+              How Maharashtra Single Window Portal Works
+            </h3>
+            <p className="text-xs text-slate-600 mt-1 mb-4">
+              Watch how end-to-end statutory clearances across MIDC, MPCB, DISH, and Fire Services are parallelized and guaranteed with statutory deemed approvals.
+            </p>
+
+            <div className="aspect-video bg-[#0B1728] rounded-2xl flex flex-col items-center justify-center text-center p-6 text-white border border-slate-800">
+              <div className="w-16 h-16 rounded-full bg-[#00A859] flex items-center justify-center text-white mb-3 shadow-lg">
+                <Play className="w-8 h-8 fill-white ml-1" />
+              </div>
+              <p className="text-sm font-bold">AARAMBH Clearance Lifecycle Overview</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                Single Application • Zero Duplicate Uploads • Real-time SLA Countdown • 100% Deemed Approvals
+              </p>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setVideoModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold cursor-pointer"
+              >
+                Close Video
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help / FAQ Modal */}
+      {helpDrawerOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => setHelpDrawerOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-2 text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">
+              <HelpCircle className="w-4 h-4" />
+              <span>Helpdesk & FAQs</span>
+            </div>
+            <h3 className="text-lg font-black text-[#0B1728]">
+              Single Window Investor Assistance
+            </h3>
+            <div className="mt-4 space-y-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-bold text-slate-900">What is Deemed Approval?</p>
+                <p className="text-slate-600 mt-1">Under the Maharashtra Right to Public Services Act, if a department fails to grant or query a clearance within statutory SLA days, approval is automatically deemed granted.</p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-bold text-slate-900">How do I verify documents with AI Vault?</p>
+                <p className="text-slate-600 mt-1">Upload your Land Registry, PAN, or Blueprint to Document Vault. Our OCR automatically extracts plot dimensions, electricity loads, and auto-fills all departmental applications.</p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="font-bold text-slate-900">Helpline Numbers</p>
+                <p className="text-slate-600 mt-1">Toll-Free: <strong>1800-120-8040</strong> • Email: <strong>support.aarambh@maharashtra.gov.in</strong></p>
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setHelpDrawerOpen(false)}
+                className="px-5 py-2 rounded-xl bg-[#0B1728] text-white text-xs font-bold cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

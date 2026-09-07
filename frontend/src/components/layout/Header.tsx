@@ -1,120 +1,209 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Search,
-  Compass,
+  Building2,
+  Landmark,
+  Award,
   LogIn,
+  Pause,
+  Play,
+  ArrowRight,
   Menu,
   X,
+  Paperclip,
+  MapPin,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [tickerPaused, setTickerPaused] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full bg-[#0B1728] text-white border-b border-slate-800 shadow-md">
+      {/* 1. Main Navigation Bar */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo + Tagline */}
+          {/* Left Brand Identity: Logo + Govt. of Maharashtra */}
           <Link href="/" className="flex items-center space-x-3.5 group focus:outline-hidden">
-            {/* Government Crest / Brand Emblem */}
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0F172A] to-[#1E293B] border border-slate-700 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
-              <span className="font-extrabold text-xl tracking-wider text-indigo-400">आ</span>
+            {/* NSWS-style Interlinked Dual Node Icon in Emerald Green & White */}
+            <div className="w-11 h-11 rounded-xl bg-[#060D17] border border-slate-700 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
+              <div className="flex items-center space-x-1">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#00A859] shadow-xs shadow-emerald-500/50"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-white shadow-xs"></span>
+              </div>
             </div>
 
             <div className="flex flex-col">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-black tracking-tight text-[#0F172A]">
+              <div className="flex items-center space-x-1.5">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
                   AARAMBH
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-widest">
-                  PORTAL
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 uppercase tracking-wider">
+                  MH-SWS
                 </span>
               </div>
-              <p className="text-[11px] font-medium text-slate-600 leading-tight line-clamp-1 max-w-md">
-                Dept. of Skills, Employment, Entrepreneurship & Innovation, Govt. of Maharashtra
-              </p>
+              <span className="text-[11px] font-medium text-slate-300 tracking-wide">
+                Single Window System • Govt. of Maharashtra
+              </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
-            {/* Know Your Approvals */}
+          {/* Desktop Center Navigation (Exact NSWS Layout & Icons) */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            {/* 1. Central Approvals */}
             <Link
               href="/dashboard/kya"
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
+              className="flex items-center space-x-3 group text-left hover:text-amber-300 transition-colors"
             >
-              <Compass className="w-4 h-4 text-indigo-500" />
-              <span>Know Your Approvals</span>
+              <div className="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:text-amber-400 group-hover:border-amber-400/40 transition-colors">
+                <Landmark className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-amber-300">
+                  Central Approvals
+                </span>
+                <span className="text-[10px] text-slate-400 leading-tight">
+                  Issued by Ministries of Govt. of India
+                </span>
+              </div>
             </Link>
 
-            {/* Track Status */}
+            {/* 2. State Approvals (Maharashtra) */}
             <Link
-              href="/dashboard/sla"
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
+              href="/dashboard/workflows"
+              className="flex items-center space-x-3 group text-left hover:text-amber-300 transition-colors"
             >
-              <Search className="w-4 h-4 text-indigo-500" />
-              <span>Track Status</span>
+              <div className="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:text-amber-400 group-hover:border-amber-400/40 transition-colors">
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-amber-300">
+                  State Approvals
+                </span>
+                <span className="text-[10px] text-slate-400 leading-tight">
+                  Issued by Govt. of Maharashtra
+                </span>
+              </div>
             </Link>
 
+            {/* 3. Government Schemes */}
+            <Link
+              href="/schemes"
+              className="flex items-center space-x-3 group text-left hover:text-amber-300 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:text-amber-400 group-hover:border-amber-400/40 transition-colors">
+                <Award className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-amber-300">
+                  Government Schemes
+                </span>
+                <span className="text-[10px] text-slate-400 leading-tight">
+                  Avail incentives under PSI 2019
+                </span>
+              </div>
+            </Link>
           </nav>
 
-          {/* Desktop Right CTA: Login */}
-          <div className="hidden lg:flex items-center space-x-3">
+          {/* Desktop Right: NSWS Styled Amber Bordered Login Button */}
+          <div className="hidden lg:flex items-center">
             <Link
               href="/login"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-sm font-semibold shadow-xs hover:shadow-md transition-all duration-150"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-md bg-[#0B1728] hover:bg-[#12233D] border-2 border-amber-400 text-amber-400 font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 hover:shadow-amber-400/20"
             >
-              <LogIn className="w-4 h-4" />
-              <span>Investor Login / Sign Up</span>
+              <LogIn className="w-4 h-4 text-amber-400" />
+              <span>Login</span>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu trigger */}
           <div className="flex lg:hidden items-center space-x-2">
             <Link
               href="/login"
-              className="px-3 py-1.5 rounded-md bg-[#4F46E5] text-white text-xs font-semibold"
+              className="px-3 py-1.5 rounded-md border border-amber-400 text-amber-400 text-xs font-bold"
             >
               Login
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200 py-4 px-2 space-y-2 bg-white">
-            <div className="pt-2 border-t border-slate-100 space-y-1">
-              <Link
-                href="/dashboard/kya"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-slate-800 hover:bg-slate-50"
-              >
-                <Compass className="w-4 h-4 text-indigo-500" />
-                <span>Know Your Approvals</span>
-              </Link>
-              <Link
-                href="/dashboard/sla"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-slate-800 hover:bg-slate-50"
-              >
-                <Search className="w-4 h-4 text-indigo-500" />
-                <span>Track Status</span>
-              </Link>
+      {/* 2. NSWS News Ticker Bar (Exact Layout from Reference Image 1) */}
+      <div className="w-full bg-[#060D17] border-t border-slate-800/90 text-xs">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between">
+          {/* Ticker Content */}
+          <div className="flex items-center space-x-3 overflow-hidden pr-4">
+            <button
+              type="button"
+              onClick={() => setTickerPaused(!tickerPaused)}
+              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition-colors shrink-0 cursor-pointer"
+              title={tickerPaused ? "Resume Ticker" : "Pause Ticker"}
+            >
+              {tickerPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+            </button>
+
+            <div className="flex items-center space-x-2 text-slate-200 truncate text-[11px]">
+              <span className="text-amber-400 font-semibold shrink-0 hidden sm:inline">Notice:</span>
+              <span className="truncate">
+                Licenses, Standalone Clearances, Permissions, and NOCs shall be issued seamlessly under AARAMBH Single Window Portal 2.0 with Deemed Approval guarantee w.e.f. 2026.
+              </span>
+              <Paperclip className="w-3 h-3 text-amber-400 shrink-0 inline ml-1" />
             </div>
           </div>
-        )}
+
+          {/* Golden View All Button on Far Right (Exact Match) */}
+          <Link
+            href="/dashboard/kya"
+            className="shrink-0 inline-flex items-center space-x-1.5 px-4 h-10 bg-[#FFB800] hover:bg-[#E5A600] text-[#0B1728] font-black text-xs transition-colors -mr-4 sm:-mr-6 lg:-mr-8 px-5"
+          >
+            <span>View all</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+          </Link>
+        </div>
       </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-[#0D1B2A] border-t border-slate-800 p-4 space-y-3">
+          <Link
+            href="/dashboard/kya"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 text-xs font-bold text-white hover:bg-slate-800"
+          >
+            <span>Central Approvals</span>
+            <ChevronRight className="w-4 h-4 text-amber-400" />
+          </Link>
+
+          <Link
+            href="/dashboard/workflows"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 text-xs font-bold text-white hover:bg-slate-800"
+          >
+            <span>State Approvals (Govt. of Maharashtra)</span>
+            <ChevronRight className="w-4 h-4 text-amber-400" />
+          </Link>
+
+          <Link
+            href="/schemes"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/60 text-xs font-bold text-white hover:bg-slate-800"
+          >
+            <span>Government Schemes (PSI 2019)</span>
+            <ChevronRight className="w-4 h-4 text-amber-400" />
+          </Link>
+        </div>
+      )}
     </header>
   );
 }
