@@ -59,12 +59,12 @@ function getRuntimeApiKey(userKey?: string): string {
   return "";
 }
 
-// Order of priority models officially supported by Groq API
+// Order of priority models officially active on Groq API
 const CANDIDATE_MODELS = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "mixtral-8x7b-32768",
-  "gemma2-9b-it",
+  "llama3-70b-8192",
+  "llama3-8b-8192",
 ];
 
 export async function POST(req: NextRequest) {
@@ -93,6 +93,8 @@ export async function POST(req: NextRequest) {
 
     // Iterate through supported Groq models with automated fallback
     let lastErrorText = "";
+    const attemptedErrors: Record<string, string> = {};
+
     for (const model of CANDIDATE_MODELS) {
       try {
         const groqPayload = {
@@ -132,16 +134,32 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        lastErrorText = await response.text();
-        console.warn(`[AARAMBH Chat API] Model ${model} returned ${response.status}: ${lastErrorText}`);
+        const rawErr = await response.text();
+        let parsedMessage = rawErr;
+        try {
+          const errObj = JSON.parse(rawErr);
+          if (errObj?.error?.message) {
+            parsedMessage = errObj.error.message;
+          }
+        } catch {
+          // use rawErr
+        }
+
+        attemptedErrors[model] = `[${response.status}] ${parsedMessage}`;
+        lastErrorText = parsedMessage;
+        console.warn(`[AARAMBH Chat API] Model ${model} returned ${response.status}: ${parsedMessage}`);
       } catch (modelErr) {
-        lastErrorText = (modelErr instanceof Error ? modelErr.message : String(modelErr));
+        const errMsg = modelErr instanceof Error ? modelErr.message : String(modelErr);
+        attemptedErrors[model] = `[Exception] ${errMsg}`;
+        lastErrorText = errMsg;
         console.warn(`[AARAMBH Chat API] Model ${model} fetch failed:`, modelErr);
       }
     }
 
+    console.error("[AARAMBH Chat API] All models exhausted. Failures:", attemptedErrors);
+
     return NextResponse.json(
-      { error: `Groq API Error: ${lastErrorText || "Unable to reach Groq models."}` },
+      { error: `Groq Advisory Error: ${lastErrorText || "Service temporarily unavailable. Please retry."}` },
       { status: 502 }
     );
   } catch (err: unknown) {
