@@ -22,6 +22,7 @@ import {
   Building2,
   ShieldCheck,
   Sparkles,
+  CalendarCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -57,6 +58,7 @@ export default function DashboardLayout({
       { label: t("dash.prevalidation", "Pre-Validation Gate"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
       { label: t("dash.dag", "Parallel Clearance DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
       { label: t("dash.sla", "SLA Tracker"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+      { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       { label: t("grievances.title", "Grievance Desk"), href: "/dashboard/grievances", icon: MessageSquareWarning },
       { label: t("profile.title", "Investor Profile"), href: "/dashboard/profile", icon: User },
     ],
@@ -65,6 +67,7 @@ export default function DashboardLayout({
       { label: t("dash.overview", "Clearance Analytics"), href: "/dashboard", icon: LayoutDashboard },
       { label: t("dash.dag", "Live Department DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
       { label: t("dash.sla", "Department SLA Monitor"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+      { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       { label: t("dash.vault", "Dossier Verification Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
       { label: t("dash.prevalidation", "Cross-Doc AI Audit"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
       { label: t("grievances.title", "Dispute Resolution"), href: "/dashboard/grievances", icon: MessageSquareWarning },

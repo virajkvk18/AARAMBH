@@ -68,6 +68,28 @@ export interface GrievanceTicket {
   resolution?: string;
 }
 
+export interface InspectorOfficer {
+  department: string;
+  officerName: string;
+  designation: string;
+  contact: string;
+  status: "confirmed" | "attended";
+}
+
+export interface JointInspection {
+  id: string;
+  applicationRef: string;
+  scheduledDate: string;
+  timeSlot: string;
+  location: string;
+  status: "scheduled" | "in_progress" | "completed" | "report_issued";
+  inspectors: InspectorOfficer[];
+  checklist: { id: string; label: string; completed: boolean }[];
+  remarks?: string;
+  reportSummary?: string;
+  issuedAt?: string;
+}
+
 export type ApplicationStatus = "draft" | "submitted" | "under_review" | "approved";
 
 export interface EnterpriseState {
@@ -99,6 +121,9 @@ export interface EnterpriseState {
 
   // Grievances State
   grievanceTickets: GrievanceTicket[];
+
+  // Joint Inspections State
+  jointInspections: JointInspection[];
 
   // Actions
   setFormData: (
@@ -137,6 +162,13 @@ export interface EnterpriseState {
     status?: "open" | "in_progress" | "resolved";
   }) => void;
   resolveGrievanceTicket: (id: string, resolution?: string) => void;
+  scheduleJointInspection: (inspection: Omit<JointInspection, "id">) => void;
+  updateInspectionStatus: (
+    id: string,
+    status: JointInspection["status"],
+    reportSummary?: string
+  ) => void;
+  toggleChecklistItem: (inspectionId: string, checklistId: string) => void;
   resetAssessment: () => void;
   reset: () => void;
 }
@@ -291,6 +323,47 @@ const initialTickets: GrievanceTicket[] = [
   },
 ];
 
+const initialInspections: JointInspection[] = [
+  {
+    id: "JINSP-2026-0881",
+    applicationRef: "MH-CAF-2026-00412",
+    scheduledDate: "2026-09-15",
+    timeSlot: "10:30 AM - 01:30 PM",
+    location: "Plot No. A-42, MIDC Chakan Phase-II Industrial Area, Pune",
+    status: "scheduled",
+    inspectors: [
+      {
+        department: "Maharashtra Pollution Control Board (MPCB)",
+        officerName: "Er. Sunil Deshmukh",
+        designation: "Sub-Regional Officer (Pune-II)",
+        contact: "+91 98220 54321",
+        status: "confirmed",
+      },
+      {
+        department: "Directorate of Fire Services, Maharashtra",
+        officerName: "Chief Insp. Rajesh Shinde",
+        designation: "Divisional Fire Safety Inspector",
+        contact: "+91 98224 87654",
+        status: "confirmed",
+      },
+      {
+        department: "Directorate of Industrial Safety & Health (DISH)",
+        officerName: "Dr. Anjali Patil",
+        designation: "Joint Director of Industrial Safety",
+        contact: "+91 98231 11223",
+        status: "confirmed",
+      },
+    ],
+    checklist: [
+      { id: "chk-1", label: "Effluent treatment plant (ETP) civil layout and pipeline gradient verified", completed: true },
+      { id: "chk-2", label: "100 kL static fire water reservoir & high-pressure hydrant manifold inspected", completed: true },
+      { id: "chk-3", label: "Emergency fire exits, smoke ventilation shafts, and assembly points clear", completed: false },
+      { id: "chk-4", label: "Industrial plot boundary demarcation stones matched with MIDC master map", completed: true },
+    ],
+    remarks: "Joint site inspection to assess CTE Red category pollution mitigation, Fire NOC compliance, and factory layout safety.",
+  },
+];
+
 const initialState = {
   sector: "Food Processing" as SectorType,
   locationZone: "Chakan MIDC (Pune)",
@@ -333,6 +406,7 @@ const initialState = {
   },
 
   grievanceTickets: initialTickets,
+  jointInspections: initialInspections,
 };
 
 export const useEnterpriseStore = create<EnterpriseState>()(
@@ -516,6 +590,48 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           ...state,
           grievanceTickets: state.grievanceTickets.map((t) =>
             t.id === id ? { ...t, status: "resolved", resolution: resolution || "Resolved by department" } : t
+          ),
+        })),
+
+      scheduleJointInspection: (inspection) =>
+        set((state) => {
+          const newInspection: JointInspection = {
+            ...inspection,
+            id: `JINSP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+          };
+          return {
+            ...state,
+            jointInspections: [newInspection, ...state.jointInspections],
+          };
+        }),
+
+      updateInspectionStatus: (id, status, reportSummary) =>
+        set((state) => ({
+          ...state,
+          jointInspections: state.jointInspections.map((i) =>
+            i.id === id
+              ? {
+                  ...i,
+                  status,
+                  reportSummary: reportSummary || i.reportSummary,
+                  issuedAt: status === "report_issued" ? new Date().toISOString() : i.issuedAt,
+                }
+              : i
+          ),
+        })),
+
+      toggleChecklistItem: (inspectionId, checklistId) =>
+        set((state) => ({
+          ...state,
+          jointInspections: state.jointInspections.map((i) =>
+            i.id === inspectionId
+              ? {
+                  ...i,
+                  checklist: i.checklist.map((c) =>
+                    c.id === checklistId ? { ...c, completed: !c.completed } : c
+                  ),
+                }
+              : i
           ),
         })),
 
