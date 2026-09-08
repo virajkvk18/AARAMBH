@@ -30,6 +30,7 @@ import {
   Cpu,
   Leaf,
   Landmark,
+  FolderLock,
 } from "lucide-react";
 import {
   useEnterpriseStore,
@@ -140,7 +141,9 @@ export default function KYAWizardPage() {
     applicableIncentives: storedIncentives,
     policyIncentiveDetails: storedPolicyDetails,
     isAssessed: storedIsAssessed,
+    masterCAF,
     setFormData,
+    updateMasterCAF,
     setAssessmentResult,
     resetAssessment,
   } = useEnterpriseStore();
@@ -259,7 +262,7 @@ export default function KYAWizardPage() {
     setCalculatedIncentives(incentivesResult);
     setWorkflowDAG(dagResult);
 
-    // Save to global store
+    // Save to global store & sync Master CAF
     const selectedOption = sectorOptions.find((s) => s.value === selectedSectorKey);
     const sectorDisplay = (selectedOption ? selectedOption.label : "General Manufacturing") as SectorType;
 
@@ -272,6 +275,26 @@ export default function KYAWizardPage() {
       powerLoadKva,
       waterDemandKld,
       workforceSize,
+    });
+
+    updateMasterCAF({
+      locationDetails: {
+        ...masterCAF.locationDetails,
+        district: selectedDistrict,
+        taluka: selectedTaluka,
+        midcZoneName: locationZone,
+      },
+      projectSpecs: {
+        ...masterCAF.projectSpecs,
+        industryType: selectedSectorKey,
+        sector: sectorDisplay,
+        capitalInvestmentInr: capexCr * 10000000,
+        powerRequirementKw: powerLoadKva,
+        waterRequirementKlpd: waterDemandKld,
+        hazardCategory,
+        maxBuildingHeightMeters: buildingHeightMeters,
+        totalOccupants: workforceSize,
+      },
     });
 
     setAssessmentResult(riskTrack, storeClearances, incentiveSummaryList, incentivesResult);
@@ -756,7 +779,23 @@ export default function KYAWizardPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/dashboard/vault"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[#FFF2DF] hover:bg-[#FFE6C4] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-all"
+                >
+                  <FolderLock className="w-3.5 h-3.5 text-[#FE7251]" />
+                  <span>Upload Vault Dossier</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/dag"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+                >
+                  <Layers className="w-3.5 h-3.5 text-[#9B2A48]" />
+                  <span>DAG Pipeline</span>
+                </Link>
+
                 <Link
                   href="/dashboard/caf"
                   className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all"

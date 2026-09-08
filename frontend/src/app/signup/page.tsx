@@ -27,11 +27,11 @@ type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
 function SignupForm() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const redirectTo = searchParams.get("redirect") || "/dashboard/kya";
 
   const { loginAsApplicant, loginWithDigiLocker } = useAuth();
   const { t } = useLanguage();
-  const { setFormData, setExtractedFields } = useEnterpriseStore();
+  const { setFormData, setExtractedFields, updateMasterCAF, reset } = useEnterpriseStore();
 
   // Current Step: 1 = Initial Credentials, 2 = Entity Type, 3 = PAN Validation, 4 = Address
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -160,7 +160,10 @@ function SignupForm() {
   const handleCompleteRegistration = () => {
     if (!validateStep4()) return;
 
-    // 1. Sync full user profile with AuthContext
+    // 1. Reset prior assessment/documents for fresh registration
+    reset();
+
+    // 2. Sync full user profile with AuthContext
     loginAsApplicant(
       email,
       applicantName,
@@ -179,10 +182,44 @@ function SignupForm() {
       redirectTo
     );
 
-    // 2. Sync with Enterprise Store
+    // 3. Sync with Enterprise Store & Master CAF
     setFormData({
+      district,
       locationZone: `${district} MIDC Industrial Area`,
     });
+
+    updateMasterCAF({
+      companyDetails: {
+        companyName: businessName,
+        pan: panNumber.toUpperCase(),
+        gstin: `27${panNumber.toUpperCase()}1Z5`,
+        cin: legalEntity === "company" ? `U72200MH${new Date().getFullYear()}PTC${Math.floor(100000 + Math.random() * 900000)}` : "",
+        entityType: legalEntity === "company" ? "Pvt Ltd" : legalEntity === "llp" ? "LLP" : legalEntity === "proprietor" ? "Proprietorship" : "Partnership",
+        signatoryName: applicantName,
+        signatoryEmail: email,
+        signatoryMobile: mobile,
+      },
+      locationDetails: {
+        state: stateName,
+        district,
+        address: `${addressLine1}, ${addressLine2}`,
+        pincode: pinCode,
+        plotAreaSqMeters: 0,
+        midcZoneName: `${district} MIDC Industrial Area`,
+        midcPlotNo: "",
+      },
+      projectSpecs: {
+        industryType: "",
+        sector: "",
+        capitalInvestmentInr: 0,
+        powerRequirementKw: 0,
+        waterRequirementKlpd: 0,
+        hazardCategory: "Orange",
+        maxBuildingHeightMeters: 0,
+        totalOccupants: 0,
+      },
+    });
+
     setExtractedFields({
       entity_name: { value: businessName, confidenceScore: 1.0, hasConflict: false },
       pan: { value: panNumber.toUpperCase(), confidenceScore: 1.0, hasConflict: false },

@@ -132,37 +132,34 @@ export default function UnifiedCAFPage() {
   const handleSyncFromVault = () => {
     updateMasterCAF({
       companyDetails: {
+        ...masterCAF.companyDetails,
         companyName: extractedFields.entity_name?.value || masterCAF.companyDetails.companyName,
         pan: extractedFields.pan?.value || masterCAF.companyDetails.pan,
         gstin: extractedFields.gstin?.value || masterCAF.companyDetails.gstin,
-        cin: masterCAF.companyDetails.cin || "U24299MH2026PTC104921",
-        entityType: masterCAF.companyDetails.entityType || "Pvt Ltd",
-        signatoryName: masterCAF.companyDetails.signatoryName || "Rajesh V. Shinde",
-        signatoryEmail: masterCAF.companyDetails.signatoryEmail || "investor@maharashtra-solvents.com",
-        signatoryMobile: masterCAF.companyDetails.signatoryMobile || "+91 98220 12345",
       },
       locationDetails: {
-        state: "Maharashtra",
-        district: masterCAF.locationDetails.district || "Pune",
-        address: masterCAF.locationDetails.address || "Plot No. A-42, MIDC Chakan Phase-II Industrial Area",
-        pincode: masterCAF.locationDetails.pincode || "410501",
-        plotAreaSqMeters: parseFloat(extractedFields.plot_area_sqm?.value?.replace(/[^0-9.]/g, "") || "5000"),
-        midcZoneName: masterCAF.locationDetails.midcZoneName || "Chakan Industrial Zone Phase II (Pune)",
-        midcPlotNo: masterCAF.locationDetails.midcPlotNo || "Plot A-42/12",
+        ...masterCAF.locationDetails,
+        plotAreaSqMeters: extractedFields.plot_area_sqm?.value
+          ? parseFloat(extractedFields.plot_area_sqm.value.replace(/[^0-9.]/g, ""))
+          : masterCAF.locationDetails.plotAreaSqMeters,
       },
       projectSpecs: {
-        industryType: masterCAF.projectSpecs.industryType || "Chemical Manufacturing",
-        sector: masterCAF.projectSpecs.sector || "Specialty Chemicals & Bio-Solvents",
-        capitalInvestmentInr: parseFloat(extractedFields.capex_amount?.value?.replace(/[^0-9.]/g, "") || "350000000"),
-        powerRequirementKw: parseFloat(extractedFields.power_load_kva?.value?.replace(/[^0-9.]/g, "") || "250"),
-        waterRequirementKlpd: masterCAF.projectSpecs.waterRequirementKlpd || 20,
-        hazardCategory: "Red",
-        maxBuildingHeightMeters: 12.5,
-        totalOccupants: 120,
+        ...masterCAF.projectSpecs,
+        capitalInvestmentInr: extractedFields.capex_amount?.value
+          ? parseFloat(extractedFields.capex_amount.value.replace(/[^0-9.]/g, ""))
+          : masterCAF.projectSpecs.capitalInvestmentInr,
+        powerRequirementKw: extractedFields.power_load_kva?.value
+          ? parseFloat(extractedFields.power_load_kva.value.replace(/[^0-9.]/g, ""))
+          : masterCAF.projectSpecs.powerRequirementKw,
       },
     });
 
-    setSyncSuccessNotice("Successfully synchronized 14 statutory fields from Document Vault and DigiLocker!");
+    const extractedCount = Object.keys(extractedFields).length;
+    setSyncSuccessNotice(
+      extractedCount > 0
+        ? `Successfully synchronized ${extractedCount} verified fields from Document Vault and DigiLocker!`
+        : "Master CAF is synchronized with your registered enterprise profile."
+    );
     setTimeout(() => setSyncSuccessNotice(null), 4000);
   };
 

@@ -154,9 +154,55 @@ export default function ApplyApprovalPage({
     if (user) {
       if (user.name) updates.applicantName = user.name;
       if (user.email) updates.applicantEmail = user.email;
+      if (user.phone) updates.applicantMobile = user.phone;
+      if (user.enterpriseName) updates.businessName = user.enterpriseName;
+      if (user.panNumber) updates.businessPan = user.panNumber;
+      if (user.addressLine1) updates.commAddress = user.addressLine1;
+      if (user.pinCode) updates.commPincode = user.pinCode;
+      if (user.district) updates.commCity = user.district;
     }
 
     if (enterpriseStore) {
+      // Pull extracted or master CAF company data
+      if (enterpriseStore.extractedFields?.entity_name?.value) {
+        updates.businessName = enterpriseStore.extractedFields.entity_name.value;
+      } else if (enterpriseStore.masterCAF?.companyDetails?.companyName) {
+        updates.businessName = enterpriseStore.masterCAF.companyDetails.companyName;
+      }
+
+      if (enterpriseStore.extractedFields?.pan?.value) {
+        updates.businessPan = enterpriseStore.extractedFields.pan.value;
+      } else if (enterpriseStore.masterCAF?.companyDetails?.pan) {
+        updates.businessPan = enterpriseStore.masterCAF.companyDetails.pan;
+      }
+
+      if (enterpriseStore.extractedFields?.gstin?.value) {
+        updates.businessGstin = enterpriseStore.extractedFields.gstin.value;
+      } else if (enterpriseStore.masterCAF?.companyDetails?.gstin) {
+        updates.businessGstin = enterpriseStore.masterCAF.companyDetails.gstin;
+      }
+
+      if (enterpriseStore.masterCAF?.companyDetails?.signatoryName) {
+        updates.applicantName = enterpriseStore.masterCAF.companyDetails.signatoryName;
+      }
+      if (enterpriseStore.masterCAF?.companyDetails?.signatoryEmail) {
+        updates.applicantEmail = enterpriseStore.masterCAF.companyDetails.signatoryEmail;
+      }
+      if (enterpriseStore.masterCAF?.companyDetails?.signatoryMobile) {
+        updates.applicantMobile = enterpriseStore.masterCAF.companyDetails.signatoryMobile;
+      }
+      if (enterpriseStore.masterCAF?.locationDetails?.address) {
+        updates.commAddress = enterpriseStore.masterCAF.locationDetails.address;
+        updates.regOfficeAddress = enterpriseStore.masterCAF.locationDetails.address;
+      }
+      if (enterpriseStore.masterCAF?.locationDetails?.pincode) {
+        updates.commPincode = enterpriseStore.masterCAF.locationDetails.pincode;
+      }
+      if (enterpriseStore.masterCAF?.locationDetails?.district) {
+        updates.commCity = enterpriseStore.masterCAF.locationDetails.district;
+      }
+
+      // Specs
       if (enterpriseStore.capexCr) updates.capexFixedAssets = enterpriseStore.capexCr;
       if (enterpriseStore.powerLoadKva) updates.powerLoadRequired = enterpriseStore.powerLoadKva;
       if (enterpriseStore.powerLoadKva) updates.installedMotivePowerHp = enterpriseStore.powerLoadKva;
@@ -208,9 +254,40 @@ export default function ApplyApprovalPage({
     );
   }
 
-  // Handle Field Changes
+  // Handle Field Changes & Sync with Single Window Master CAF
   const handleInputChange = (fieldId: string, value: any) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
+
+    // Propagate changes to enterpriseStore masterCAF & formData for seamless cross-form auto-fetch
+    if (fieldId === "businessName" || fieldId === "businessPan" || fieldId === "businessGstin") {
+      enterpriseStore.updateMasterCAF({
+        companyDetails: {
+          ...enterpriseStore.masterCAF.companyDetails,
+          ...(fieldId === "businessName" ? { companyName: value } : {}),
+          ...(fieldId === "businessPan" ? { pan: value } : {}),
+          ...(fieldId === "businessGstin" ? { gstin: value } : {}),
+        },
+      });
+    } else if (fieldId === "commAddress" || fieldId === "commPincode" || fieldId === "commCity") {
+      enterpriseStore.updateMasterCAF({
+        locationDetails: {
+          ...enterpriseStore.masterCAF.locationDetails,
+          ...(fieldId === "commAddress" ? { address: value } : {}),
+          ...(fieldId === "commPincode" ? { pincode: value } : {}),
+          ...(fieldId === "commCity" ? { district: value } : {}),
+        },
+      });
+    } else if (fieldId === "capexFixedAssets") {
+      const num = parseFloat(value) || 0;
+      enterpriseStore.setFormData({ capexCr: num });
+    } else if (fieldId === "powerLoadRequired" || fieldId === "installedMotivePowerHp") {
+      const num = parseFloat(value) || 0;
+      enterpriseStore.setFormData({ powerLoadKva: num });
+    } else if (fieldId === "waterRequirementCmd" || fieldId === "freshWaterConsumption") {
+      const num = parseFloat(value) || 0;
+      enterpriseStore.setFormData({ waterDemandKld: num });
+    }
+
     if (errors[fieldId]) {
       setErrors((prev) => {
         const copy = { ...prev };
