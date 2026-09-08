@@ -191,34 +191,28 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#9B2A48] selection:text-white">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION (SINGLE CENTERED COMPOSITION WITH INDUSTRIAL BACKDROP)    */}
+      {/* 1. HERO SECTION (SINGLE CENTERED COMPOSITION WITH NEW INDUSTRIAL BACKDROP)*/}
       {/* ========================================================================= */}
-      <section className="relative bg-[#14050B] text-white border-b border-[#2D0D19] overflow-hidden pt-16 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-28">
-        {/* Night Industrial Image Backdrop - centered with low opacity */}
+      <section className="relative text-white overflow-hidden min-h-[78vh] lg:min-h-[85vh] flex items-center justify-center pt-16 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-28 border-b border-slate-800/40">
+        {/* New Provided Industrial Image Backdrop */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center opacity-25 mix-blend-luminosity pointer-events-none transition-opacity duration-700"
-          style={{ backgroundImage: "url('/images/aarambh-industrial-night.png')" }}
+          className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center sm:bg-[60%_center] lg:bg-center pointer-events-none transition-all duration-700"
+          style={{ backgroundImage: "url('/images/aarambh-industrial-hero.jpg')" }}
         />
 
-        {/* Sophisticated Dark Gradient Overlay for Readability */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#14050B]/90 via-[#16060E]/95 to-[#14050B] pointer-events-none" />
+        {/* Subtle Transparent Dark Gradient to enhance text legibility while keeping blue sky, mountains, Maharashtra outline & factory crystal clear */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0A1628]/50 via-[#0A1628]/25 to-[#0A1628]/60 pointer-events-none" />
 
-        {/* Subtle Vector Geo-Outline of Maharashtra in background - centered and subtle */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[650px] z-0 opacity-10 pointer-events-none hidden md:block bg-no-repeat bg-contain bg-center"
-          style={{ backgroundImage: "url('/images/maharashtra-outline.svg')" }}
-        />
-
-        <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
             {/* Government Badging */}
-            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#250C19] border border-[#FED17A]/50 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
+            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-xs shadow-[#FE7251]" />
               <span>AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA</span>
             </div>
 
             {/* Main Hero Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[3.3rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-xs">
+            <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-md">
               Everything your business needs to{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
                 start, operate & grow
@@ -227,14 +221,14 @@ export default function HomePage() {
             </h1>
 
             {/* Supporting Content */}
-            <p className="mt-5 text-base sm:text-lg text-[#E0C7BC] leading-relaxed max-w-3xl mx-auto font-normal">
+            <p className="mt-5 text-base sm:text-lg text-slate-100 leading-relaxed max-w-3xl mx-auto font-medium drop-shadow-sm">
               Discover approvals, apply online, manage documents, track applications, stay compliant and access government support — all from one place.
             </p>
 
             {/* Prominent Central Search / Discovery Bar */}
             <form
               onSubmit={handleHeroSearch}
-              className="mt-9 w-full max-w-3xl bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl shadow-black/50 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800"
+              className="mt-9 w-full max-w-3xl bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-2xl shadow-black/50 border-2 border-[#FE7251]/40 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800"
             >
               {/* Category Dropdown */}
               <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-2">
@@ -278,20 +272,20 @@ export default function HomePage() {
             <div className="mt-8 flex flex-col items-center justify-center gap-2.5">
               <Link
                 href={authHref("/dashboard/kya")}
-                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-[#9B2A48]/50 border border-[#FED17A]/40 transition-all duration-150 hover:scale-[1.02] cursor-pointer"
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-black/40 border border-[#FED17A]/50 transition-all duration-150 hover:scale-[1.02] cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
                 <span>FIND MY REQUIREMENTS</span>
                 <ArrowRight className="w-4 h-4 text-[#FED17A]" />
               </Link>
-              <span className="text-xs sm:text-sm text-[#E0C7BC] font-medium">
+              <span className="text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
                 Get a customized list of clearances relevant to your business.
               </span>
             </div>
 
             {/* Popular Clearance Chips */}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
-              <span className="text-[#FFCA7C] font-bold tracking-wide">Popular Clearances:</span>
+              <span className="text-[#FED17A] font-bold tracking-wide drop-shadow-xs">Popular Clearances:</span>
               {[
                 { name: "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
                 { name: "MPCB CTE", href: "/apply/mpcb-consent" },
@@ -302,7 +296,7 @@ export default function HomePage() {
                 <Link
                   key={chip.name}
                   href={authHref(chip.href)}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#250C19]/90 hover:bg-[#381326] text-white font-medium border border-[#521C35] hover:border-[#FE7251] hover:text-[#FFCA7C] shadow-xs transition-all duration-150"
+                  className="px-3.5 py-1.5 rounded-lg bg-[#16060E]/80 backdrop-blur-md hover:bg-[#250C19] text-white font-medium border border-[#FED17A]/30 hover:border-[#FE7251] hover:text-[#FFCA7C] shadow-md shadow-black/30 transition-all duration-150"
                 >
                   {chip.name}
                 </Link>
