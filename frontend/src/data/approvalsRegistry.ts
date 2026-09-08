@@ -5,7 +5,7 @@ export interface ApprovalMetadata {
   slug: string;
   title: string;
   department: string;
-  departmentCode: "MIDC" | "MPCB" | "MFIS" | "DISH";
+  departmentCode: "MIDC" | "MPCB" | "MFIS" | "DISH" | "FSSAI" | "LABOUR" | string;
   category: "Pre-Establishment" | "Pre-Operation";
   slaDays: number;
   feeRange: string;
@@ -14,7 +14,7 @@ export interface ApprovalMetadata {
   validityYears?: string;
   officialWebsite: string;
   helpline: string;
-  iconName: "Building2" | "Factory" | "Flame" | "ShieldCheck";
+  iconName: "Building2" | "Factory" | "Flame" | "ShieldCheck" | "Utensils" | "Store" | string;
 }
 
 export interface FormFieldOption {
@@ -981,6 +981,360 @@ export const dishFactoryLicenseConfig: ApprovalConfig = {
 };
 
 // ============================================================================
+// 5. FSSAI FOOD BUSINESS LICENSE & REGISTRATION
+// ============================================================================
+export const fssaiFoodConfig: ApprovalConfig = {
+  meta: {
+    id: "fssai-food-license",
+    slug: "fssai-food-license",
+    title: "FSSAI Food Business License & Registration",
+    department: "Food Safety and Standards Authority of India (FDA Maharashtra)",
+    departmentCode: "FSSAI",
+    category: "Pre-Operation",
+    slaDays: 14,
+    feeRange: "₹2,000 - ₹7,500 (Based on turnover & category)",
+    act: "Food Safety and Standards Act, 2006 & Rules 2011",
+    description:
+      "Mandatory statutory food license for restaurants, fast food outlets, cloud kitchens, cafes, food processing units, and bakeries operating in Maharashtra.",
+    validityYears: "1 to 5 Years Renewable",
+    officialWebsite: "https://foscos.fssai.gov.in",
+    helpline: "1800-112-100",
+    iconName: "Utensils",
+  },
+  aliases: ["fssai", "fssai-license", "fssai-food-license", "food-license", "restaurant-license", "food-business-license", "food"],
+  projectFields: [
+    {
+      id: "foodBusinessType",
+      label: "Food Establishment & Service Category",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Fast Food / Quick Service Restaurant (QSR)", value: "fast_food_qsr" },
+        { label: "Restaurant & Eating House (Dine-in)", value: "restaurant_dine_in" },
+        { label: "Cloud Kitchen / Dark Kitchen (Delivery Only)", value: "cloud_kitchen" },
+        { label: "Bakery, Confectionery & Pastry Unit", value: "bakery" },
+        { label: "Cafe / Juice Bar / Beverage Outlet", value: "cafe_beverage" },
+        { label: "Food Processing & Packaged Food Unit", value: "food_processing" },
+        { label: "Catering & Banquet Food Services", value: "catering_services" },
+      ],
+      helperText: "Select the operational structure that best matches your food enterprise.",
+      colSpan: 1,
+    },
+    {
+      id: "annualTurnoverCategory",
+      label: "Projected Annual Business Turnover",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Petty Food Business (Turnover up to ₹12 Lakhs / year)", value: "petty_fbo" },
+        { label: "State License (Turnover ₹12 Lakhs to ₹20 Crores / year)", value: "state_license" },
+        { label: "Central License (Turnover above ₹20 Crores / multi-state)", value: "central_license" },
+      ],
+      helperText: "Determines statutory fee tier and inspection category under FoSCoS.",
+      colSpan: 1,
+    },
+    {
+      id: "kitchenAreaSqFt",
+      label: "Kitchen & Food Prep Carpet Area (Sq. Ft.)",
+      type: "number",
+      placeholder: "e.g. 450",
+      required: true,
+      unit: "Sq. Ft.",
+      helperText: "Must feature separate wash basins, drainage channels, and stainless food contact surfaces.",
+      colSpan: 1,
+    },
+    {
+      id: "dailyCustomerSeating",
+      label: "Daily Customer / Order Volume",
+      type: "number",
+      placeholder: "e.g. 200",
+      required: true,
+      unit: "Per Day",
+      helperText: "Estimated average daily footfall or order delivery transactions.",
+      colSpan: 1,
+    },
+    {
+      id: "foodSafetySupervisorName",
+      label: "Certified FoSTaC Food Safety Supervisor Name",
+      type: "text",
+      placeholder: "e.g. Rajesh Patil (FoSTaC Reg: MH/FSS/89201)",
+      required: true,
+      helperText: "Name and registration ID of staff trained under Food Safety Training & Certification.",
+      colSpan: 2,
+    },
+    {
+      id: "waterSourceType",
+      label: "Drinking & Cooking Water Supply Source",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Municipal Potable Water Supply (MCGM / PMC / PCMC / MIDC)", value: "municipal" },
+        { label: "Commercial RO + UV Commercial Filtration System", value: "ro_purified" },
+        { label: "Dedicated Borewell with NABL Potability Test Report", value: "borewell_tested" },
+        { label: "Licensed Commercial Potable Water Tanker", value: "commercial_tanker" },
+      ],
+      colSpan: 1,
+    },
+    {
+      id: "oilGreaseTrapProvision",
+      label: "Oil & Grease Trap Drainage Installed?",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Yes — Dual-Chamber Commercial Grease Interceptor Fitted", value: "yes_grease_trap" },
+        { label: "No — Under Installation Prior to Commercial Opening", value: "in_progress" },
+      ],
+      helperText: "Mandatory for all kitchens discharging cooking oils and fats to municipal drains.",
+      colSpan: 1,
+    },
+    {
+      id: "wasteManagementPlan",
+      label: "Wet & Dry Food Waste Segregation Plan",
+      type: "textarea",
+      placeholder: "Describe daily organic wet waste composting/disposal and tie-up with local municipal garbage pickup...",
+      required: true,
+      colSpan: 2,
+    },
+  ],
+  complianceDeclarations: [
+    {
+      id: "fssai_sanitation_norms",
+      title: "Adherence to Schedule 4 General Hygienic & Sanitary Practices",
+      description: "Applicant affirms all food storage, preparation, refrigeration (< 5°C), cooking (> 75°C), and distribution adhere to Schedule 4 hygiene standards under FSS Regulations.",
+      statutoryAct: "Schedule 4, Food Safety and Standards (Licensing & Registration) Regulations, 2011",
+      mandatory: true,
+    },
+    {
+      id: "fssai_potable_water",
+      title: "IS 10500 Potable Water Quality Conformance",
+      description: "Water used for cooking, washing utensils, and ice preparation complies with IS 10500 drinking water parameters, tested semi-annually at an accredited lab.",
+      statutoryAct: "Section 26 of Food Safety and Standards Act, 2006",
+      mandatory: true,
+    },
+    {
+      id: "fssai_medical_fitness",
+      title: "Annual Medical Fitness & Typhoid Vaccination of Food Handlers",
+      description: "All chefs, kitchen workers, and service staff undergo annual medical checkups, skin examinations, and typhoid/cholera vaccination records maintained on site.",
+      statutoryAct: "Rule 2.1.2 of FSS (Licensing and Registration of Food Businesses) Regulations, 2011",
+      mandatory: true,
+    },
+  ],
+  documents: [
+    {
+      id: "fssai_kitchen_layout",
+      title: "Kitchen & Dining Floor Blueprint Layout Plan",
+      description: "Detailed layout showing receiving area, dry store, cold storage, cookline, dishwashing, and waste exit.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf", ".jpg", ".png"],
+    },
+    {
+      id: "water_test_report_nabl",
+      title: "NABL Laboratory Chemical & Bacteriological Water Test Report",
+      description: "Certified potability testing report conforming to IS:10500 standard issued within last 6 months.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf"],
+    },
+    {
+      id: "fostac_training_cert",
+      title: "FoSTaC Food Safety Supervisor Certificate",
+      description: "Official Food Safety Training and Certification issued by FSSAI-recognized training institute.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf"],
+    },
+    {
+      id: "premises_possession_fssai",
+      title: "Premises Possession Proof (Rent Agreement / MIDC Lease / Electricity Bill)",
+      description: "Registered rent deed with landlord NOC for running a food establishment or utility bill.",
+      mandatory: true,
+      maxSizeMb: 10,
+      allowedFormats: [".pdf"],
+    },
+    {
+      id: "medical_fitness_staff",
+      title: "Form-IX Food Handler Medical Fitness Certificates",
+      description: "Medical fitness certificates signed by registered MBBS medical practitioner for food handlers.",
+      mandatory: false,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf"],
+    },
+  ],
+  feeCalculator: (values) => {
+    const category = values.annualTurnoverCategory || "state_license";
+    let baseFee = 3000;
+    if (category === "petty_fbo") baseFee = 500;
+    else if (category === "central_license") baseFee = 7500;
+    const cess = Math.round(baseFee * 0.18);
+    return {
+      baseFee,
+      cess,
+      total: baseFee + cess,
+      explanation: `Calculated from FSSAI FoSCoS Gazette Fee Schedule (${category}) + 18% GST.`,
+    };
+  },
+};
+
+// ============================================================================
+// 6. MAHARASHTRA SHOPS & ESTABLISHMENTS REGISTRATION (GUMASTA)
+// ============================================================================
+export const gumastaShopConfig: ApprovalConfig = {
+  meta: {
+    id: "gumasta-license",
+    slug: "gumasta-license",
+    title: "Maharashtra Shops & Establishments Registration (Gumasta)",
+    department: "Labour Department, Government of Maharashtra",
+    departmentCode: "LABOUR",
+    category: "Pre-Establishment",
+    slaDays: 7,
+    feeRange: "₹0 - ₹1,500 (Auto-intimation receipt free for <10 employees)",
+    act: "Maharashtra Shops and Establishments (Regulation of Employment) Act, 2017",
+    description:
+      "Mandatory municipal statutory trade registration certificate (Gumasta) for operating commercial establishments, restaurants, retail shops, and corporate branch offices in Maharashtra.",
+    validityYears: "Lifetime / Permanent Registration",
+    officialWebsite: "https://lms.mahaonline.gov.in",
+    helpline: "022-26573891",
+    iconName: "Store",
+  },
+  aliases: ["gumasta", "gumasta-license", "shop-act", "shops-establishment", "shop-and-establishment", "labour-license", "gumasta-registration"],
+  projectFields: [
+    {
+      id: "establishmentCategory",
+      label: "Commercial Establishment Type",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Restaurant / Cafe / Eating House / QSR", value: "restaurant_eating_house" },
+        { label: "Commercial Office / IT / Professional Services", value: "commercial_office" },
+        { label: "Retail Shop / Departmental Store / Supermarket", value: "retail_shop" },
+        { label: "Warehouse / Distribution & Logistics Center", value: "warehouse_logistics" },
+        { label: "Hospital / Healthcare / Diagnostic Center", value: "healthcare" },
+      ],
+      colSpan: 1,
+    },
+    {
+      id: "totalEmployeeCount",
+      label: "Total Number of Employed Workers (Male + Female)",
+      type: "number",
+      placeholder: "e.g. 12",
+      required: true,
+      unit: "Employees",
+      helperText: "Units with less than 10 workers receive an instant Intimation Receipt Form F.",
+      colSpan: 1,
+    },
+    {
+      id: "weeklyOffDay",
+      label: "Designated Weekly Off Day for Workers",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Monday", value: "monday" },
+        { label: "Tuesday", value: "tuesday" },
+        { label: "Wednesday", value: "wednesday" },
+        { label: "Thursday", value: "thursday" },
+        { label: "Friday", value: "friday" },
+        { label: "Saturday", value: "saturday" },
+        { label: "Sunday", value: "sunday" },
+        { label: "Rotational 7-Day Shift Roster (24x7 Permitted)", value: "rotational_shift" },
+      ],
+      colSpan: 1,
+    },
+    {
+      id: "localMunicipalCorporation",
+      label: "Local Municipal Corporation / Council Jurisdiction",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Brihanmumbai Municipal Corporation (BMC / MCGM)", value: "bmc_mumbai" },
+        { label: "Pune Municipal Corporation (PMC)", value: "pmc_pune" },
+        { label: "Pimpri Chinchwad Municipal Corporation (PCMC)", value: "pcmc_pune" },
+        { label: "Navi Mumbai Municipal Corporation (NMMC)", value: "nmmc_navi_mumbai" },
+        { label: "Thane Municipal Corporation (TMC)", value: "tmc_thane" },
+        { label: "Nagpur Municipal Corporation (NMC)", value: "nmc_nagpur" },
+        { label: "Chhatrapati Sambhaji Nagar Municipal Corp (CSNMC)", value: "csnmc" },
+        { label: "Nashik Municipal Corporation (NMC)", value: "nmc_nashik" },
+        { label: "Other Maharashtra Rural Gram Panchayat / Municipal Council", value: "other_council" },
+      ],
+      colSpan: 1,
+    },
+    {
+      id: "devanagariSignboardAffirmed",
+      label: "Marathi Devanagari Name Signboard Compliance",
+      type: "select",
+      required: true,
+      options: [
+        { label: "Yes — Prominent Marathi Devanagari Signboard Erected (Rule 35)", value: "yes_signboard" },
+        { label: "Under Fabrication — Undertaking to install before commencement", value: "in_progress" },
+      ],
+      helperText: "Mandatory under Maharashtra Shops & Establishments Amendment Act.",
+      colSpan: 2,
+    },
+  ],
+  complianceDeclarations: [
+    {
+      id: "gumasta_labour_wages",
+      title: "Minimum Wages Act & 9-Hour Daily Work Limit Undertaking",
+      description: "Applicant affirms payment of statutory minimum wages, overtime allowances at double rate, and adherence to 9 hours maximum daily work schedule.",
+      statutoryAct: "Maharashtra Shops and Establishments Act, 2017 & Minimum Wages Act, 1948",
+      mandatory: true,
+    },
+    {
+      id: "gumasta_marathi_signboard",
+      title: "Devanagari Marathi Font Precedence on Business Board",
+      description: "Applicant affirms the shop nameboard prominently displays the establishment name in Marathi script in equal or larger font size than English.",
+      statutoryAct: "Section 36-A of Maharashtra Shops & Establishments Act, 2017",
+      mandatory: true,
+    },
+  ],
+  documents: [
+    {
+      id: "shop_front_photo_signboard",
+      title: "Establishment Front Photo with Devanagari Signboard Visible",
+      description: "Clear photograph of the entrance displaying shop front and Marathi signage.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".jpg", ".png", ".pdf"],
+    },
+    {
+      id: "gumasta_address_proof",
+      title: "Premises Address Proof (Electricity Bill / Property Tax Receipt)",
+      description: "Latest utility bill or property tax receipt for the business address.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf", ".jpg"],
+    },
+    {
+      id: "gumasta_partnership_incorporation",
+      title: "Incorporation Certificate / Partnership Deed / Proprietor Aadhaar",
+      description: "Entity legal constitution proof and identity proof of authorized applicant.",
+      mandatory: true,
+      maxSizeMb: 5,
+      allowedFormats: [".pdf"],
+    },
+  ],
+  feeCalculator: (values) => {
+    const count = Number(values.totalEmployeeCount) || 5;
+    let baseFee = 0;
+    let explanation = "Self-Intimation Receipt Form F (0 to 9 Employees) - No Government Fee.";
+    if (count >= 10 && count <= 25) {
+      baseFee = 1000;
+      explanation = `Statutory Registration Fee (10 to 25 Employees): ₹1,000.`;
+    } else if (count > 25) {
+      baseFee = 1500;
+      explanation = `Statutory Registration Fee (>25 Employees): ₹1,500.`;
+    }
+    const cess = Math.round(baseFee * 0.18);
+    return {
+      baseFee,
+      cess,
+      total: baseFee + cess,
+      explanation,
+    };
+  },
+};
+
+// ============================================================================
 // REGISTRY MAP AND LOOKUP HELPERS
 // ============================================================================
 export const allApprovalsList: ApprovalConfig[] = [
@@ -988,6 +1342,8 @@ export const allApprovalsList: ApprovalConfig[] = [
   mpcbConsentConfig,
   fireSafetyNocConfig,
   dishFactoryLicenseConfig,
+  fssaiFoodConfig,
+  gumastaShopConfig,
 ];
 
 export const approvalsRegistry: Record<string, ApprovalConfig> = {
@@ -996,6 +1352,8 @@ export const approvalsRegistry: Record<string, ApprovalConfig> = {
   "mpcb-consent": mpcbConsentConfig,
   "fire-safety-noc": fireSafetyNocConfig,
   "dish-factory-license": dishFactoryLicenseConfig,
+  "fssai-food-license": fssaiFoodConfig,
+  "gumasta-license": gumastaShopConfig,
 
   // Aliases and Legacy IDs
   "midc-land": midcLandConfig,
@@ -1004,8 +1362,21 @@ export const approvalsRegistry: Record<string, ApprovalConfig> = {
   "mpcb": mpcbConsentConfig,
   "fire-noc": fireSafetyNocConfig,
   "fire": fireSafetyNocConfig,
+  "fire-safety": fireSafetyNocConfig,
   "dish-license": dishFactoryLicenseConfig,
   "dish": dishFactoryLicenseConfig,
+  "factory-license": dishFactoryLicenseConfig,
+  "fssai": fssaiFoodConfig,
+  "fssai-license": fssaiFoodConfig,
+  "food-license": fssaiFoodConfig,
+  "restaurant-license": fssaiFoodConfig,
+  "food": fssaiFoodConfig,
+  "food-business": fssaiFoodConfig,
+  "gumasta": gumastaShopConfig,
+  "shop-act": gumastaShopConfig,
+  "shops-establishment": gumastaShopConfig,
+  "labour-license": gumastaShopConfig,
+  "gumasta-registration": gumastaShopConfig,
 };
 
 export function getApprovalConfig(slugOrId: string): ApprovalConfig | null {
@@ -1013,3 +1384,4 @@ export function getApprovalConfig(slugOrId: string): ApprovalConfig | null {
   const normalized = slugOrId.toLowerCase().trim();
   return approvalsRegistry[normalized] || null;
 }
+

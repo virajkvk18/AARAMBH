@@ -67,8 +67,37 @@ RESPONSE STYLE & RULES:
 6. One Clarifying Question for Broad Topics:
    - When a user asks an open-ended question, give the quick baseline and ask ONE helpful clarifying question (such as sector, scale, or location).
 
-7. Multilingual Support:
-   - English ("en"), Marathi ("mr"), Hindi ("hi"). If user writes in Marathi or Hindi, reply in that language.`;
+7. Interactive Navigation Action Tags:
+   - When a user asks about starting a specific business (e.g. food restaurant, EV manufacturing, chemical unit, warehouse, textile, hotel, shop, IT startup) or asks how to apply for approvals/incentives, ALWAYS include direct actionable navigation tags at the end of your response using this exact syntax:
+     [action:/apply/<approval-id>|<Title>|<Subtitle or Department>]
+     or
+     [action:/dashboard/<module>|<Title>|<Subtitle>]
+
+   - Direct Approval Routes Available:
+     • Fast Food / Restaurant / Cafe / Hotel / Cloud Kitchen:
+       [action:/apply/fssai-food-license|Apply for FSSAI Food License|FDA Maharashtra • 14 Days SLA]
+       [action:/apply/gumasta-license|Apply for Gumasta Shop Act Registration|Labour Dept • 7 Days SLA]
+       [action:/apply/fire-safety-noc|Apply for Fire Safety NOC|Directorate of Fire Services • 10 Days SLA]
+       [action:/dashboard/kya|Run Restaurant KYA Checklist|Know Your Approvals Wizard]
+     • Factory / Manufacturing / Industrial Unit:
+       [action:/apply/dish-factory-license|Apply for DISH Factory License|DISH Maharashtra • 15 Days SLA]
+       [action:/apply/mpcb-consent|Apply for MPCB Consent to Establish|MPCB • 21 Days SLA]
+       [action:/apply/fire-safety-noc|Apply for Fire Safety NOC|Fire Services • 10 Days SLA]
+       [action:/apply/midc-land-allotment|Apply for MIDC Land Allotment|MIDC • 15 Days SLA]
+     • Warehouse / Logistics:
+       [action:/apply/midc-land-allotment|Apply for MIDC Warehouse Land|MIDC • 15 Days SLA]
+       [action:/apply/fire-safety-noc|Apply for Fire Safety NOC|Fire Services • 10 Days SLA]
+       [action:/apply/gumasta-license|Apply for Gumasta Registration|Labour Dept • 7 Days SLA]
+     • EV / Renewable / Electronics:
+       [action:/apply/mpcb-consent|Apply for MPCB Green Consent|MPCB • 21 Days SLA]
+       [action:/apply/dish-factory-license|Apply for DISH Factory License|DISH Maharashtra • 15 Days SLA]
+       [action:/dashboard/kya|Check EV Policy 2021 Subsidies|Package Scheme of Incentives]
+     • General Exploration & Tracking:
+       [action:/dashboard/kya|Run KYA Approval Wizard|Get Customized Statutory Roadmap]
+       [action:/dashboard/prevalidation|AI Pre-Validation Gatekeeper|Pre-Check Application Readiness]
+
+8. Multilingual Support:
+   - English ("en"), Marathi ("mr"), Hindi ("hi"). If user writes in Marathi or Hindi, reply in that language (action button text can also be localized or kept bilingual).`;
 
 function getRuntimeApiKey(userKey?: string): string {
   if (userKey && userKey.trim().startsWith("gsk_")) {

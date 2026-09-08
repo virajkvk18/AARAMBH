@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   MessageCircle,
   X,
@@ -15,6 +16,16 @@ import {
   ShieldCheck,
   CheckCircle2,
   HelpCircle,
+  Utensils,
+  Store,
+  Factory,
+  Flame,
+  ArrowRight,
+  Compass,
+  FileText,
+  ExternalLink,
+  Layers,
+  Zap,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -23,40 +34,238 @@ interface Message {
   role: "user" | "assistant" | "system";
   content: string;
   timestamp: string;
+  userQueryContext?: string;
+}
+
+interface ActionItem {
+  url: string;
+  title: string;
+  subtitle?: string;
 }
 
 const SUGGESTIONS_MAP: Record<string, string[]> = {
   en: [
+    "I'm starting a fast food restaurant business",
     "What approvals do I need for my industry?",
-    "What documents do I need before applying?",
+    "How to set up an EV manufacturing unit?",
     "Am I eligible for PSI 2019 incentives?",
-    "How can I track my application status?",
+    "How do I apply for MIDC land allotment?",
     "Explain MPCB CTE vs CTO requirements",
-    "Why is my application pending at scrutiny desk?",
   ],
   mr: [
+    "मी फास्ट फूड / रेस्टॉरंट व्यवसाय सुरू करत आहे",
     "माझ्या उद्योगासाठी कोणते परवाने आवश्यक आहेत?",
-    "अर्ज करण्यापूर्वी कोणती कागदपत्रे लागतील?",
+    "महाराष्ट्रात ईव्ही उत्पादन प्रकल्प कसा सुरू करावा?",
     "मी PSI २०१९ अनुदानासाठी पात्र आहे का?",
-    "माझ्या अर्जाची स्थिती कशी तपासावी?",
+    "MIDC जमीन आणि इमारत परवानगी कशी मिळवावी?",
     "MPCB संमतीसाठी वैधानिक SLA दिवस किती आहेत?",
-    "माझा अर्ज पडताळणी कक्षात का प्रलंबित आहे?",
   ],
   hi: [
+    "मैं एक फास्ट फूड / रेस्टोरेंट व्यवसाय शुरू कर रहा हूँ",
     "मेरे उद्योग के लिए कौन से अनुमोदन आवश्यक हैं?",
-    "आवेदन से पहले कौन से दस्तावेज़ आवश्यक हैं?",
+    "महाराष्ट्र में ईवी विनिर्माण संयंत्र कैसे स्थापित करें?",
     "क्या मैं PSI 2019 सब्सिडी के लिए पात्र हूँ?",
-    "मैं अपने आवेदन की स्थिति कैसे ट्रैक करूँ?",
+    "MIDC भूमि और भवन निर्माण स्वीकृति के लिए कैसे आवेदन करें?",
     "MPCB प्रदूषण सहमति का वैधानिक SLA क्या है?",
-    "मेरा आवेदन संवीक्षा पटल पर क्यों लंबित है?",
   ],
 };
 
 const WELCOME_MAP: Record<string, string> = {
-  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about MIDC, MPCB, Fire NOC, DISH licensing, PSI 2019 incentives, or SLA timelines for your application.",
-  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला MIDC जमीन, MPCB प्रदूषण परवाना, अग्निशमन NOC, DISH फॅक्टरी परवाना, PSI २०१९ सबसिडी किंवा SLA मुदतीबद्दल विचारा.",
-  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे MIDC भूमि, MPCB सहमति, फायर NOC, DISH फैक्ट्री लाइसेंस, PSI 2019 सब्सिडी या SLA समयसीमा के बारे में पूछें।",
+  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about starting any business (like restaurants, EV, factories, warehouses), clearances (FSSAI, MIDC, MPCB, Fire NOC, DISH), or PSI 2019 incentives!",
+  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला कोणत्याही व्यवसायाची सुरुवात (उदा. रेस्टॉरंट, ईव्ही, फॅक्टरी, वेअरहाऊस), परवाने (FSSAI, MIDC, MPCB, फायर NOC, DISH) किंवा सबसिडीबद्दल विचारा!",
+  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे कोई भी व्यवसाय शुरू करने (जैसे रेस्टोरेंट, ईवी, फैक्ट्री, गोदाम), अनुमोदन (FSSAI, MIDC, MPCB, फायर NOC, DISH) या सब्सिडी के बारे में पूछें!",
 };
+
+function extractActionItems(content: string, userQuery?: string): { cleanContent: string; actions: ActionItem[] } {
+  const actions: ActionItem[] = [];
+  const actionRegex = /\[action:([^|\]]+)\|([^|\]]+)(?:\|([^\]]*))?\]/g;
+
+  let match;
+  while ((match = actionRegex.exec(content)) !== null) {
+    const url = match[1]?.trim();
+    const title = match[2]?.trim();
+    const subtitle = match[3]?.trim();
+    if (url && title && !actions.some((a) => a.url === url)) {
+      actions.push({ url, title, subtitle });
+    }
+  }
+
+  const cleanContent = content.replace(actionRegex, "").trim();
+
+  // Intelligent heuristic fallback if AI didn't emit structured tags
+  if (actions.length === 0) {
+    const combinedText = `${userQuery || ""} ${content}`.toLowerCase();
+
+    // Food / Restaurant / Cafe / Bakery / Cloud Kitchen / Fast Food
+    if (
+      combinedText.includes("restaurant") ||
+      combinedText.includes("food") ||
+      combinedText.includes("fast food") ||
+      combinedText.includes("cafe") ||
+      combinedText.includes("hotel") ||
+      combinedText.includes("kitchen") ||
+      combinedText.includes("bakery") ||
+      combinedText.includes("eating house") ||
+      combinedText.includes("catering") ||
+      combinedText.includes("qsr") ||
+      combinedText.includes("eatery") ||
+      combinedText.includes("रेस्टॉरंट") ||
+      combinedText.includes("खाद्य") ||
+      combinedText.includes("हॉटेल") ||
+      combinedText.includes("रेस्टोरेंट") ||
+      combinedText.includes("भोजनालय")
+    ) {
+      actions.push(
+        {
+          url: "/apply/fssai-food-license",
+          title: "Apply for FSSAI Food Business License",
+          subtitle: "FDA Maharashtra • 14 Days Statutory SLA",
+        },
+        {
+          url: "/apply/gumasta-license",
+          title: "Apply for Gumasta Shop Act Registration",
+          subtitle: "Labour Department • 7 Days Statutory SLA",
+        },
+        {
+          url: "/apply/fire-safety-noc",
+          title: "Apply for Fire Safety NOC",
+          subtitle: "Directorate of Fire Services • 10 Days SLA",
+        },
+        {
+          url: "/dashboard/kya",
+          title: "Run Restaurant KYA Checklist",
+          subtitle: "Know Your Approvals Statutory Roadmap",
+        }
+      );
+    }
+    // EV / Battery / Clean Energy
+    else if (
+      combinedText.includes("electric vehicle") ||
+      combinedText.includes("ev ") ||
+      combinedText.includes("battery") ||
+      combinedText.includes("charging station") ||
+      combinedText.includes("solar") ||
+      combinedText.includes("ईव्ही")
+    ) {
+      actions.push(
+        {
+          url: "/apply/mpcb-consent",
+          title: "Apply for MPCB Consent to Establish (CTE)",
+          subtitle: "MPCB • 21 Days Statutory SLA",
+        },
+        {
+          url: "/apply/dish-factory-license",
+          title: "Apply for DISH Factory License",
+          subtitle: "DISH Maharashtra • 15 Days SLA",
+        },
+        {
+          url: "/dashboard/kya",
+          title: "Check EV Policy 2021 Subsidies",
+          subtitle: "Package Scheme of Incentives (D+ Mega Status)",
+        }
+      );
+    }
+    // Manufacturing / Factory / Industrial / Engineering / Chemical / Pharma
+    else if (
+      combinedText.includes("factory") ||
+      combinedText.includes("manufacturing") ||
+      combinedText.includes("industry") ||
+      combinedText.includes("plant") ||
+      combinedText.includes("chemical") ||
+      combinedText.includes("pharma") ||
+      combinedText.includes("textile") ||
+      combinedText.includes("engineering") ||
+      combinedText.includes("कारखाना") ||
+      combinedText.includes("उत्पादन") ||
+      combinedText.includes("फैक्ट्री")
+    ) {
+      actions.push(
+        {
+          url: "/apply/dish-factory-license",
+          title: "Apply for DISH Factory License",
+          subtitle: "DISH Maharashtra • 15 Days SLA",
+        },
+        {
+          url: "/apply/mpcb-consent",
+          title: "Apply for MPCB Consent to Establish",
+          subtitle: "MPCB • 21 Days Statutory SLA",
+        },
+        {
+          url: "/apply/midc-land-allotment",
+          title: "Apply for MIDC Land Allotment",
+          subtitle: "MIDC • 15 Days SLA",
+        },
+        {
+          url: "/apply/fire-safety-noc",
+          title: "Apply for Fire Safety NOC",
+          subtitle: "Directorate of Fire Services • 10 Days SLA",
+        }
+      );
+    }
+    // Warehouse / Logistics Hub
+    else if (
+      combinedText.includes("warehouse") ||
+      combinedText.includes("logistics") ||
+      combinedText.includes("godown") ||
+      combinedText.includes("storage park") ||
+      combinedText.includes("वेअरहाऊस") ||
+      combinedText.includes("गोदाम")
+    ) {
+      actions.push(
+        {
+          url: "/apply/midc-land-allotment",
+          title: "Apply for MIDC Logistics Land Plot",
+          subtitle: "MIDC • 15 Days SLA",
+        },
+        {
+          url: "/apply/fire-safety-noc",
+          title: "Apply for Fire Safety NOC",
+          subtitle: "Directorate of Fire Services • 10 Days SLA",
+        },
+        {
+          url: "/apply/gumasta-license",
+          title: "Apply for Gumasta Registration",
+          subtitle: "Labour Department • 7 Days SLA",
+        },
+        {
+          url: "/dashboard/kya",
+          title: "Logistics Policy 2024 Incentives",
+          subtitle: "FSI 3-5 & Capital Subsidies",
+        }
+      );
+    }
+  }
+
+  return { cleanContent, actions };
+}
+
+function getActionIcon(url: string) {
+  if (url.includes("fssai") || url.includes("food")) {
+    return <Utensils className="w-3.5 h-3.5 text-amber-600" />;
+  }
+  if (url.includes("gumasta") || url.includes("shop")) {
+    return <Store className="w-3.5 h-3.5 text-emerald-600" />;
+  }
+  if (url.includes("dish") || url.includes("factory")) {
+    return <Factory className="w-3.5 h-3.5 text-blue-600" />;
+  }
+  if (url.includes("mpcb")) {
+    return <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />;
+  }
+  if (url.includes("midc") || url.includes("land")) {
+    return <Building2 className="w-3.5 h-3.5 text-indigo-600" />;
+  }
+  if (url.includes("fire")) {
+    return <Flame className="w-3.5 h-3.5 text-rose-600" />;
+  }
+  if (url.includes("kya")) {
+    return <Compass className="w-3.5 h-3.5 text-[#FE7251]" />;
+  }
+  if (url.includes("prevalidation")) {
+    return <Sparkles className="w-3.5 h-3.5 text-purple-600" />;
+  }
+  return <ArrowRight className="w-3.5 h-3.5 text-[#9B2A48]" />;
+}
 
 export default function AskAarambhChatbot() {
   const { language, t } = useLanguage();
@@ -143,8 +352,15 @@ export default function AskAarambhChatbot() {
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         role: "assistant",
-        content: data.content || (language === "mr" ? "सध्या आपल्या विनंतीवर प्रक्रिया करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा १८००-१२०-८०४० वर संपर्क साधा." : language === "hi" ? "वर्तमान में आपके अनुरोध को संसाधित नहीं किया जा सका। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।" : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040."),
+        content:
+          data.content ||
+          (language === "mr"
+            ? "सध्या आपल्या विनंतीवर प्रक्रिया करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा १८००-१२०-८०४० वर संपर्क साधा."
+            : language === "hi"
+            ? "वर्तमान में आपके अनुरोध को संसाधित नहीं किया जा सका। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।"
+            : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040."),
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        userQueryContext: query.trim(),
       };
 
       setMessages((prev) => [...prev, botMessage]);
@@ -160,8 +376,9 @@ export default function AskAarambhChatbot() {
       const errorMessage: Message = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: (err instanceof Error ? err.message : errorFallback),
+        content: err instanceof Error ? err.message : errorFallback,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        userQueryContext: query.trim(),
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -266,9 +483,7 @@ export default function AskAarambhChatbot() {
             </div>
 
             <div className="flex items-center space-x-1.5 pr-1">
-              <span className="text-xs font-bold tracking-wide text-white">
-                Ask AARAMBH
-              </span>
+              <span className="text-xs font-bold tracking-wide text-white">Ask AARAMBH</span>
             </div>
           </button>
         </div>
@@ -277,8 +492,8 @@ export default function AskAarambhChatbot() {
       {/* 2. Interactive Chat Window */}
       {isOpen && (
         <div
-          className={`fixed right-3 sm:right-5 bottom-5 z-50 w-[88vw] sm:w-[370px] bg-white rounded-2xl shadow-2xl border border-[#F0E5E0] overflow-hidden flex flex-col transition-all duration-200 animate-in fade-in zoom-in-95 ${
-            isMinimized ? "h-14" : "h-[520px] max-h-[80vh]"
+          className={`fixed right-3 sm:right-5 bottom-5 z-50 w-[92vw] sm:w-[390px] bg-white rounded-2xl shadow-2xl border border-[#F0E5E0] overflow-hidden flex flex-col transition-all duration-200 animate-in fade-in zoom-in-95 ${
+            isMinimized ? "h-14" : "h-[560px] max-h-[85vh]"
           }`}
         >
           {/* Header */}
@@ -290,16 +505,12 @@ export default function AskAarambhChatbot() {
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
-                  <h3 className="text-xs font-black text-white tracking-wide">
-                    AARAMBH
-                  </h3>
+                  <h3 className="text-xs font-black text-white tracking-wide">AARAMBH</h3>
                   <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30">
-                    Helpdesk
+                    Smart AI Advisory
                   </span>
                 </div>
-                <p className="text-[9px] text-[#C4A89C]">
-                  Single Window Clearance Assistant
-                </p>
+                <p className="text-[9px] text-[#C4A89C]">Single Window Statutory Assistant</p>
               </div>
             </div>
 
@@ -336,45 +547,90 @@ export default function AskAarambhChatbot() {
             <>
               {/* Messages Body */}
               <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[#FCFAF8]">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex items-start gap-2 ${
-                      msg.role === "user" ? "flex-row-reverse" : "flex-row"
-                    }`}
-                  >
-                    {/* Avatar */}
-                    <div
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-xs ${
-                        msg.role === "user"
-                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white"
-                          : "bg-[#16060E] text-[#FFCA7C] border border-[#36101E]"
-                      }`}
-                    >
-                      {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                    </div>
+                {messages.map((msg) => {
+                  const { cleanContent, actions } =
+                    msg.role === "assistant" && msg.id !== "welcome-msg"
+                      ? extractActionItems(msg.content, msg.userQueryContext)
+                      : { cleanContent: msg.content, actions: [] };
 
-                    {/* Bubble */}
+                  return (
                     <div
-                      className={`max-w-[85%] rounded-xl p-3 text-xs shadow-xs ${
-                        msg.role === "user"
-                          ? "bg-[#9B2A48] text-white rounded-tr-none"
-                          : "bg-white text-slate-800 border border-[#F0E5E0] rounded-tl-none"
+                      key={msg.id}
+                      className={`flex items-start gap-2 ${
+                        msg.role === "user" ? "flex-row-reverse" : "flex-row"
                       }`}
                     >
-                      <div className="space-y-1">
-                        {renderMessageContent(msg.content)}
-                      </div>
-                      <span
-                        className={`text-[9px] mt-1 block text-right ${
-                          msg.role === "user" ? "text-rose-200" : "text-slate-400"
+                      {/* Avatar */}
+                      <div
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-xs ${
+                          msg.role === "user"
+                            ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white"
+                            : "bg-[#16060E] text-[#FFCA7C] border border-[#36101E]"
                         }`}
                       >
-                        {msg.timestamp}
-                      </span>
+                        {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                      </div>
+
+                      {/* Bubble */}
+                      <div
+                        className={`max-w-[88%] rounded-xl p-3 text-xs shadow-xs ${
+                          msg.role === "user"
+                            ? "bg-[#9B2A48] text-white rounded-tr-none"
+                            : "bg-white text-slate-800 border border-[#F0E5E0] rounded-tl-none"
+                        }`}
+                      >
+                        <div className="space-y-1">{renderMessageContent(cleanContent)}</div>
+
+                        {/* Interactive Direct Navigation Action Buttons */}
+                        {actions && actions.length > 0 && (
+                          <div className="mt-3 pt-2.5 border-t border-[#F0E5E0] space-y-2">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#9B2A48] uppercase tracking-wider">
+                              <Sparkles className="w-3 h-3 text-[#FE7251]" />
+                              <span>Direct Approvals & Statutory Clearance</span>
+                            </div>
+                            <div className="grid grid-cols-1 gap-1.5">
+                              {actions.map((act, aIdx) => (
+                                <Link
+                                  key={aIdx}
+                                  href={act.url}
+                                  className="group flex items-center justify-between p-2 rounded-lg bg-gradient-to-r from-[#FFF9F6] to-white hover:from-[#FFF0E6] hover:to-[#FFF7F0] border border-[#FED17A]/70 hover:border-[#FE7251] shadow-xs hover:shadow-sm transition-all duration-150 text-left"
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                                    <div className="w-7 h-7 rounded-md bg-white border border-[#FED17A]/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                                      {getActionIcon(act.url)}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <span className="text-[11px] font-bold text-slate-900 group-hover:text-[#9B2A48] line-clamp-1">
+                                        {act.title}
+                                      </span>
+                                      {act.subtitle && (
+                                        <span className="text-[9px] text-slate-500 block truncate">
+                                          {act.subtitle}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-1 px-2 py-1 rounded bg-[#9B2A48]/10 text-[9px] font-bold text-[#9B2A48] group-hover:bg-[#9B2A48] group-hover:text-white shrink-0 transition-colors">
+                                    <span>Apply</span>
+                                    <ArrowRight className="w-2.5 h-2.5" />
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <span
+                          className={`text-[9px] mt-1.5 block text-right ${
+                            msg.role === "user" ? "text-rose-200" : "text-slate-400"
+                          }`}
+                        >
+                          {msg.timestamp}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Loading Indicator */}
                 {loading && (
@@ -387,7 +643,11 @@ export default function AskAarambhChatbot() {
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.2s]"></span>
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[10px] text-slate-500 font-medium ml-1">
-                        {language === "mr" ? "आरंभ वैधानिक नियमावली तपासत आहे..." : language === "hi" ? "आरंभ वैधानिक रिकॉर्ड की जांच कर रहा है..." : "AARAMBH is consulting statutory records..."}
+                        {language === "mr"
+                          ? "आरंभ वैधानिक नियमावली तपासत आहे..."
+                          : language === "hi"
+                          ? "आरंभ वैधानिक रिकॉर्ड की जांच कर रहा है..."
+                          : "AARAMBH is consulting statutory records..."}
                       </span>
                     </div>
                   </div>
@@ -403,7 +663,7 @@ export default function AskAarambhChatbot() {
                     <button
                       key={suggestion}
                       onClick={() => handleSendMessage(suggestion)}
-                      className="px-2 py-1 rounded-md bg-white border border-[#FED17A] hover:border-[#FE7251] hover:text-[#9B2A48] text-slate-700 text-[10px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0 shadow-xs"
+                      className="px-2.5 py-1 rounded-md bg-white border border-[#FED17A] hover:border-[#FE7251] hover:text-[#9B2A48] text-slate-700 text-[10px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0 shadow-xs"
                     >
                       {suggestion}
                     </button>
@@ -419,7 +679,10 @@ export default function AskAarambhChatbot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={t("chat.placeholder", "Ask about clearances, MIDC zones, PSI subsidies, or SLAs...")}
+                    placeholder={t(
+                      "chat.placeholder",
+                      "Ask about restaurant, EV, MIDC zones, PSI subsidies, or approvals..."
+                    )}
                     className="flex-1 max-h-20 min-h-[36px] px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251] focus:outline-none resize-none"
                   />
                   <button
@@ -433,7 +696,13 @@ export default function AskAarambhChatbot() {
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[8px] text-slate-400 px-0.5">
                   <span>{t("topbar.portal_title", "Single Window Clearance Portal")}</span>
-                  <span>{language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
+                  <span>
+                    {language === "mr"
+                      ? "महाराष्ट्र शासन"
+                      : language === "hi"
+                      ? "महाराष्ट्र सरकार"
+                      : "Govt. of Maharashtra"}
+                  </span>
                 </div>
               </div>
             </>
