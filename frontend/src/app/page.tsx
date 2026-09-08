@@ -143,7 +143,7 @@ export default function HomePage() {
   const enterprise = useEnterpriseStore();
 
   const authHref = (target: string) =>
-    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
+    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
 
   // Hero Search and Category State
   const [heroSearch, setHeroSearch] = useState("");
@@ -1075,7 +1075,7 @@ export default function HomePage() {
 
           <div className="pt-4 flex items-center justify-center gap-4">
             <Link
-              href={user ? "/dashboard" : "/login"}
+              href={authHref("/dashboard")}
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
             >
               <span>Open My Business</span>

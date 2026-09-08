@@ -17,7 +17,7 @@ export default function Header() {
   const { user } = useAuth();
 
   const authHref = (target: string) =>
-    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
+    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#16060E] text-white border-b border-[#36101E] shadow-md shadow-black/20">
@@ -80,7 +80,7 @@ export default function Header() {
           {/* Mobile Menu Controls */}
           <div className="flex sm:hidden items-center space-x-2">
             <Link
-              href={user ? "/dashboard" : "/login"}
+              href={authHref("/dashboard")}
               className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold flex items-center gap-1.5"
             >
               <Briefcase className="w-3.5 h-3.5" />
@@ -102,7 +102,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="sm:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
           <Link
-            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/login"}
+            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/signin?redirect=%2Fdashboard"}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-white hover:text-[#FFCA7C]"
           >
@@ -119,7 +119,7 @@ export default function Header() {
             {!user ? (
               <>
                 <Link
-                  href="/login"
+                  href="/signin"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex-1 py-2 px-3 rounded-lg bg-[#250C19] border border-[#521C35] text-center text-xs font-bold text-[#FFCA7C]"
                 >

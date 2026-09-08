@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -19,7 +19,8 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
-  const { loginAsApplicant, loginAsOfficer, loginWithDigiLocker } = useAuth();
+  const { signIn, loginWithDigiLocker } = useAuth();
+  const router = useRouter();
   const { t } = useLanguage();
 
   const [activeRole, setActiveRole] = useState<"applicant" | "officer">("applicant");
@@ -28,26 +29,15 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [officerDept, setOfficerDept] = useState("MIDC Industrial Clearances");
   const [resetNotice, setResetNotice] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    if (activeRole === "applicant") {
-      loginAsApplicant(
-        email,
-        "Sanjay Deshmukh",
-        "Maharashtra Solvents & Chemicals Pvt Ltd",
-        {},
-        redirectTo
-      );
-    } else {
-      loginAsOfficer(
-        email,
-        officerDept,
-        redirectTo.startsWith("/dashboard/officer") ? redirectTo : "/dashboard/officer-workspace"
-      );
-    }
+    const error = await signIn(email, password);
+    if (error) { setAuthError(error); return; }
+    router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard");
   };
 
   const handleForgotPassword = () => {
@@ -197,6 +187,7 @@ function LoginForm() {
                   <span>{resetNotice}</span>
                 </div>
               )}
+              {authError && <p className="text-xs text-rose-700 font-semibold">{authError}</p>}
             </form>
 
             {/* Fast Track DigiLocker Option for Applicants */}
@@ -204,7 +195,7 @@ function LoginForm() {
               <div className="mt-6 pt-5 border-t border-slate-200">
                 <button
                   type="button"
-                  onClick={() => loginWithDigiLocker(redirectTo)}
+                  onClick={async () => setAuthError(await loginWithDigiLocker())}
                   className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#FE7251]" />

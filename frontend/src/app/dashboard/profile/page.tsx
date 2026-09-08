@@ -23,7 +23,7 @@ import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProfilePage() {
-  const { user, loginAsApplicant } = useAuth();
+  const { user, updateProfile } = useAuth();
   const { t } = useLanguage();
   const {
     sector,
@@ -54,17 +54,19 @@ export default function ProfilePage() {
   const companyName = user?.enterpriseName || masterCAF.companyDetails.companyName || "Maharashtra Solvents & Chemicals Pvt Ltd";
   const signatoryName = user?.name || masterCAF.companyDetails.signatoryName || "Sanjay Deshmukh";
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Update AuthContext
-    loginAsApplicant(editEmail, editName, editCompanyName, {
+    const profileError = await updateProfile({
+      name: editName,
+      enterpriseName: editCompanyName,
       phone: editPhone,
       panNumber: editPan.toUpperCase(),
       addressLine1: editAddress,
       district: editDistrict,
       enterpriseId: user?.enterpriseId || "ENT-MH-2026-8891",
     });
+    if (profileError) return;
 
     // 2. Update Master CAF in Enterprise Store
     updateMasterCAF({

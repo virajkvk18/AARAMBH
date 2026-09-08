@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Building2,
   Handshake,
@@ -29,7 +29,8 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard/kya";
 
-  const { loginAsApplicant, loginWithDigiLocker } = useAuth();
+  const { signUpApplicant, loginWithDigiLocker } = useAuth();
+  const router = useRouter();
   const { t } = useLanguage();
   const { setFormData, setExtractedFields, updateMasterCAF, reset } = useEnterpriseStore();
 
@@ -170,18 +171,15 @@ function SignupForm() {
   };
 
   // Complete Registration
-  const handleCompleteRegistration = () => {
+  const handleCompleteRegistration = async () => {
     if (!validateStep4()) return;
 
-    // 1. Reset prior assessment/documents for fresh registration
-    reset();
-
-    // 2. Sync full user profile with AuthContext
-    loginAsApplicant(
+    const registration = await signUpApplicant(
       email,
-      applicantName,
-      businessName,
+      password,
       {
+        name: applicantName,
+        enterpriseName: businessName,
         phone: mobile,
         panNumber: panNumber.toUpperCase(),
         entityType: legalEntity,
@@ -191,9 +189,14 @@ function SignupForm() {
         district,
         state: stateName,
         enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      },
-      redirectTo
+      }
     );
+    if (registration.error) { setStepError(registration.error); return; }
+    if (registration.needsConfirmation) { setStepError("Please confirm your email address before signing in."); return; }
+
+    // Preserve the existing new-enterprise setup only after Supabase has
+    // authenticated the account.
+    reset();
 
     // 3. Sync with Enterprise Store & Master CAF
     const selectedSectorObj = SIGNUP_SECTORS.find((s) => s.value === primarySector);
@@ -241,6 +244,7 @@ function SignupForm() {
       entity_name: { value: businessName, confidenceScore: 1.0, hasConflict: false },
       pan: { value: panNumber.toUpperCase(), confidenceScore: 1.0, hasConflict: false },
     }, "Onboarding Registration Dossier");
+    router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard");
   };
 
   return (
@@ -345,7 +349,7 @@ function SignupForm() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => loginWithDigiLocker(redirectTo)}
+                    onClick={async () => setStepError(await loginWithDigiLocker())}
                     className="mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                   >
                     Connect DigiLocker

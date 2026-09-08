@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Compass,
@@ -33,11 +33,14 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, toggleRole, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const { t } = useLanguage();
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => { if (!isLoading && !user) router.replace(`/signin?redirect=${encodeURIComponent(pathname || "/dashboard")}`); }, [isLoading, pathname, router, user]);
+  if (isLoading || !user) return <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC]" aria-busy="true" />;
 
   const isOfficer = user?.role === "officer";
 
@@ -275,14 +278,6 @@ export default function DashboardLayout({
             <div className="flex items-center space-x-1">
               <button
                 type="button"
-                onClick={toggleRole}
-                className="p-1.5 rounded-lg text-[#FFCA7C] hover:bg-[#250C19] text-[10px] font-bold border border-[#521C35] transition-colors"
-                title="Switch between Investor and Officer demo perspective"
-              >
-                {user?.role === "officer" ? "Switch to Investor" : "Switch to Officer"}
-              </button>
-              <button
-                type="button"
                 onClick={logout}
                 className="p-2 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors"
                 title="Sign Out"
@@ -307,14 +302,9 @@ export default function DashboardLayout({
             <span className="text-xs font-bold text-[#16060E]">Workspace Menu</span>
           </button>
 
-          <button
-            type="button"
-            className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2.5 py-1 rounded-full cursor-pointer hover:bg-[#FFE8CC] transition-colors"
-            title="Toggle between Investor and Officer perspective"
-            onClick={toggleRole}
-          >
-            {user?.role === "officer" ? "Officer View (Switch)" : "Investor View (Switch)"}
-          </button>
+          <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2.5 py-1 rounded-full">
+            {user.role === "officer" ? "Officer View" : "Investor View"}
+          </span>
         </div>
 
         {/* Page Content */}
