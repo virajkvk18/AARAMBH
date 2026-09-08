@@ -291,7 +291,7 @@ export default function KYAWizardPage() {
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>AI-Driven Clearance Determination</span>
+            <span>Statutory Clearance Determination</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Know Your Approvals (KYA) Wizard

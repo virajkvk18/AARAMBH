@@ -91,7 +91,7 @@ export default function DashboardHomePage() {
     },
     {
       title: t("dash.vault", "Document Vault"),
-      subtitle: "AI OCR verification & DigiLocker document sync",
+      subtitle: "OCR verification & DigiLocker document sync",
       href: "/dashboard/vault",
       icon: FolderLock,
       btnLabel: "Manage Vault",

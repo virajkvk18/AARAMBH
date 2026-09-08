@@ -185,9 +185,9 @@ const benefitsData: BenefitItem[] = [
     id: "secure-vault",
     title: "Secure Document Repository",
     description:
-      "DigiLocker-integrated digital locker with automated AI extraction and pre-validation, eliminating duplicate uploads.",
+      "DigiLocker-integrated digital locker with automated extraction and pre-validation, eliminating duplicate uploads.",
     icon: ShieldCheck,
-    tag: "DigiLocker & AI OCR",
+    tag: "DigiLocker & Smart OCR",
     href: "/dashboard/vault",
   },
   {
@@ -210,11 +210,11 @@ const benefitsData: BenefitItem[] = [
   },
   {
     id: "ai-kya",
-    title: "AI-Powered Know Your Approvals",
+    title: "Dynamic Know Your Approvals",
     description:
       "Intelligent rule engine dynamically determines the exact pre-establishment, operational clearances and incentives.",
     icon: Sparkles,
-    tag: "Smart Clearance Wizard",
+    tag: "Clearance Wizard",
     href: "/dashboard/kya",
   },
 ];
@@ -850,7 +850,7 @@ export default function HomePage() {
                 <p className="text-slate-600 mt-1">Under the Maharashtra Right to Public Services Act, if a department fails to grant or query a clearance within statutory SLA days, approval is automatically deemed granted.</p>
               </div>
               <div className="p-3.5 rounded-xl bg-[#FCFAF8] border border-[#F0E5E0]">
-                <p className="font-bold text-slate-900">How do I verify documents with AI Vault?</p>
+                <p className="font-bold text-slate-900">How do I verify documents with Document Vault?</p>
                 <p className="text-slate-600 mt-1">Upload your Land Registry, PAN, or Blueprint to Document Vault. Our OCR automatically extracts plot dimensions, electricity loads, and auto-fills all departmental applications.</p>
               </div>
               <div className="p-3.5 rounded-xl bg-[#FCFAF8] border border-[#F0E5E0]">

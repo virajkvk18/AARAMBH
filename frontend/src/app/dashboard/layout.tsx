@@ -69,7 +69,7 @@ export default function DashboardLayout({
       { label: t("dash.sla", "Department SLA Monitor"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
       { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       { label: t("dash.vault", "Dossier Verification Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
-      { label: t("dash.prevalidation", "Cross-Doc AI Audit"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+      { label: t("dash.prevalidation", "Cross-Doc Pre-Audit"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
       { label: t("grievances.title", "Dispute Resolution"), href: "/dashboard/grievances", icon: MessageSquareWarning },
       { label: t("profile.title", "Officer Profile"), href: "/dashboard/profile", icon: User },
     ],

@@ -244,7 +244,7 @@ export default function DocumentVaultPage() {
     // Immediately add to persistent state with actual metadata
     addUploadedDocuments(validItems.map((v) => v.doc));
 
-    // Process each document sequentially with AI extraction
+    // Process each document sequentially with OCR extraction
     setIsProcessingAll(true);
     try {
       for (const { file, doc } of validItems) {
@@ -403,7 +403,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <FolderLock className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>DigiLocker & AI-Verified Repository</span>
+            <span>DigiLocker & Verified Repository</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Document Vault & Extraction
@@ -513,7 +513,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
         </div>
       </div>
 
-      {/* SECTION 2: AI VAULT UPLOAD */}
+      {/* SECTION 2: DOCUMENT VAULT UPLOAD */}
       <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
         <div className="p-6 border-b border-[#F0E5E0] flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -522,7 +522,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
             </div>
             <div>
               <h2 className="text-base font-bold text-[#16060E]">
-                AI Vault Upload & Structured Field Extraction
+                Document Vault Upload & Structured Field Extraction
               </h2>
               <p className="text-xs text-slate-500">
                 Upload single or multiple statutory documents (PDF, JPG, PNG) for OCR parsing and parameter verification
@@ -752,7 +752,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                         : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                     }`}
                   >
-                    {extractedFields.gstin?.value ? "AI Synced" : "Missing (null)"}
+                    {extractedFields.gstin?.value ? "Vault Synced" : "Missing (null)"}
                   </span>
                 </div>
                 <span
@@ -776,7 +776,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                         : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                     }`}
                   >
-                    {extractedFields.pan?.value ? "AI Synced" : "Missing (null)"}
+                    {extractedFields.pan?.value ? "Vault Synced" : "Missing (null)"}
                   </span>
                 </div>
                 <span
@@ -800,7 +800,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                         : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                     }`}
                   >
-                    {extractedFields.aadhaar?.value ? "AI Synced" : "Missing (null)"}
+                    {extractedFields.aadhaar?.value ? "Vault Synced" : "Missing (null)"}
                   </span>
                 </div>
                 <span
@@ -822,7 +822,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                   <div className="flex items-center space-x-2">
                     <span className="inline-flex items-center space-x-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] uppercase tracking-wider">
                       <Sparkles className="w-3 h-3 text-[#FE7251]" />
-                      <span>AI Extracted Parameters</span>
+                      <span>Extracted Parameters</span>
                     </span>
                     {uploadedDocumentName && (
                       <span className="text-xs text-slate-500 font-mono font-medium truncate max-w-xs">
@@ -837,7 +837,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
 
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded">
-                    Engine: {extractionMethod || "AARAMBH AI Parser"}
+                    Engine: {extractionMethod || "AARAMBH Document Parser"}
                   </span>
                 </div>
               </div>
@@ -913,7 +913,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                             ) : hasValue ? (
                               <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
                                 <Sparkles className="w-3 h-3 text-[#FE7251]" />
-                                <span>AI Extracted</span>
+                                <span>OCR Extracted</span>
                               </span>
                             ) : (
                               <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]">

@@ -129,7 +129,7 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            {t("dash.vault", "Document Vault & AI OCR")}
+            {t("dash.vault", "Document Vault & OCR")}
           </Link>
           <Link
             href="/dashboard/dag"

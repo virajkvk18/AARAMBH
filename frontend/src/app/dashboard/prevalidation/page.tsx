@@ -165,7 +165,7 @@ export default function PreValidationPage() {
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <FileCheck2 className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>AI Automated Scrutiny & Cross-Verification Gate</span>
+            <span>Automated Scrutiny & Cross-Verification Gate</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Pre-Validation & Document Comparison
@@ -351,7 +351,7 @@ export default function PreValidationPage() {
                   <span className="text-xs font-bold text-[#16060E]">Source Dossier B</span>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                  AI OCR Extracted
+                  OCR Extracted
                 </span>
               </div>
               <p className="text-xs font-mono font-bold text-[#16060E] truncate mb-4">
@@ -420,14 +420,14 @@ export default function PreValidationPage() {
               MPCB Consent to Establish (CTE) Form • Pre-Populated
             </h2>
             <p className="text-xs text-slate-500">
-              Fields populated automatically from AI Vault and verified DigiLocker certificates
+              Fields populated automatically from Document Vault and verified DigiLocker certificates
             </p>
           </div>
 
           <div className="flex items-center space-x-2">
             <span className="text-xs text-slate-400">Source:</span>
             <span className="text-xs font-mono font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded-md">
-              AI Vault Synchronized
+              Vault Synchronized
             </span>
           </div>
         </div>
@@ -447,7 +447,7 @@ export default function PreValidationPage() {
                   className="block w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                 />
                 <span className="absolute right-3 top-2.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                  AI Synced
+                  Vault Synced
                 </span>
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function PreValidationPage() {
                     formData.pan ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                   }`}
                 >
-                  {formData.pan ? "AI Synced" : "Missing (null)"}
+                  {formData.pan ? "Vault Synced" : "Missing (null)"}
                 </span>
               </div>
               <input
@@ -499,7 +499,7 @@ export default function PreValidationPage() {
                     formData.gstin ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                   }`}
                 >
-                  {formData.gstin ? "AI Synced" : "Missing (null)"}
+                  {formData.gstin ? "Vault Synced" : "Missing (null)"}
                 </span>
               </div>
               <input
@@ -522,7 +522,7 @@ export default function PreValidationPage() {
                     formData.aadhaar ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]" : "bg-[#FFF9F5] text-slate-400 border border-[#F0E5E0]"
                   }`}
                 >
-                  {formData.aadhaar ? "AI Synced" : "Missing (null)"}
+                  {formData.aadhaar ? "Vault Synced" : "Missing (null)"}
                 </span>
               </div>
               <input

@@ -124,7 +124,7 @@ export default function OfficerWorkspacePage() {
               Officer Review Queue • {user?.department || "MIDC Industrial Clearances"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
-              Review incoming Common Application Forms (CAF), verify AI OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.
+              Review incoming Common Application Forms (CAF), verify OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.
             </p>
           </div>
 

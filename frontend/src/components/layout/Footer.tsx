@@ -78,7 +78,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/dashboard/vault" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
-                  Document Vault (AI & DigiLocker)
+                  Document Vault & DigiLocker
                 </Link>
               </li>
               <li>
