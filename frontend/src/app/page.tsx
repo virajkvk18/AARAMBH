@@ -17,6 +17,7 @@ import {
   Search,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
   X,
   AlertCircle,
   Sparkles,
@@ -144,6 +145,10 @@ export default function HomePage() {
   const authHref = (target: string) =>
     user ? target : `/login?redirect=${encodeURIComponent(target)}`;
 
+  // Hero Search and Category State
+  const [heroSearch, setHeroSearch] = useState("");
+  const [heroCategory, setHeroCategory] = useState("All Approvals");
+
   // Approvals Search and Filter State
   const [approvalSearch, setApprovalSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
@@ -153,6 +158,20 @@ export default function HomePage() {
   const [discoverySector, setDiscoverySector] = useState("Automotive & Engineering");
   const [discoveryInvestment, setDiscoveryInvestment] = useState("₹10 Cr - ₹50 Cr");
   const [discoveryZone, setDiscoveryZone] = useState("MIDC Industrial Estate");
+
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setApprovalSearch(heroSearch);
+    if (heroCategory === "All Approvals") {
+      setSelectedFilter("All");
+    } else {
+      setSelectedFilter(heroCategory);
+    }
+    const el = document.getElementById("approvals");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   // Filtered approvals
   const filteredApprovals = keyApprovalsList.filter((app) => {
@@ -172,228 +191,122 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#9B2A48] selection:text-white">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION WITH NIGHT INDUSTRIAL BACKDROP & BUSINESS CONTROL PANEL   */}
+      {/* 1. HERO SECTION (SINGLE CENTERED COMPOSITION WITH INDUSTRIAL BACKDROP)    */}
       {/* ========================================================================= */}
-      <section className="relative bg-[#14050B] text-white border-b border-[#2D0D19] overflow-hidden">
-        {/* Night Industrial Image Backdrop - positioned right/bottom */}
+      <section className="relative bg-[#14050B] text-white border-b border-[#2D0D19] overflow-hidden pt-16 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-28">
+        {/* Night Industrial Image Backdrop - centered with low opacity */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-right-bottom opacity-25 mix-blend-luminosity pointer-events-none transition-opacity duration-700"
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-25 mix-blend-luminosity pointer-events-none transition-opacity duration-700"
           style={{ backgroundImage: "url('/images/aarambh-industrial-night.png')" }}
         />
 
-        {/* Subtle Dark Gradient Overlay for Readability */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#14050B] via-[#16060E]/95 to-[#14050B]/70 pointer-events-none" />
+        {/* Sophisticated Dark Gradient Overlay for Readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#14050B]/90 via-[#16060E]/95 to-[#14050B] pointer-events-none" />
 
-        {/* Subtle Vector Geo-Outline of Maharashtra in background */}
+        {/* Subtle Vector Geo-Outline of Maharashtra in background - centered and subtle */}
         <div
-          className="absolute right-6 top-1/2 -translate-y-1/2 w-[700px] h-[550px] z-0 opacity-15 pointer-events-none hidden xl:block bg-no-repeat bg-contain"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[650px] z-0 opacity-10 pointer-events-none hidden md:block bg-no-repeat bg-contain bg-center"
           style={{ backgroundImage: "url('/images/maharashtra-outline.svg')" }}
         />
 
-        <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Product Entry & Primary Positioning (7 cols) */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Government Badging */}
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#250C19] border border-[#FED17A]/40 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#FE7251] animate-pulse" />
-                <span>Single Window Industrial Facilitation • Govt. of Maharashtra</span>
-              </div>
-
-              {/* Primary Heading */}
-              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-white leading-[1.15]">
-                Everything your business needs to{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FED17A] via-[#FE7251] to-[#FED17A]">
-                  start, operate & grow
-                </span>{" "}
-                in Maharashtra.
-              </h1>
-
-              {/* Supporting Text */}
-              <p className="text-base sm:text-lg text-[#E0C7BC] max-w-2xl leading-relaxed font-normal">
-                Discover approvals, apply online, manage documents, track applications, stay compliant and access government support — all from one place.
-              </p>
-
-              {/* Primary & Secondary CTAs */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                <Link
-                  href={authHref("/dashboard/kya")}
-                  className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
-                >
-                  <span>Find My Requirements</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-
-                <a
-                  href="#approvals"
-                  className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#250C19] hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-sm transition-all duration-150 cursor-pointer"
-                >
-                  <span>Explore Approvals</span>
-                  <ChevronRight className="w-4 h-4 text-[#FFCA7C]" />
-                </a>
-              </div>
-
-              {/* Functional "What are you looking to do?" Action Options */}
-              <div className="pt-6 border-t border-[#36101E]/80">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#FFCA7C] block mb-3">
-                  What are you looking to do?
-                </span>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  <Link
-                    href={authHref("/dashboard/kya")}
-                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
-                  >
-                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
-                      Start New Business
-                    </span>
-                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                      KYA Roadmap →
-                    </span>
-                  </Link>
-
-                  <Link
-                    href={authHref("/dashboard/caf")}
-                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
-                  >
-                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
-                      Expand Business
-                    </span>
-                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                      Unified CAF →
-                    </span>
-                  </Link>
-
-                  <a
-                    href="#approvals"
-                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
-                  >
-                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
-                      Get Approvals
-                    </span>
-                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                      Direct Forms →
-                    </span>
-                  </a>
-
-                  <a
-                    href="#incentives"
-                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
-                  >
-                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
-                      Access Incentives
-                    </span>
-                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                      PSI 2019 Guide →
-                    </span>
-                  </a>
-                </div>
-              </div>
+        <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-4xl mx-auto flex flex-col items-center">
+            {/* Government Badging */}
+            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#250C19] border border-[#FED17A]/50 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-xs shadow-[#FE7251]" />
+              <span>AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA</span>
             </div>
 
-            {/* Right Column: Real-Time Business Control Panel Preview (5 cols) */}
-            <div className="lg:col-span-5">
-              <div className="bg-[#190710]/90 backdrop-blur-md rounded-3xl border border-[#521C35] p-6 sm:p-7 shadow-2xl relative overflow-hidden">
-                {/* Header Strip with User Status */}
-                <div className="flex items-center justify-between pb-4 border-b border-[#36101E] mb-5">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#250C19] border border-[#FE7251]/40 flex items-center justify-center text-[#FFCA7C]">
-                      <Briefcase className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-white block uppercase tracking-wide">
-                        {user ? "Your Business Cockpit" : "Your Business Journey"}
-                      </span>
-                      <span className="text-[10px] text-[#C4A89C] block">
-                        {user ? `${user.name} • Active Session` : "Manufacturing Unit • Pune, Maharashtra"}
-                      </span>
-                    </div>
-                  </div>
+            {/* Main Hero Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[3.3rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-xs">
+              Everything your business needs to{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
+                start, operate & grow
+              </span>{" "}
+              in Maharashtra.
+            </h1>
 
-                  {!user && (
-                    <span className="px-2.5 py-1 rounded-md bg-[#250C19] border border-[#521C35] text-[10px] font-bold text-[#FFCA7C] uppercase tracking-wider">
-                      Platform Preview
-                    </span>
-                  )}
-                </div>
+            {/* Supporting Content */}
+            <p className="mt-5 text-base sm:text-lg text-[#E0C7BC] leading-relaxed max-w-3xl mx-auto font-normal">
+              Discover approvals, apply online, manage documents, track applications, stay compliant and access government support — all from one place.
+            </p>
 
-                {/* Metrics Breakdown Strip */}
-                <div className="mb-5">
-                  <span className="text-[10px] uppercase font-bold text-[#C4A89C] tracking-wider block mb-2">
-                    Applications Status
-                  </span>
-                  <div className="grid grid-cols-3 gap-2.5 text-center">
-                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
-                      <span className="text-lg font-black text-white block font-mono">
-                        {user && enterprise.clearances?.length ? enterprise.clearances.length : "18"}
-                      </span>
-                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                        Required
-                      </span>
-                    </div>
-
-                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
-                      <span className="text-lg font-black text-[#FFCA7C] block font-mono">
-                        {user && enterprise.applicationStatus === "submitted" ? "1" : "6"}
-                      </span>
-                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                        In Progress
-                      </span>
-                    </div>
-
-                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
-                      <span className="text-lg font-black text-[#FE7251] block font-mono">
-                        2
-                      </span>
-                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
-                        Actions Needed
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Next Action Box */}
-                <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-3 mb-5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold text-[#FFCA7C] tracking-wider flex items-center gap-1.5">
-                      <Clock className="w-3 h-3 text-[#FE7251]" /> Next Required Action
-                    </span>
-                    <span className="text-[10px] font-bold text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded border border-rose-800">
-                      SLA: 13 Days Left
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-bold text-white">
-                      MPCB Consent to Establish (CTE)
-                    </h4>
-                    <p className="text-xs text-[#C4A89C] mt-0.5">
-                      Dossier Scrutiny: CA Gross Fixed Assets Certificate required by Desk Officer.
-                    </p>
-                  </div>
-
-                  <Link
-                    href={authHref("/apply/mpcb-consent")}
-                    className="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95 transition-opacity"
-                  >
-                    <span>Continue Application</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-                {/* Footnote on real vs preview */}
-                <div className="pt-3 border-t border-[#36101E] flex items-center justify-between text-[11px] text-[#C4A89C]">
-                  <span>
-                    {user ? "Live state synchronized with MPCB & MIDC" : "Sign in to connect your live enterprise profile"}
-                  </span>
-                  <Link
-                    href={user ? "/dashboard" : "/login"}
-                    className="text-[#FFCA7C] font-bold hover:underline"
-                  >
-                    {user ? "Open Dashboard →" : "Sign In →"}
-                  </Link>
-                </div>
+            {/* Prominent Central Search / Discovery Bar */}
+            <form
+              onSubmit={handleHeroSearch}
+              className="mt-9 w-full max-w-3xl bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl shadow-black/50 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-slate-800"
+            >
+              {/* Category Dropdown */}
+              <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-2">
+                <select
+                  value={heroCategory}
+                  onChange={(e) => setHeroCategory(e.target.value)}
+                  className="w-full sm:w-auto bg-[#FFF5ED] hover:bg-[#FFEBE0] text-xs font-bold text-slate-900 px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8 transition-colors"
+                >
+                  <option value="All Approvals">All Approvals</option>
+                  <option value="Pre-Establishment">Pre-Establishment</option>
+                  <option value="Pre-Operation">Pre-Operation</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Renewals">Renewals</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
+
+              {/* Search Input */}
+              <div className="flex-1 flex items-center px-3">
+                <Search className="w-4 h-4 text-slate-500 mr-2.5 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search approvals, licences, registrations... e.g. MIDC, MPCB CTE"
+                  value={heroSearch}
+                  onChange={(e) => setHeroSearch(e.target.value)}
+                  className="w-full text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 bg-transparent border-0 focus:outline-hidden focus:ring-0"
+                />
+              </div>
+
+              {/* Coral / Burgundy Explore All Button */}
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02] cursor-pointer"
+              >
+                <span>EXPLORE ALL</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+
+            {/* Primary CTA (Personalized Approval Discovery) */}
+            <div className="mt-8 flex flex-col items-center justify-center gap-2.5">
+              <Link
+                href={authHref("/dashboard/kya")}
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-[#9B2A48]/50 border border-[#FED17A]/40 transition-all duration-150 hover:scale-[1.02] cursor-pointer"
+              >
+                <Compass className="w-4 h-4 text-white" />
+                <span>FIND MY REQUIREMENTS</span>
+                <ArrowRight className="w-4 h-4 text-[#FED17A]" />
+              </Link>
+              <span className="text-xs sm:text-sm text-[#E0C7BC] font-medium">
+                Get a customized list of clearances relevant to your business.
+              </span>
+            </div>
+
+            {/* Popular Clearance Chips */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
+              <span className="text-[#FFCA7C] font-bold tracking-wide">Popular Clearances:</span>
+              {[
+                { name: "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
+                { name: "MPCB CTE", href: "/apply/mpcb-consent" },
+                { name: "Fire NOC", href: "/apply/fire-noc" },
+                { name: "DISH Factory License", href: "/apply/dish-factory-license" },
+                { name: "HT Power Sanction", href: "/apply/mseb-power" },
+              ].map((chip) => (
+                <Link
+                  key={chip.name}
+                  href={authHref(chip.href)}
+                  className="px-3.5 py-1.5 rounded-lg bg-[#250C19]/90 hover:bg-[#381326] text-white font-medium border border-[#521C35] hover:border-[#FE7251] hover:text-[#FFCA7C] shadow-xs transition-all duration-150"
+                >
+                  {chip.name}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

@@ -3,18 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  LogIn,
   UserPlus,
   Menu,
   X,
   Briefcase,
-  ChevronRight,
-  ShieldCheck,
-  Compass,
-  FileCheck2,
-  Clock,
-  Coins,
-  FileSpreadsheet,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -51,40 +43,6 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center space-x-6 text-xs font-bold text-[#E0C7BC]">
-            <Link
-              href={authHref("/dashboard/kya")}
-              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
-            >
-              <span>Plan Your Project</span>
-            </Link>
-            <Link
-              href="/#approvals"
-              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
-            >
-              <span>Approvals</span>
-            </Link>
-            <Link
-              href="/#incentives"
-              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
-            >
-              <span>Incentives</span>
-            </Link>
-            <Link
-              href="/#compliance"
-              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
-            >
-              <span>Compliance</span>
-            </Link>
-            <Link
-              href={authHref("/dashboard/sla")}
-              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
-            >
-              <span>Track Applications</span>
-            </Link>
-          </nav>
-
           {/* Desktop Right: MY BUSINESS Personal Control Center */}
           <div className="hidden sm:flex items-center space-x-3">
             {user ? (
@@ -119,8 +77,8 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Hamburger */}
-          <div className="flex lg:hidden items-center space-x-2">
+          {/* Mobile Menu Controls */}
+          <div className="flex sm:hidden items-center space-x-2">
             <Link
               href={user ? "/dashboard" : "/login"}
               className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold flex items-center gap-1.5"
@@ -142,57 +100,48 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
+        <div className="sm:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
           <Link
-            href={authHref("/dashboard/kya")}
+            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/login"}
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
+            className="block py-2 text-xs font-bold text-white hover:text-[#FFCA7C]"
           >
-            Plan Your Project (KYA Roadmap)
+            My Business Portal
           </Link>
           <Link
-            href="/#approvals"
+            href={authHref("/dashboard/caf")}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            Approvals & Licences
-          </Link>
-          <Link
-            href="/#incentives"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
-          >
-            Incentives & Schemes (PSI 2019)
-          </Link>
-          <Link
-            href="/#compliance"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
-          >
-            Compliance & Document Readiness
-          </Link>
-          <Link
-            href={authHref("/dashboard/sla")}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
-          >
-            Track Applications (RTS SLA)
+            Unified Common Application (CAF)
           </Link>
           <div className="pt-3 border-t border-[#36101E] flex items-center gap-2">
-            <Link
-              href={authHref("/dashboard/caf")}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 py-2 px-3 rounded-lg bg-[#250C19] border border-[#521C35] text-center text-xs font-bold text-[#FFCA7C]"
-            >
-              Unified CAF Form
-            </Link>
-            <Link
-              href={user ? "/dashboard" : "/login"}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
-            >
-              {user ? "Dashboard" : "Sign In"}
-            </Link>
+            {!user ? (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 py-2 px-3 rounded-lg bg-[#250C19] border border-[#521C35] text-center text-xs font-bold text-[#FFCA7C]"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
+                >
+                  Register
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
+              >
+                Go to Dashboard
+              </Link>
+            )}
           </div>
         </div>
       )}
