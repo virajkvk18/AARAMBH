@@ -24,6 +24,9 @@ export default function Header() {
   const { t } = useLanguage();
   const { user } = useAuth();
 
+  const authHref = (target: string) =>
+    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
+
   return (
     <header className="sticky top-0 z-40 w-full bg-[#16060E] text-white border-b border-[#36101E] shadow-md shadow-black/20">
       {/* Main Navigation Bar */}
@@ -51,7 +54,7 @@ export default function Header() {
           {/* Center Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center space-x-6 text-xs font-bold text-[#E0C7BC]">
             <Link
-              href="/dashboard/kya"
+              href={authHref("/dashboard/kya")}
               className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
             >
               <span>Plan Your Project</span>
@@ -75,7 +78,7 @@ export default function Header() {
               <span>Compliance</span>
             </Link>
             <Link
-              href="/dashboard/sla"
+              href={authHref("/dashboard/sla")}
               className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
             >
               <span>Track Applications</span>
@@ -141,7 +144,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
           <Link
-            href="/dashboard/kya"
+            href={authHref("/dashboard/kya")}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
@@ -169,7 +172,7 @@ export default function Header() {
             Compliance & Document Readiness
           </Link>
           <Link
-            href="/dashboard/sla"
+            href={authHref("/dashboard/sla")}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
@@ -177,11 +180,18 @@ export default function Header() {
           </Link>
           <div className="pt-3 border-t border-[#36101E] flex items-center gap-2">
             <Link
-              href="/dashboard/caf"
+              href={authHref("/dashboard/caf")}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 rounded-xl bg-[#250C19] border border-[#521C35] text-[#FFCA7C] text-xs font-bold"
+              className="flex-1 py-2 px-3 rounded-lg bg-[#250C19] border border-[#521C35] text-center text-xs font-bold text-[#FFCA7C]"
             >
-              Common Application Form (CAF)
+              Unified CAF Form
+            </Link>
+            <Link
+              href={user ? "/dashboard" : "/login"}
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
+            >
+              {user ? "Dashboard" : "Sign In"}
             </Link>
           </div>
         </div>

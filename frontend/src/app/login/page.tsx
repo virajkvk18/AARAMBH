@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -9,11 +10,15 @@ import {
   CheckCircle2,
   AlertCircle,
   Building2,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+
   const { loginAsApplicant, loginAsOfficer, loginWithDigiLocker } = useAuth();
   const { t } = useLanguage();
 
@@ -32,10 +37,16 @@ export default function LoginPage() {
       loginAsApplicant(
         email,
         "Sanjay Deshmukh",
-        "Maharashtra Solvents & Chemicals Pvt Ltd"
+        "Maharashtra Solvents & Chemicals Pvt Ltd",
+        {},
+        redirectTo
       );
     } else {
-      loginAsOfficer(email, officerDept);
+      loginAsOfficer(
+        email,
+        officerDept,
+        redirectTo.startsWith("/dashboard/officer") ? redirectTo : "/dashboard/officer-workspace"
+      );
     }
   };
 
@@ -193,7 +204,7 @@ export default function LoginPage() {
               <div className="mt-6 pt-5 border-t border-slate-200">
                 <button
                   type="button"
-                  onClick={loginWithDigiLocker}
+                  onClick={() => loginWithDigiLocker(redirectTo)}
                   className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
@@ -327,5 +338,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#16060E] flex items-center justify-center text-white">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

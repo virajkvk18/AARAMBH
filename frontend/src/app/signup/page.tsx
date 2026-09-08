@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Building2,
   Handshake,
@@ -24,7 +25,10 @@ import { useEnterpriseStore } from "@/store/enterpriseStore";
 
 type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
-export default function SignupPage() {
+function SignupForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+
   const { loginAsApplicant, loginWithDigiLocker } = useAuth();
   const { t } = useLanguage();
   const { setFormData, setExtractedFields } = useEnterpriseStore();
@@ -157,17 +161,23 @@ export default function SignupPage() {
     if (!validateStep4()) return;
 
     // 1. Sync full user profile with AuthContext
-    loginAsApplicant(email, applicantName, businessName, {
-      phone: mobile,
-      panNumber: panNumber.toUpperCase(),
-      entityType: legalEntity,
-      addressLine1,
-      addressLine2,
-      pinCode,
-      district,
-      state: stateName,
-      enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-    });
+    loginAsApplicant(
+      email,
+      applicantName,
+      businessName,
+      {
+        phone: mobile,
+        panNumber: panNumber.toUpperCase(),
+        entityType: legalEntity,
+        addressLine1,
+        addressLine2,
+        pinCode,
+        district,
+        state: stateName,
+        enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      },
+      redirectTo
+    );
 
     // 2. Sync with Enterprise Store
     setFormData({
@@ -281,7 +291,7 @@ export default function SignupPage() {
                   </p>
                   <button
                     type="button"
-                    onClick={loginWithDigiLocker}
+                    onClick={() => loginWithDigiLocker(redirectTo)}
                     className="mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                   >
                     Connect DigiLocker
@@ -989,5 +999,13 @@ export default function SignupPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#16060E] flex items-center justify-center text-white">Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }

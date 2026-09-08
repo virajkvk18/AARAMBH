@@ -141,6 +141,9 @@ export default function HomePage() {
   const { user } = useAuth();
   const enterprise = useEnterpriseStore();
 
+  const authHref = (target: string) =>
+    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
+
   // Approvals Search and Filter State
   const [approvalSearch, setApprovalSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
@@ -214,7 +217,7 @@ export default function HomePage() {
               {/* Primary & Secondary CTAs */}
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <Link
-                  href="/dashboard/kya"
+                  href={authHref("/dashboard/kya")}
                   className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
                 >
                   <span>Find My Requirements</span>
@@ -238,7 +241,7 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   <Link
-                    href="/dashboard/kya"
+                    href={authHref("/dashboard/kya")}
                     className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
                   >
                     <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
@@ -250,7 +253,7 @@ export default function HomePage() {
                   </Link>
 
                   <Link
-                    href="/dashboard/caf"
+                    href={authHref("/dashboard/caf")}
                     className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
                   >
                     <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
@@ -370,7 +373,7 @@ export default function HomePage() {
                   </div>
 
                   <Link
-                    href="/apply/mpcb-consent"
+                    href={authHref("/apply/mpcb-consent")}
                     className="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95 transition-opacity"
                   >
                     <span>Continue Application</span>
@@ -420,7 +423,7 @@ export default function HomePage() {
 
                 <div className="pt-2">
                   <Link
-                    href="/dashboard/kya"
+                    href={authHref("/dashboard/kya")}
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#9B2A48] hover:bg-[#82213B] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
                   >
                     <span>Build My Personalized Roadmap</span>
@@ -500,7 +503,7 @@ export default function HomePage() {
                   </div>
 
                   <Link
-                    href="/dashboard/kya"
+                    href={authHref("/dashboard/kya")}
                     className="inline-flex items-center gap-1 font-bold text-[#9B2A48] hover:underline"
                   >
                     <span>View Full Breakdown</span>
@@ -559,7 +562,7 @@ export default function HomePage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Know exactly what to fill, upload, and submit. The integrated Common Application Form (CAF) maps once across multiple departmental portals.
             </p>
-            <Link href="/dashboard/caf" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+            <Link href={authHref("/dashboard/caf")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
               <span>Open Common Form</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -576,7 +579,7 @@ export default function HomePage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Upload once, digitally verify with OCR, and securely reuse documents across all clearance requests without repeated manual submissions.
             </p>
-            <Link href="/dashboard/vault" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+            <Link href={authHref("/dashboard/vault")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
               <span>Document Vault</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -593,7 +596,7 @@ export default function HomePage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Track status, statutory SLA countdowns, and desk reviews with statutory deemed approval enforcement under the Maharashtra Right to Services Act.
             </p>
-            <Link href="/dashboard/sla" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+            <Link href={authHref("/dashboard/sla")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
               <span>SLA Tracker</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -694,7 +697,7 @@ export default function HomePage() {
             ].map((stage, idx) => (
               <Link
                 key={stage.step}
-                href={stage.href}
+                href={stage.href.startsWith("#") ? stage.href : authHref(stage.href)}
                 className="p-5 rounded-2xl bg-[#250C19]/80 border border-[#521C35] hover:border-[#FE7251] hover:bg-[#361026] transition-all group flex flex-col justify-between"
               >
                 <div>
@@ -737,7 +740,7 @@ export default function HomePage() {
           </div>
 
           <Link
-            href="/apply"
+            href={authHref("/apply")}
             className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9B2A48] hover:underline shrink-0"
           >
             <span>View All Approvals Directory</span>
@@ -832,7 +835,7 @@ export default function HomePage() {
                   </button>
 
                   <Link
-                    href={app.applyHref}
+                    href={authHref(app.applyHref)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider shadow-xs hover:shadow-md transition-all group-hover:scale-[1.02]"
                   >
                     <span>Apply Online</span>
@@ -867,7 +870,7 @@ export default function HomePage() {
 
               <div className="pt-2">
                 <Link
-                  href="/dashboard/vault"
+                  href={authHref("/dashboard/vault")}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
                 >
                   <span>Complete Requirements</span>
@@ -952,7 +955,7 @@ export default function HomePage() {
 
               <div className="pt-2">
                 <Link
-                  href="/dashboard/kya"
+                  href={authHref("/dashboard/kya")}
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
                 >
                   <span>Check My Eligibility</span>
@@ -1021,7 +1024,7 @@ export default function HomePage() {
 
               <div className="pt-2">
                 <Link
-                  href="/dashboard/vault"
+                  href={authHref("/dashboard/vault")}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
                 >
                   <span>Open Document Vault</span>
@@ -1135,7 +1138,7 @@ export default function HomePage() {
             </div>
 
             <Link
-              href="/dashboard/sla"
+              href={authHref("/dashboard/sla")}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
             >
               <span>View Full SLA Audit</span>
@@ -1283,7 +1286,7 @@ export default function HomePage() {
               </button>
 
               <Link
-                href={activeModalApproval.applyHref}
+                href={authHref(activeModalApproval.applyHref)}
                 className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95"
               >
                 <span>Apply for this Clearance</span>

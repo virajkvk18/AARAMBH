@@ -28,10 +28,11 @@ interface AuthContextType {
     email: string,
     name?: string,
     enterpriseName?: string,
-    extra?: Partial<User>
+    extra?: Partial<User>,
+    redirectTo?: string
   ) => void;
-  loginAsOfficer: (email: string, department?: string) => void;
-  loginWithDigiLocker: () => void;
+  loginAsOfficer: (email: string, department?: string, redirectTo?: string) => void;
+  loginWithDigiLocker: (redirectTo?: string) => void;
   toggleRole: () => void;
   logout: () => void;
 }
@@ -44,33 +45,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Restore session from localStorage if available, or initialize default demo applicant
+    // Restore session from localStorage if available
     try {
       const stored = localStorage.getItem("aarambh_user");
       if (stored) {
         setUser(JSON.parse(stored));
       } else {
-        const defaultUser: User = {
-          name: "Sanjay Deshmukh",
-          email: "investor@smartelectronics.in",
-          role: "applicant",
-          enterpriseId: "ENT-MH-2026-8891",
-          enterpriseName: "Maharashtra Solvents & Chemicals Pvt Ltd",
-          phone: "9823012345",
-          panNumber: "AAECS8891M",
-          entityType: "proprietor",
-          addressLine1: "Plot No. A-42, Sector 10",
-          addressLine2: "MIDC Chakan Phase-II",
-          pinCode: "410501",
-          district: "Pune",
-          state: "Maharashtra",
-          isDigiLockerVerified: false,
-        };
-        setUser(defaultUser);
-        localStorage.setItem("aarambh_user", JSON.stringify(defaultUser));
+        setUser(null);
       }
     } catch (e) {
       console.error("Failed to load user session", e);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     name = "Sanjay Deshmukh",
     enterpriseName = "Maharashtra Solvents & Chemicals Pvt Ltd",
-    extra: Partial<User> = {}
+    extra: Partial<User> = {},
+    redirectTo?: string
   ) => {
     const applicantUser: User = {
       name,
@@ -108,10 +94,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isDigiLockerVerified: extra.isDigiLockerVerified || false,
     };
     saveUser(applicantUser);
-    router.push("/dashboard");
+    router.push(redirectTo || "/dashboard");
   };
 
-  const loginAsOfficer = (email: string, department = "MIDC Industrial Clearances") => {
+  const loginAsOfficer = (
+    email: string,
+    department = "MIDC Industrial Clearances",
+    redirectTo?: string
+  ) => {
     const officerUser: User = {
       name: "S. K. Kulkarni (Joint Director)",
       email,
@@ -119,10 +109,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       department,
     };
     saveUser(officerUser);
-    router.push("/dashboard/officer-workspace");
+    router.push(redirectTo || "/dashboard/officer-workspace");
   };
 
-  const loginWithDigiLocker = () => {
+  const loginWithDigiLocker = (redirectTo?: string) => {
     const digiUser: User = {
       name: "Rajeshwar Patil",
       email: "rajeshwar.patil@aarambhenterprise.in",
@@ -140,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isDigiLockerVerified: true,
     };
     saveUser(digiUser);
-    router.push("/dashboard");
+    router.push(redirectTo || "/dashboard");
   };
 
   const toggleRole = () => {
