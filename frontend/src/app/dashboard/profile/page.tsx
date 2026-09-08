@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   User,
   Building2,
@@ -14,60 +14,127 @@ import {
   MapPin,
   Cpu,
   Layers,
+  Edit3,
+  X,
+  Save,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, loginAsApplicant } = useAuth();
   const { t } = useLanguage();
   const {
     sector,
     locationZone,
+    district: storedDistrict,
     capexCr,
     powerLoadKva,
     applicationRef,
     applicationStatus,
     extractedFields,
+    masterCAF,
+    updateMasterCAF,
+    setFormData,
   } = useEnterpriseStore();
 
-  const pan = user?.panNumber || extractedFields.pan?.value || "AAECS8891M";
-  const gstin = extractedFields.gstin?.value || "27AAECS8891M1Z8";
-  const aadhaar = extractedFields.aadhaar?.value || (user?.isDigiLockerVerified ? "XXXXXXXX8891" : "Not Linked");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(user?.name || masterCAF.companyDetails.signatoryName || "Sanjay Deshmukh");
+  const [editEmail, setEditEmail] = useState(user?.email || masterCAF.companyDetails.signatoryEmail || "investor@maharashtra-solvents.com");
+  const [editPhone, setEditPhone] = useState(user?.phone || masterCAF.companyDetails.signatoryMobile || "+91 98220 12345");
+  const [editCompanyName, setEditCompanyName] = useState(user?.enterpriseName || masterCAF.companyDetails.companyName || "Maharashtra Solvents & Chemicals Pvt Ltd");
+  const [editPan, setEditPan] = useState(user?.panNumber || masterCAF.companyDetails.pan || "AAECS8891M");
+  const [editGstin, setEditGstin] = useState(extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "27AAECS8891M1Z2");
+  const [editAddress, setEditAddress] = useState(user?.addressLine1 || masterCAF.locationDetails.address || "Plot No. A-42, MIDC Chakan Phase-II Industrial Area");
+  const [editDistrict, setEditDistrict] = useState(user?.district || storedDistrict || masterCAF.locationDetails.district || "Pune");
+
+  const pan = user?.panNumber || masterCAF.companyDetails.pan || extractedFields.pan?.value || "AAECS8891M";
+  const gstin = extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "27AAECS8891M1Z2";
+  const companyName = user?.enterpriseName || masterCAF.companyDetails.companyName || "Maharashtra Solvents & Chemicals Pvt Ltd";
+  const signatoryName = user?.name || masterCAF.companyDetails.signatoryName || "Sanjay Deshmukh";
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 1. Update AuthContext
+    loginAsApplicant(editEmail, editName, editCompanyName, {
+      phone: editPhone,
+      panNumber: editPan.toUpperCase(),
+      addressLine1: editAddress,
+      district: editDistrict,
+      enterpriseId: user?.enterpriseId || "ENT-MH-2026-8891",
+    });
+
+    // 2. Update Master CAF in Enterprise Store
+    updateMasterCAF({
+      companyDetails: {
+        ...masterCAF.companyDetails,
+        companyName: editCompanyName,
+        pan: editPan.toUpperCase(),
+        gstin: editGstin.toUpperCase(),
+        signatoryName: editName,
+        signatoryEmail: editEmail,
+        signatoryMobile: editPhone,
+      },
+      locationDetails: {
+        ...masterCAF.locationDetails,
+        address: editAddress,
+        district: editDistrict,
+      },
+    });
+
+    setFormData({
+      district: editDistrict,
+      locationZone: `${editDistrict} Industrial Zone`,
+    });
+
+    setIsEditing(false);
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-16">
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-5 border-b border-[#F0E5E0] pb-6 mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-[#FFCA7C] flex items-center justify-center font-black text-2xl shadow-md shrink-0">
-            {user?.name ? user.name[0].toUpperCase() : "M"}
-          </div>
-          <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-black text-[#16060E]">
-              {user?.name || "Enterprise Signatory"}
-            </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {user?.enterpriseName || extractedFields.entity_name?.value || "Maharashtra Solvents & Chemicals Pvt Ltd"} • {user?.email || "investor@maharashtra-solvents.com"}
-            </p>
-            <div className="mt-2.5 flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">
-                <CheckCircle2 className="w-3 h-3 text-[#FE7251]" />
-                <span>Active Verified Entity</span>
-              </span>
-              {user?.isDigiLockerVerified && (
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF7F0] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">
-                  <ShieldCheck className="w-3 h-3 text-[#FE7251]" />
-                  <span>DigiLocker Linked</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#F0E5E0] pb-6 mb-6">
+          <div className="flex items-center space-x-5">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-[#FFCA7C] flex items-center justify-center font-black text-2xl shadow-md shrink-0">
+              {signatoryName ? signatoryName[0].toUpperCase() : "M"}
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-[#16060E]">
+                {signatoryName}
+              </h1>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {companyName} • {user?.email || "investor@maharashtra-solvents.com"}
+              </p>
+              <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">
+                  <CheckCircle2 className="w-3 h-3 text-[#FE7251]" />
+                  <span>Active Verified Entity</span>
                 </span>
-              )}
-              {applicationRef && (
-                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#9B2A48] text-[#FFCA7C]">
-                  CAF: {applicationRef}
-                </span>
-              )}
+                {user?.isDigiLockerVerified && (
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF7F0] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">
+                    <ShieldCheck className="w-3 h-3 text-[#FE7251]" />
+                    <span>DigiLocker Linked</span>
+                  </span>
+                )}
+                {applicationRef && (
+                  <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#9B2A48] text-[#FFCA7C]">
+                    CAF: {applicationRef}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF9F5] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer shrink-0"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>Edit Profile Details</span>
+          </button>
         </div>
 
         {/* Profile Attributes Grid */}
@@ -75,7 +142,7 @@ export default function ProfilePage() {
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
             <span className="text-[#886A75] font-bold uppercase text-[10px] flex items-center space-x-1">
               <Building2 className="w-3 h-3 text-[#FE7251]" />
-              <span>{t("profile_enterprise_id") || "Enterprise ID"}</span>
+              <span>Enterprise ID</span>
             </span>
             <p className="font-mono font-bold text-[#9B2A48] text-sm">
               {user?.enterpriseId || "ENT-MH-2026-8891"}
@@ -85,10 +152,10 @@ export default function ProfilePage() {
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
             <span className="text-[#886A75] font-bold uppercase text-[10px] flex items-center space-x-1">
               <User className="w-3 h-3 text-[#FE7251]" />
-              <span>{t("profile_role") || "Role / Access Tier"}</span>
+              <span>Role / Access Tier</span>
             </span>
             <p className="font-bold text-[#16060E] capitalize text-sm">
-              {user?.role === "officer" ? `Nodal Scrutiny Officer (${user.department || "MIDC"})` : "Authorized Industrial Investor"}
+              {user?.role === "officer" ? `Nodal Scrutiny Officer (${user.department || "MIDC"})` : "Authorized Industrial Signatory"}
             </p>
           </div>
 
@@ -111,17 +178,17 @@ export default function ProfilePage() {
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
             <span className="text-[#886A75] font-bold uppercase text-[10px] flex items-center space-x-1">
               <Layers className="w-3 h-3 text-[#FE7251]" />
-              <span>{t("profile_sector") || "Industry Sector"}</span>
+              <span>Industry Sector</span>
             </span>
-            <p className="font-bold text-[#16060E]">{sector || "Chemical Manufacturing & Solvents"}</p>
+            <p className="font-bold text-[#16060E]">{sector || "Electric Vehicle & Clean Mobility"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
             <span className="text-[#886A75] font-bold uppercase text-[10px] flex items-center space-x-1">
               <MapPin className="w-3 h-3 text-[#FE7251]" />
-              <span>{t("profile_location") || "Industrial Zone (MIDC)"}</span>
+              <span>Registered Address / Location</span>
             </span>
-            <p className="font-bold text-[#16060E]">{locationZone || "Chakan Phase-II Industrial Area, Pune"}</p>
+            <p className="font-bold text-[#16060E]">{user?.addressLine1 || locationZone || "Plot A-42, MIDC Chakan, Pune"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
@@ -129,7 +196,7 @@ export default function ProfilePage() {
               <Phone className="w-3 h-3 text-[#FE7251]" />
               <span>Contact Phone</span>
             </span>
-            <p className="font-bold text-[#16060E]">{user?.phone || "+91 98200 12345"}</p>
+            <p className="font-bold text-[#16060E]">{user?.phone || "+91 98220 12345"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
@@ -143,7 +210,136 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* EDIT PROFILE MODAL */}
+      {isEditing && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-[#F0E5E0] space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#F0E5E0] pb-4">
+              <div>
+                <h3 className="text-lg font-black text-[#16060E]">Edit Investor Profile</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Update authorized enterprise credentials & legal registry data</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Signatory Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Company / Enterprise Name</label>
+                  <input
+                    type="text"
+                    value={editCompanyName}
+                    onChange={(e) => setEditCompanyName(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Contact Phone</label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Corporate PAN</label>
+                  <input
+                    type="text"
+                    value={editPan}
+                    onChange={(e) => setEditPan(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold uppercase focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-[#16060E] uppercase mb-1">Maharashtra GSTIN</label>
+                  <input
+                    type="text"
+                    value={editGstin}
+                    onChange={(e) => setEditGstin(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-mono font-bold uppercase focus:ring-2 focus:ring-[#FE7251]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#16060E] uppercase mb-1">District</label>
+                <input
+                  type="text"
+                  value={editDistrict}
+                  onChange={(e) => setEditDistrict(e.target.value)}
+                  required
+                  className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#16060E] uppercase mb-1">Plot / Factory Address</label>
+                <textarea
+                  rows={2}
+                  value={editAddress}
+                  onChange={(e) => setEditAddress(e.target.value)}
+                  required
+                  className="w-full px-3.5 py-2.5 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#FE7251]"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t border-[#F0E5E0]">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 hover:from-[#7D1E36] hover:to-[#E55B3B]"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

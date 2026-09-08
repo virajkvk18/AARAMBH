@@ -257,7 +257,7 @@ export default function DashboardHomePage() {
           <div>
             <h3 className="text-base font-bold text-[#18080E]">Active Parallel Approvals Tracker</h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Current stage, SLA countdown, and departmental reviews for Application #MH-CAF-2026-00412
+              Current stage, SLA countdown, and departmental reviews for Application #{applicationRef || "MH-CAF-2026-00412"}
             </p>
           </div>
           <Link

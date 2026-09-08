@@ -17,9 +17,10 @@ import {
   RotateCcw,
   ArrowRight,
   ShieldCheck,
-  Award,
   FileCheck2,
+  Award,
 } from "lucide-react";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
 
 interface ClearanceSLABar {
   id: string;
@@ -27,13 +28,13 @@ interface ClearanceSLABar {
   department: string;
   totalSlaDays: number;
   icon: React.ComponentType<{ className?: string }>;
-  weightOffset?: number; // small offset to demonstrate relative timeline variance
+  weightOffset?: number;
 }
 
-const activeApplications: ClearanceSLABar[] = [
+const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
   {
     id: "mpcb-cte",
-    name: "MPCB Consent to Establish (CTE) - Red Category",
+    name: "MPCB Consent to Establish (CTE)",
     department: "Maharashtra Pollution Control Board",
     totalSlaDays: 21,
     icon: Factory,
@@ -66,6 +67,37 @@ const activeApplications: ClearanceSLABar[] = [
 ];
 
 export default function SLATrackerPage() {
+  const { clearances } = useEnterpriseStore();
+
+  const activeApplications: ClearanceSLABar[] =
+    clearances && clearances.length > 0
+      ? clearances.map((c, idx) => {
+          let IconComp = Building2;
+          const dept = (c.department || "").toLowerCase();
+          const name = (c.name || "").toLowerCase();
+          if (dept.includes("pollution") || dept.includes("mpcb") || name.includes("mpcb")) {
+            IconComp = Factory;
+          } else if (dept.includes("fire") || name.includes("fire")) {
+            IconComp = Flame;
+          } else if (dept.includes("water") || name.includes("water")) {
+            IconComp = Droplets;
+          } else if (dept.includes("safety") || dept.includes("dish") || name.includes("dish")) {
+            IconComp = ShieldCheck;
+          } else if (dept.includes("electricity") || dept.includes("power") || name.includes("power")) {
+            IconComp = Zap;
+          }
+
+          return {
+            id: c.id,
+            name: c.name,
+            department: c.department,
+            totalSlaDays: c.slaDays || 15,
+            icon: IconComp,
+            weightOffset: (idx % 3) - 1,
+          };
+        })
+      : DEFAULT_APPLICATIONS;
+
   // Real React state for Acceleration Simulator (0 - 100)
   const [sliderValue, setSliderValue] = useState<number>(45);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
