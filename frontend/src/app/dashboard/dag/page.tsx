@@ -94,21 +94,36 @@ const INITIAL_NODES: DAGNode[] = [
 
 export default function DAGWorkflowPage() {
   const { user } = useAuth();
+  const { dagNodeStatuses: storeDagStatuses, updateDAGNodeStatus, resetDAGStatuses } = useEnterpriseStore();
   const enterpriseId = user?.enterpriseId || "ENT-MH-2026-8891";
 
   const [nodeStatuses, setNodeStatuses] = useState<Record<string, NodeStatus>>({
-    "node-root": "active",
-    "node-mpcb": "locked",
-    "node-fire": "locked",
-    "node-water": "locked",
-    "node-dish": "locked",
+    "node-root": (storeDagStatuses?.["node-root"] as NodeStatus) || "active",
+    "node-mpcb": (storeDagStatuses?.["node-mpcb"] as NodeStatus) || "locked",
+    "node-fire": (storeDagStatuses?.["node-fire"] as NodeStatus) || "locked",
+    "node-water": (storeDagStatuses?.["node-water"] as NodeStatus) || "locked",
+    "node-dish": (storeDagStatuses?.["node-dish"] as NodeStatus) || "locked",
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPersisted, setIsPersisted] = useState(false);
   const [historyLog, setHistoryLog] = useState<string[]>([
-    "DAG Initialized: Connecting to persistent backend store...",
+    "DAG Initialized: Connecting to enterprise single-window clearance engine...",
   ]);
+
+  // Keep local status synchronized with storeDagStatuses if changed externally (e.g., by officer workspace)
+  useEffect(() => {
+    if (storeDagStatuses) {
+      setNodeStatuses((prev) => ({
+        ...prev,
+        "node-root": (storeDagStatuses["node-root"] as NodeStatus) || prev["node-root"],
+        "node-mpcb": (storeDagStatuses["node-mpcb"] as NodeStatus) || prev["node-mpcb"],
+        "node-fire": (storeDagStatuses["node-fire"] as NodeStatus) || prev["node-fire"],
+        "node-water": (storeDagStatuses["node-water"] as NodeStatus) || prev["node-water"],
+        "node-dish": (storeDagStatuses["node-dish"] as NodeStatus) || prev["node-dish"],
+      }));
+    }
+  }, [storeDagStatuses]);
 
   // Load persisted DAG nodes from Backend / Supabase REST API
   const fetchPersistedNodes = useCallback(async () => {
@@ -228,6 +243,9 @@ export default function DAGWorkflowPage() {
     setNodeStatuses(updatedStatuses);
     setHistoryLog((old) => [...newLogs, ...old]);
 
+    // Update persistent enterprise store
+    updateDAGNodeStatus(nodeId, "approved");
+
     // Broadcast update across open tabs
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       try {
@@ -275,6 +293,7 @@ export default function DAGWorkflowPage() {
       "node-dish": "locked",
     };
     setNodeStatuses(initialStatuses);
+    resetDAGStatuses();
     setHistoryLog(["🔄 Pipeline reset to initial state. Root is Active."]);
 
     // Re-initialize in backend

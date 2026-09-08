@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   MapPin,
   Mail,
@@ -20,7 +21,7 @@ export default function Footer() {
     <footer className="bg-[#14050B] text-[#E0C7BC] border-t border-[#36101E] text-sm">
       {/* Top Banner: Quick Single-Window Assurance */}
       <div className="bg-[#0D0307] border-b border-[#2D0D19]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-3.5">
           <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center space-x-2 text-[#EFE4DC]">
               <CheckCircle2 className="w-4 h-4 text-[#FE7251] shrink-0" />
@@ -39,7 +40,7 @@ export default function Footer() {
       </div>
 
       {/* Main 3-Column Footer Grid */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Column 1: AARAMBH Single Window Portal Identity */}
           <div className="space-y-4">
@@ -71,34 +72,34 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/kya" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Know Your Approvals (KYA Wizard)
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
-                  Document Vault (AI & DigiLocker)
-                </span>
+                <Link href="/dashboard/vault" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
+                  Document Vault & DigiLocker
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/dag" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Multi-Department DAG Orchestrator
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/sla" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Statutory SLA & Deemed Tracker
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/kya" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Package Scheme of Incentives (PSI 2019)
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/grievances" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Investor Grievance Redressal Desk
-                </span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -111,24 +112,24 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/sla" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Maharashtra Right to Public Services Act
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
-                  Maharashtra Industrial Policy
-                </span>
+                <Link href="/dashboard/kya" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
+                  Maharashtra Industrial Policy (PSI 2019)
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
+                <Link href="/dashboard/vault" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
                   Terms of Service & Data Privacy
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors cursor-pointer">
-                  Hyperlinking & Copyright Policy
-                </span>
+                <Link href="/dashboard/grievances" className="text-[#C4A89C] hover:text-[#FFCA7C] transition-colors block">
+                  Hyperlinking & Grievance Policy
+                </Link>
               </li>
               <li>
                 <a
@@ -160,11 +161,18 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4 text-[#FE7251] shrink-0" />
-                <span>Toll-Free Helpline: <strong className="text-[#FFCA7C] font-mono">1800-120-8040</strong></span>
+                <span>
+                  Toll-Free Helpline:{" "}
+                  <a href="tel:18001208040" className="text-[#FFCA7C] font-mono hover:underline font-bold">
+                    1800-120-8040
+                  </a>
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-[#FFCA7C] shrink-0" />
-                <span>support.aarambh@maharashtra.gov.in</span>
+                <a href="mailto:support.aarambh@maharashtra.gov.in" className="hover:text-[#FFCA7C] hover:underline">
+                  support.aarambh@maharashtra.gov.in
+                </a>
               </div>
             </div>
           </div>
@@ -173,7 +181,7 @@ export default function Footer() {
 
       {/* Bottom Copyright and Legal Bar */}
       <div className="bg-[#0D0307] border-t border-[#2D0D19] py-4">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#C4A89C]">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#C4A89C]">
           <p>
             © 2026 AARAMBH Single Window Portal. Government of Maharashtra. All Rights Reserved.
           </p>

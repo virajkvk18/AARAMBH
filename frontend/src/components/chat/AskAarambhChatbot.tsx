@@ -112,10 +112,12 @@ export default function AskAarambhChatbot() {
     setLoading(true);
 
     try {
-      const history = [...messages, userMessage].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+      const history = [...messages, userMessage]
+        .filter((m) => !m.id.startsWith("err-"))
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
 
       const savedKey = typeof window !== "undefined" ? localStorage.getItem("aarambh_groq_api_key") : null;
 
@@ -264,9 +266,6 @@ export default function AskAarambhChatbot() {
               <span className="text-xs font-bold tracking-wide text-white">
                 Ask AARAMBH
               </span>
-              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-white/20 text-[#FFF2DF] border border-white/30 uppercase tracking-wider">
-                AI
-              </span>
             </div>
           </button>
         </div>
@@ -292,7 +291,7 @@ export default function AskAarambhChatbot() {
                     AARAMBH
                   </h3>
                   <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30">
-                    Govt. AI
+                    Helpdesk
                   </span>
                 </div>
                 <p className="text-[9px] text-[#C4A89C]">

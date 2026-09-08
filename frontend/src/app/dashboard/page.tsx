@@ -21,48 +21,57 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { clearances, applicationRef, applicationStatus, isAssessed, sector, locationZone } = useEnterpriseStore();
 
   const userName = user?.name || "Investor";
   const isOfficer = user?.role === "officer";
 
+  // Dynamic KPI Calculations
+  const activeClearancesCount = clearances.length > 0 ? clearances.length : 5;
+  const parallelLeadTimeDays = clearances.length > 0
+    ? Math.max(...clearances.map((c) => c.slaDays))
+    : 21;
+  const deemedApprovalsCount = clearances.filter((c) => c.status === "approved" || c.status === "deemed_approved").length;
+
   // KPI Data
   const kpiData = [
     {
-      title: t("dash.kpi_active"),
-      value: "12",
+      title: t("dash.kpi_active", "Active Clearances"),
+      value: String(activeClearancesCount),
       suffix: " Approvals",
-      change: t("dash.kpi_active_sub"),
+      change: isAssessed ? `${sector} Sector` : t("dash.kpi_active_sub", "Statutory MH Clearances"),
       changeType: "neutral",
       icon: Layers,
       color: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.kpi_parallel"),
-      value: "36",
+      title: t("dash.kpi_parallel", "Parallel Lead Time"),
+      value: String(parallelLeadTimeDays),
       suffix: " Days",
-      change: t("dash.kpi_parallel_sub"),
+      change: t("dash.kpi_parallel_sub", "vs 120+ sequential days"),
       changeType: "positive",
       icon: GitFork,
       color: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.kpi_sla"),
+      title: t("dash.kpi_sla", "SLA Compliance"),
       value: "100%",
       suffix: "",
-      change: t("dash.kpi_sla_sub"),
+      change: t("dash.kpi_sla_sub", "Under Maharashtra RTS Act"),
       changeType: "positive",
       icon: Clock,
       color: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.kpi_deemed"),
-      value: "5",
-      suffix: " Guaranteed",
-      change: t("dash.kpi_deemed_sub"),
+      title: t("dash.kpi_deemed", "Deemed Approvals"),
+      value: String(deemedApprovalsCount > 0 ? deemedApprovalsCount : "Guaranteed"),
+      suffix: deemedApprovalsCount > 0 ? " Issued" : "",
+      change: t("dash.kpi_deemed_sub", "Auto-issued on statutory timeout"),
       changeType: "positive",
       icon: Award,
       color: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
@@ -72,7 +81,7 @@ export default function DashboardHomePage() {
   // Quick Action Feature Buttons
   const quickActions = [
     {
-      title: t("dash.kya"),
+      title: t("dash.kya", "Know Your Approvals"),
       subtitle: "Evaluate required statutory approvals & incentives",
       href: "/dashboard/kya",
       icon: Compass,
@@ -81,8 +90,8 @@ export default function DashboardHomePage() {
       iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.vault"),
-      subtitle: "AI OCR verification & DigiLocker document sync",
+      title: t("dash.vault", "Document Vault"),
+      subtitle: "OCR verification & DigiLocker document sync",
       href: "/dashboard/vault",
       icon: FolderLock,
       btnLabel: "Manage Vault",
@@ -90,7 +99,7 @@ export default function DashboardHomePage() {
       iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.dag"),
+      title: t("dash.dag", "Parallel Clearance DAG"),
       subtitle: "Inspect multi-department parallel dependency graphs",
       href: "/dashboard/dag",
       icon: GitFork,
@@ -99,7 +108,7 @@ export default function DashboardHomePage() {
       iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
-      title: t("dash.sla"),
+      title: t("dash.sla", "SLA Tracker & Deemed Approvals"),
       subtitle: "Real-time statutory countdowns & deemed approvals",
       href: "/dashboard/sla",
       icon: Clock,
@@ -246,63 +255,66 @@ export default function DashboardHomePage() {
               <tr>
                 <th className="px-6 py-3 text-left">Department / Authority</th>
                 <th className="px-6 py-3 text-left">Clearance Required</th>
-                <th className="px-6 py-3 text-left">Stage</th>
+                <th className="px-6 py-3 text-left">Category</th>
                 <th className="px-6 py-3 text-left">Statutory SLA</th>
                 <th className="px-6 py-3 text-left">Status</th>
                 <th className="px-6 py-3 text-right">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0E5E0] font-medium text-slate-800">
-              <tr className="hover:bg-[#FFF9F5]/70">
-                <td className="px-6 py-3.5 font-bold text-slate-900">MIDC Planning Wing</td>
-                <td className="px-6 py-3.5">Plot Allotment & Building Plan</td>
-                <td className="px-6 py-3.5 text-slate-500">Field Scrutiny Complete</td>
-                <td className="px-6 py-3.5 font-semibold text-[#FE7251]">4 Days Remaining</td>
-                <td className="px-6 py-3.5">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                    On Schedule
-                  </span>
-                </td>
-                <td className="px-6 py-3.5 text-right">
-                  <Link href="/dashboard/dag" className="text-[#9B2A48] font-bold hover:text-[#FE7251] hover:underline">
-                    Graph Node
-                  </Link>
-                </td>
-              </tr>
+              {clearances.map((clr) => {
+                const isResolved = clr.status === "approved" || clr.status === "deemed_approved";
+                const isQuery = clr.id === "clr-fire-noc";
 
-              <tr className="hover:bg-[#FFF9F5]/70">
-                <td className="px-6 py-3.5 font-bold text-slate-900">MPCB (Environment)</td>
-                <td className="px-6 py-3.5">Consent to Establish (CTE) - Red</td>
-                <td className="px-6 py-3.5 text-slate-500">Technical Committee Review</td>
-                <td className="px-6 py-3.5 font-semibold text-[#FE7251]">11 Days Remaining</td>
-                <td className="px-6 py-3.5">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                    Under Review
-                  </span>
-                </td>
-                <td className="px-6 py-3.5 text-right">
-                  <Link href="/dashboard/dag" className="text-[#9B2A48] font-bold hover:text-[#FE7251] hover:underline">
-                    Graph Node
-                  </Link>
-                </td>
-              </tr>
-
-              <tr className="hover:bg-[#FFF9F5]/70">
-                <td className="px-6 py-3.5 font-bold text-slate-900">State Fire Directorate</td>
-                <td className="px-6 py-3.5">Provisional Fire NOC</td>
-                <td className="px-6 py-3.5 text-slate-500">Clarification On Water Reservoir</td>
-                <td className="px-6 py-3.5 font-semibold text-[#FE7251]">3 Days To Respond</td>
-                <td className="px-6 py-3.5">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#FE7251] border border-[#FED17A]">
-                    Query Pending
-                  </span>
-                </td>
-                <td className="px-6 py-3.5 text-right">
-                  <Link href="/dashboard/grievances" className="text-[#FE7251] font-bold hover:underline">
-                    Respond
-                  </Link>
-                </td>
-              </tr>
+                return (
+                  <tr key={clr.id} className="hover:bg-[#FFF9F5]/70">
+                    <td className="px-6 py-3.5 font-bold text-slate-900">{clr.department}</td>
+                    <td className="px-6 py-3.5">{clr.name}</td>
+                    <td className="px-6 py-3.5 text-slate-500">
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700">
+                        {clr.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3.5 font-semibold text-[#FE7251]">
+                      {isResolved ? "Completed ✓" : `${clr.slaDays} Working Days`}
+                    </td>
+                    <td className="px-6 py-3.5">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          isResolved
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : isQuery
+                            ? "bg-[#FFF2DF] text-[#FE7251] border-[#FED17A]"
+                            : "bg-[#FFF2DF] text-[#9B2A48] border-[#FED17A]"
+                        }`}
+                      >
+                        {isResolved
+                          ? "Approved ✓"
+                          : isQuery
+                          ? "Query Pending"
+                          : "Under Review"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3.5 text-right">
+                      {isQuery ? (
+                        <Link
+                          href="/dashboard/grievances"
+                          className="text-[#FE7251] font-bold hover:underline"
+                        >
+                          Respond
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/dashboard/dag"
+                          className="text-[#9B2A48] font-bold hover:text-[#FE7251] hover:underline"
+                        >
+                          Graph Node
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

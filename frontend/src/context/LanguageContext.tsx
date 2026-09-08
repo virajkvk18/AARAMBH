@@ -36,7 +36,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "hero.headline_start": "Accelerating Industrial",
     "hero.headline_highlight": "Enterprise Growth",
     "hero.headline_end": "in Maharashtra",
-    "hero.subheadline": "Unified single-window portal enabling real-time statutory clearances, AI-assisted document pre-validation, automated DAG routing, and time-bound deemed approvals under Maharashtra Right to Public Services Act.",
+    "hero.subheadline": "Unified single-window portal enabling real-time statutory clearances, automated document pre-validation, smart DAG routing, and time-bound deemed approvals under Maharashtra Right to Public Services Act.",
     "hero.cta_primary": "Launch Single Window Application",
     "hero.cta_secondary": "Know Your Approvals (KYA)",
     "hero.stat1_val": "70+",
@@ -52,7 +52,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "benefits.badge": "Pioneering State Infrastructure",
     "benefits.title": "Why Industrialists Choose Maharashtra",
     "benefits.sub": "Engineered to eliminate departmental red tape and accelerate manufacturing plant commissioning.",
-    "benefits.card1_title": "AI Document Scrutiny & Vault",
+    "benefits.card1_title": "Automated Document Scrutiny & Vault",
     "benefits.card1_desc": "Automated OCR extracts key statutory parameters from lease deeds and blueprints with cross-document discrepancy detection.",
     "benefits.card2_title": "DAG Parallel Clearance Engine",
     "benefits.card2_desc": "Break out of sequential bottlenecks. MPCB, Fire NOC, and Water allotments process simultaneously.",
@@ -87,14 +87,14 @@ export const translations: Record<Language, Record<string, string>> = {
     "footer.rights": "Government of Maharashtra. All Rights Reserved. Built for Industrial Growth.",
 
     // Chatbot
-    "chat.title": "AARAMBH AI Advisory",
+    "chat.title": "AARAMBH Industrial Advisory",
     "chat.online": "Online • 24x7 Regulatory Assistant",
     "chat.placeholder": "Ask about clearances, MIDC zones, PSI subsidies, or SLAs...",
-    "chat.disclaimer": "AI assistant provides guidance based on Maharashtra Industrial Policies & RTS Rules.",
+    "chat.disclaimer": "Advisory assistant provides guidance based on Maharashtra Industrial Policies & RTS Rules.",
     "chat.chip1": "What approvals do I need for Chemical manufacturing?",
     "chat.chip2": "How does Deemed Approval work?",
     "chat.chip3": "What subsidies apply for Pune Chakan MIDC?",
-    "chat.welcome": "Namaste! I am the AARAMBH Industrial Advisory AI. How can I assist with your Maharashtra statutory clearances, MIDC land, or subsidy inquiries today?",
+    "chat.welcome": "Namaste! I am the AARAMBH Industrial Advisory Assistant. How can I assist with your Maharashtra statutory clearances, MIDC land, or subsidy inquiries today?",
 
     // Dashboard Layout & Sidebar
     "dash.overview": "Control Center",
@@ -148,8 +148,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "vault.digilocker_title": "DigiLocker Verified Statutory Certificates",
     "vault.connect_dl": "Connect DigiLocker",
     "vault.drop_title": "Drop your Industrial Dossier or Click to Browse",
-    "vault.process_ai": "Process with AI",
-    "vault.extracted_title": "AI Extracted Payload",
+    "vault.process_ai": "Process Documents",
+    "vault.extracted_title": "Extracted Payload Data",
 
     // DAG Page
     "dag.title": "Directed Acyclic Graph (DAG) Workflow",
@@ -220,6 +220,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "Available Land:",
     "zones.check_approvals": "Check Approvals for this Zone",
 
+    // Grievances Page
+    "grievances.title": "Dispute Redressal & Officer Query Desk",
+    "grievances.sub": "Time-bound statutory resolution for delays, inspection queries, or payment reconciliations under Maharashtra RTS Act.",
+    "grievances.raise_ticket": "Raise New Ticket",
+    "grievances.active_scrutiny": "Under Active Scrutiny",
+    "grievances.resolved": "Resolved & Closed ✓",
+    "grievances.target_dept": "Target Department",
+    "grievances.subject": "Subject / Clear Query Summary",
+    "grievances.details": "Detailed Description",
+    "grievances.submit_btn": "Submit Grievance",
+    "grievances.modal_title": "Raise Grievance or Officer Query",
+    "grievances.modal_sub": "Your ticket will be routed directly to the designated nodal officer.",
+
+    // Officer Workspace
+    "officer.console_tag": "Department Officer Scrutiny Console",
+    "officer.title": "Officer Review Queue",
+    "officer.sub": "Review incoming Common Application Forms (CAF), verify OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.",
+    "officer.queue_ref": "Application Ref",
+    "officer.queue_enterprise": "Enterprise Name",
+    "officer.queue_clearance": "Clearance Requested",
+    "officer.queue_sla": "SLA Due Date",
+    "officer.queue_action": "Review Action",
+    "officer.endorse_approve": "Endorse & Approve",
+    "officer.raise_query": "Raise Query",
+    "officer.approved": "Approved ✓",
+    "officer.restricted_title": "Restricted Officer Access",
+    "officer.restricted_sub": "This workspace is exclusively for verified Department Scrutiny Officers. Toggle 'Officer View' on the top bar for testing.",
+
+    // Profile Page
+    "profile.title": "Investor Profile",
+    "profile.single_window_id": "Enterprise Single Window ID",
+    "profile.role_tier": "Role / Access Tier",
+    "profile.registered_sector": "Registered Sector",
+    "profile.industrial_zone": "Industrial Zone (MIDC)",
+    "profile.active_badge": "Active Verified Profile",
+    "profile.digi_badge": "DigiLocker Linked",
+    "profile.edit_profile": "Edit Profile Details",
+    "profile.save_changes": "Save Changes",
+
+    // Common UI Elements
+    "common.cancel": "Cancel",
+    "common.close": "Close",
+    "common.download": "Download",
+    "common.view": "View",
+    "common.remove": "Remove",
+    "common.submit": "Submit",
+    "common.back": "Back",
+    "common.next": "Next",
+    "common.loading": "Loading...",
+
     // Auth & Form
     "auth.sign_in": "Sign In",
     "auth.sign_in_sub": "To access your dashboard and apply for approvals.",
@@ -241,6 +291,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.address": "Enter your Address",
     "auth.validate_pan": "Validate your Permanent Account Number (PAN)",
     "auth.legal_entity": "Select your legal entity type",
+    "auth.login_title": "Welcome back to AARAMBH",
+    "auth.login_sub": "Sign in with your enterprise credentials to manage your approvals.",
+    "auth.signup_title": "Setup your profile",
+    "auth.signup_sub": "Register your enterprise on the Maharashtra Single Window Portal.",
   },
   mr: {
     // Top Bar & Government statement
@@ -267,7 +321,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "hero.headline_start": "महाराष्ट्रात औद्योगिक",
     "hero.headline_highlight": "उद्यमांची प्रगती",
     "hero.headline_end": "गतिमान करा",
-    "hero.subheadline": "महाराष्ट्रात सर्व वैधानिक परवानग्या, AI-आधारित कागदपत्र पूर्व-पडताळणी, DAG समांतर मंजुरी आणि महाराष्ट्र लोकसेवा हक्क अधिनियमांतर्गत विहित वेळेत मानिव मंजुरी.",
+    "hero.subheadline": "महाराष्ट्रात सर्व वैधानिक परवानग्या, स्वयंचलित कागदपत्र पूर्व-पडताळणी, DAG समांतर मंजुरी आणि महाराष्ट्र लोकसेवा हक्क अधिनियमांतर्गत विहित वेळेत मानिव मंजुरी.",
     "hero.cta_primary": "एक खिडकी अर्ज सुरू करा",
     "hero.cta_secondary": "परवानग्या जाणून घ्या (KYA)",
     "hero.stat1_val": "७०+",
@@ -283,7 +337,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "benefits.badge": "अग्रगण्य राज्य पायाभूत सुविधा",
     "benefits.title": "उद्योगपती महाराष्ट्राची निवड का करतात?",
     "benefits.sub": "विभागीय विलंब दूर करून उत्पादन युनिट्स वेळेत सुरू करण्यासाठी तयार केलेली आधुनिक प्रणाली.",
-    "benefits.card1_title": "AI कागदपत्र तपासणी व व्हॉल्ट",
+    "benefits.card1_title": "कागदपत्र तपासणी व व्हॉल्ट",
     "benefits.card1_desc": "स्वयंचलित OCR द्वारे भाडेपट्टे आणि नकाशांमधून वैधानिक माहिती तात्काळ तपासली जाते.",
     "benefits.card2_title": "DAG समांतर परवाना इंजिन",
     "benefits.card2_desc": "एकामागून एक रांगेत थांबण्याऐवजी MPCB, अग्निशमन NOC आणि पाणी वाटप एकाच वेळी मंजूर होतात.",
@@ -318,14 +372,14 @@ export const translations: Record<Language, Record<string, string>> = {
     "footer.rights": "महाराष्ट्र शासन. सर्व हक्क राखीव. औद्योगिक विकासासाठी समर्पित.",
 
     // Chatbot
-    "chat.title": "आरंभ AI औद्योगिक सल्लागार",
+    "chat.title": "आरंभ औद्योगिक सल्लागार",
     "chat.online": "सक्रिय • २४x७ नियामक सहाय्यक",
     "chat.placeholder": "परवानग्या, MIDC क्षेत्र, PSI सबसिडी किंवा SLA बद्दल विचारा...",
-    "chat.disclaimer": "AI सहाय्यक महाराष्ट्र औद्योगिक धोरणे आणि RTS नियमांवर आधारित मार्गदर्शन करतो.",
+    "chat.disclaimer": "सल्लागार सहाय्यक महाराष्ट्र औद्योगिक धोरणे आणि RTS नियमांवर आधारित मार्गदर्शन करतो.",
     "chat.chip1": "केमिकल उद्योगासाठी कोणते परवाने लागतात?",
     "chat.chip2": "मानिव मंजुरी (Deemed Approval) कशी मिळते?",
     "chat.chip3": "पुणे चाकण MIDC साठी कोणत्या सबसिडी आहेत?",
-    "chat.welcome": "नमस्कार! मी आरंभ औद्योगिक सल्लागार AI आहे. आज मी आपल्या महाराष्ट्र वैधानिक परवानग्या, MIDC जमीन किंवा सबसिडीबद्दल कशी मदत करू शकतो?",
+    "chat.welcome": "नमस्कार! मी आरंभ औद्योगिक सल्लागार सहाय्यक आहे. आज मी आपल्या महाराष्ट्र वैधानिक परवानग्या, MIDC जमीन किंवा सबसिडीबद्दल कशी मदत करू शकतो?",
 
     // Dashboard Layout & Sidebar
     "dash.overview": "नियंत्रण केंद्र",
@@ -374,13 +428,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "kya.modify": "मापदंड बदला",
 
     // Vault Page
-    "vault.title": "कागदपत्र व्हॉल्ट व AI माहिती संकलन",
+    "vault.title": "कागदपत्र व्हॉल्ट व माहिती संकलन",
     "vault.sub": "स्वयंचलित OCR आणि स्ट्रक्चर्ड पडताळणीसह वैधानिक कागदपत्रे संग्रहित व सिंक करा.",
     "vault.digilocker_title": "डिजिलॉकर प्रमाणित वैधानिक प्रमाणपत्रे",
     "vault.connect_dl": "डिजिलॉकर कनेक्ट करा",
     "vault.drop_title": "आपली कागदपत्रे येथे ड्रॅग करा किंवा ब्राउझ करा",
-    "vault.process_ai": "AI द्वारे तपासणी करा",
-    "vault.extracted_title": "AI संकलित माहिती",
+    "vault.process_ai": "कागदपत्रे तपासा",
+    "vault.extracted_title": "संकलित माहिती",
 
     // DAG Page
     "dag.title": "Directed Acyclic Graph (DAG) कार्यप्रवाह",
@@ -451,6 +505,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "उपलब्ध जमीन:",
     "zones.check_approvals": "या क्षेत्रासाठी परवाने तपासा",
 
+    // Grievances Page
+    "grievances.title": "तक्रार निवारण व अधिकारी चौकशी कक्ष",
+    "grievances.sub": "महाराष्ट्र लोकसेवा हक्क अधिनियमांतर्गत विलंब, तपासणी प्रश्न किंवा शुल्काचे वेळेत वैधानिक निराकरण.",
+    "grievances.raise_ticket": "नवीन तिकीट तयार करा",
+    "grievances.active_scrutiny": "सक्रिय तपासणी सुरू आहे",
+    "grievances.resolved": "निराकरण झाले व बंद ✓",
+    "grievances.target_dept": "संबंधित विभाग",
+    "grievances.subject": "विषय / स्पष्ट सारांश",
+    "grievances.details": "तपशीलवार वर्णन",
+    "grievances.submit_btn": "तक्रार दाखल करा",
+    "grievances.modal_title": "तक्रार किंवा अधिकारी चौकशी दाखल करा",
+    "grievances.modal_sub": "आपले तिकीट थेट नियुक्त नोडल अधिकाऱ्याकडे पाठवले जाईल.",
+
+    // Officer Workspace
+    "officer.console_tag": "विभागीय अधिकारी तपासणी कन्सोल",
+    "officer.title": "अधिकारी पुनरावलोकन कतार",
+    "officer.sub": "येणारे सामायिक अर्ज (CAF) तपासा, OCR निष्कर्षण सत्यापित करा, तपासणी अहवाल द्या किंवा डिजिटल मंजुरी प्रमाणपत्रे जारी करा.",
+    "officer.queue_ref": "अर्ज संदर्भ क्रमांक",
+    "officer.queue_enterprise": "उद्योगाचे नाव",
+    "officer.queue_clearance": "मागितलेला परवाना",
+    "officer.queue_sla": "SLA अंतिम तारीख",
+    "officer.queue_action": "पुनरावलोकन कृती",
+    "officer.endorse_approve": "मंजूर करा",
+    "officer.raise_query": "प्रश्न उपस्थित करा",
+    "officer.approved": "मंजूर ✓",
+    "officer.restricted_title": "मर्यादित अधिकारी प्रवेश",
+    "officer.restricted_sub": "हे वर्कस्पेस केवळ सत्यापित विभागीय अधिकाऱ्यांसाठी आहे. चाचणीसाठी वरील 'Officer View' टॉगल करा.",
+
+    // Profile Page
+    "profile.title": "उद्योजक प्रोफाइल",
+    "profile.single_window_id": "उद्यम सिंगल विंडो आयडी",
+    "profile.role_tier": "प्रवेश स्तर / भूमिका",
+    "profile.registered_sector": "नोंदणीकृत उद्योग क्षेत्र",
+    "profile.industrial_zone": "औद्योगिक क्षेत्र (MIDC)",
+    "profile.active_badge": "सक्रिय सत्यापित प्रोफाइल",
+    "profile.digi_badge": "डिजिलॉकर जोडलेले",
+    "profile.edit_profile": "प्रोफाइल तपशील संपादित करा",
+    "profile.save_changes": "बदल सेव्ह करा",
+
+    // Common UI Elements
+    "common.cancel": "रद्द करा",
+    "common.close": "बंद करा",
+    "common.download": "डाउनलोड करा",
+    "common.view": "पहा",
+    "common.remove": "काढून टाका",
+    "common.submit": "सादर करा",
+    "common.back": "मागे",
+    "common.next": "पुढे",
+    "common.loading": "लोड होत आहे...",
+
     // Auth & Form
     "auth.sign_in": "लॉग इन करा",
     "auth.sign_in_sub": "डॅशबोर्डमध्ये प्रवेश करण्यासाठी आणि परवान्यांसाठी अर्ज करण्यासाठी.",
@@ -472,6 +576,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.address": "आपला पत्ता प्रविष्ट करा",
     "auth.validate_pan": "पॅन (PAN) नंबर प्रमाणित करा",
     "auth.legal_entity": "आपल्या संस्थेचा कायदेशीर प्रकार निवडा",
+    "auth.login_title": "आरंभ पोर्टलवर आपले स्वागत आहे",
+    "auth.login_sub": "आपल्या परवान्यांचे व्यवस्थापन करण्यासाठी आपल्या उद्यम क्रेडेंशियल्सने लॉगिन करा.",
+    "auth.signup_title": "आपले प्रोफाइल सेट करा",
+    "auth.signup_sub": "महाराष्ट्र सिंगल विंडो पोर्टलवर आपल्या उद्योगाची नोंदणी करा.",
   },
   hi: {
     // Top Bar & Government statement
@@ -498,7 +606,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "hero.headline_start": "महाराष्ट्र में औद्योगिक",
     "hero.headline_highlight": "उद्यमों का विकास",
     "hero.headline_end": "गतिमान करें",
-    "hero.subheadline": "महाराष्ट्र में सभी वैधानिक अनुमतियां, AI-आधारित दस्तावेज़ पूर्व-सत्यापन, DAG समानांतर रूटिंग और लोक सेवा अधिकार अधिनियम के तहत समयबद्ध डीम्ड अप्रूवल।",
+    "hero.subheadline": "महाराष्ट्र में सभी वैधानिक अनुमतियां, स्वचालित दस्तावेज़ पूर्व-सत्यापन, DAG समानांतर रूटिंग और लोक सेवा अधिकार अधिनियम के तहत समयबद्ध डीम्ड अप्रूवल।",
     "hero.cta_primary": "सिंगल विंडो आवेदन शुरू करें",
     "hero.cta_secondary": "अपनी स्वीकृतियां जानें (KYA)",
     "hero.stat1_val": "70+",
@@ -514,7 +622,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "benefits.badge": "अग्रणी राज्य अवसंरचना",
     "benefits.title": "उद्योगपति महाराष्ट्र को क्यों चुनते हैं?",
     "benefits.sub": "विभागीय देरी को समाप्त कर विनिर्माण संयंत्रों को समय पर शुरू करने के लिए निर्मित आधुनिक प्रणाली।",
-    "benefits.card1_title": "AI दस्तावेज़ जांच एवं वॉल्ट",
+    "benefits.card1_title": "दस्तावेज़ जांच एवं वॉल्ट",
     "benefits.card1_desc": "स्वचालित OCR द्वारा पट्टों और ब्लूप्रिंट से मुख्य वैधानिक विवरणों की त्वरित निष्कर्षण एवं जांच।",
     "benefits.card2_title": "DAG समानांतर क्लीयरेंस इंजन",
     "benefits.card2_desc": "क्रमिक कतारों से मुक्त। MPCB, फायर NOC और जल आवंटन एक साथ प्रोसेस होते हैं।",
@@ -549,14 +657,14 @@ export const translations: Record<Language, Record<string, string>> = {
     "footer.rights": "महाराष्ट्र सरकार। सर्वाधिकार सुरक्षित। औद्योगिक विकास को समर्पित।",
 
     // Chatbot
-    "chat.title": "आरंभ AI औद्योगिक सलाहकार",
+    "chat.title": "आरंभ औद्योगिक सलाहकार",
     "chat.online": "ऑनलाइन • 24x7 विनियामक सहायक",
     "chat.placeholder": "स्वीकृतियों, MIDC क्षेत्रों, PSI सब्सिडी या SLA के बारे में पूछें...",
-    "chat.disclaimer": "AI सहायक महाराष्ट्र औद्योगिक नीतियों और RTS नियमों के आधार पर मार्गदर्शन प्रदान करता है।",
+    "chat.disclaimer": "सलाहकार सहायक महाराष्ट्र औद्योगिक नीतियों और RTS नियमों के आधार पर मार्गदर्शन प्रदान करता है।",
     "chat.chip1": "केमिकल उद्योग के लिए कौन सी स्वीकृतियां आवश्यक हैं?",
     "chat.chip2": "डीम्ड अप्रूवल (Deemed Approval) कैसे काम करता है?",
     "chat.chip3": "पुणे चाकण MIDC के लिए कौन सी सब्सिडी लागू हैं?",
-    "chat.welcome": "नमस्ते! मैं आरंभ औद्योगिक सलाहकार AI हूँ। आज मैं आपकी महाराष्ट्र वैधानिक स्वीकृतियों, MIDC भूमि या सब्सिडी पूछताछ में कैसे सहायता कर सकता हूँ?",
+    "chat.welcome": "नमस्ते! मैं आरंभ औद्योगिक सलाहकार सहायक हूँ। आज मैं आपकी महाराष्ट्र वैधानिक स्वीकृतियों, MIDC भूमि या सब्सिडी पूछताछ में कैसे सहायता कर सकता हूँ?",
 
     // Dashboard Layout & Sidebar
     "dash.overview": "नियंत्रण केंद्र",
@@ -605,13 +713,13 @@ export const translations: Record<Language, Record<string, string>> = {
     "kya.modify": "पैरामीटर बदलें",
 
     // Vault Page
-    "vault.title": "दस्तावेज़ वॉल्ट एवं AI डेटा निष्कर्षण",
+    "vault.title": "दस्तावेज़ वॉल्ट एवं डेटा निष्कर्षण",
     "vault.sub": "स्वचालित OCR और संरचित सत्यापन के साथ वैधानिक दस्तावेज़ों को संग्रहीत और सिंक करें।",
     "vault.digilocker_title": "डिजिलॉकर सत्यापित वैधानिक प्रमाणपत्र",
     "vault.connect_dl": "डिजिलॉकर कनेक्ट करें",
     "vault.drop_title": "अपनी औद्योगिक फाइल यहां खींचें या ब्राउज़ करें",
-    "vault.process_ai": "AI से जांचें",
-    "vault.extracted_title": "AI द्वारा निष्कर्षित डेटा",
+    "vault.process_ai": "दस्तावेज़ जांचें",
+    "vault.extracted_title": "निष्कर्षित डेटा",
 
     // DAG Page
     "dag.title": "Directed Acyclic Graph (DAG) वर्कफ़्लो",
@@ -682,6 +790,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "उपलब्ध भूमि:",
     "zones.check_approvals": "इस क्षेत्र के लिए स्वीकृतियां जांचें",
 
+    // Grievances Page
+    "grievances.title": "शिकायत निवारण एवं अधिकारी प्रश्न डेस्क",
+    "grievances.sub": "महाराष्ट्र लोक सेवा अधिकार अधिनियम के तहत देरी, निरीक्षण प्रश्नों या भुगतान सुलह का समयबद्ध वैधानिक समाधान।",
+    "grievances.raise_ticket": "नया टिकट बनाएं",
+    "grievances.active_scrutiny": "सक्रिय समीक्षा जारी",
+    "grievances.resolved": "समाधान पूर्ण एवं बंद ✓",
+    "grievances.target_dept": "संबंधित विभाग",
+    "grievances.subject": "विषय / स्पष्ट सारांश",
+    "grievances.details": "विस्तृत विवरण",
+    "grievances.submit_btn": "शिकायत दर्ज करें",
+    "grievances.modal_title": "शिकायत या अधिकारी प्रश्न दर्ज करें",
+    "grievances.modal_sub": "आपका टिकट सीधे नामित नोडल अधिकारी को भेजा जाएगा।",
+
+    // Officer Workspace
+    "officer.console_tag": "विभागीय अधिकारी समीक्षा कंसोल",
+    "officer.title": "अधिकारी समीक्षा कतार",
+    "officer.sub": "आने वाले सामान्य आवेदन पत्र (CAF) की समीक्षा करें, OCR निष्कर्षण सत्यापित करें, निरीक्षण रिपोर्ट दें या डिजिटल अनुमोदन प्रमाणपत्र जारी करें।",
+    "officer.queue_ref": "आवेदन संदर्भ",
+    "officer.queue_enterprise": "उद्यम का नाम",
+    "officer.queue_clearance": "वांछित स्वीकृति",
+    "officer.queue_sla": "SLA देय तिथि",
+    "officer.queue_action": "समीक्षा कार्रवाई",
+    "officer.endorse_approve": "स्वीकृत करें",
+    "officer.raise_query": "प्रश्न पूछें",
+    "officer.approved": "स्वीकृत ✓",
+    "officer.restricted_title": "सीमित अधिकारी पहुंच",
+    "officer.restricted_sub": "यह कार्यक्षेत्र केवल सत्यापित विभागीय अधिकारियों के लिए है। परीक्षण के लिए ऊपर 'Officer View' टॉगल करें।",
+
+    // Profile Page
+    "profile.title": "निवेशक प्रोफाइल",
+    "profile.single_window_id": "उद्यम सिंगल विंडो आईडी",
+    "profile.role_tier": "पहुंच स्तर / भूमिका",
+    "profile.registered_sector": "पंजीकृत उद्योग क्षेत्र",
+    "profile.industrial_zone": "औद्योगिक क्षेत्र (MIDC)",
+    "profile.active_badge": "सक्रिय सत्यापित प्रोफाइल",
+    "profile.digi_badge": "डिजिलॉकर लिंक किया गया",
+    "profile.edit_profile": "प्रोफाइल विवरण संपादित करें",
+    "profile.save_changes": "परिवर्तन सहेजें",
+
+    // Common UI Elements
+    "common.cancel": "रद्द करें",
+    "common.close": "बंद करें",
+    "common.download": "डाउनलोड करें",
+    "common.view": "देखें",
+    "common.remove": "हटाएं",
+    "common.submit": "जमा करें",
+    "common.back": "पीछे",
+    "common.next": "आगे",
+    "common.loading": "लोड हो रहा है...",
+
     // Auth & Form
     "auth.sign_in": "साइन इन करें",
     "auth.sign_in_sub": "अपने डैशबोर्ड तक पहुंचने और स्वीकृतियों के लिए आवेदन करने हेतु।",
@@ -705,7 +863,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.legal_entity": "अपनी इकाई का कानूनी प्रकार चुनें",
     "auth.login_title": "आरंभ पोर्टल में पुनः स्वागत है",
     "auth.login_sub": "अपने उद्यम क्रेडेंशियल से लॉगिन करें और स्वीकृतियां प्रबंधित करें।",
-    "auth.signup_title": "नया उद्यम खाता बनाएं",
+    "auth.signup_title": "अपना प्रोफाइल सेट करें",
     "auth.signup_sub": "महाराष्ट्र सिंगल विंडो पोर्टल पर अपने उद्योग को पंजीकृत करें।",
   },
 };

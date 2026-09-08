@@ -3,20 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Building2,
-  Mail,
-  Lock,
   Eye,
   EyeOff,
   ShieldCheck,
-  ArrowRight,
-  Sparkles,
   CheckCircle2,
-  Landmark,
-  Building,
-  Factory,
-  Flame,
-  Zap,
+  AlertCircle,
+  Building2,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -30,6 +22,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("password123");
   const [showPassword, setShowPassword] = useState(false);
   const [officerDept, setOfficerDept] = useState("MIDC Industrial Clearances");
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,11 +32,18 @@ export default function LoginPage() {
       loginAsApplicant(
         email,
         "Sanjay Deshmukh",
-        "Smart Electronics Maharashtra Ltd"
+        "Maharashtra Solvents & Chemicals Pvt Ltd"
       );
     } else {
       loginAsOfficer(email, officerDept);
     }
+  };
+
+  const handleForgotPassword = () => {
+    setResetNotice(`Password reset instructions and security OTP have been dispatched to ${email || "your registered email"}.`);
+    setTimeout(() => {
+      setResetNotice(null);
+    }, 6000);
   };
 
   return (
@@ -173,12 +173,19 @@ export default function LoginPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("Password reset instructions have been sent to your registered email.")}
+                  onClick={handleForgotPassword}
                   className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] hover:underline cursor-pointer"
                 >
                   {t("auth.forgot_password", "Forgot Password?")}
                 </button>
               </div>
+
+              {resetNotice && (
+                <div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{resetNotice}</span>
+                </div>
+              )}
             </form>
 
             {/* Fast Track DigiLocker Option for Applicants */}

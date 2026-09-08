@@ -26,7 +26,7 @@ export default function TopUtilityBar() {
 
   return (
     <div className="w-full bg-[#14050B] text-slate-300 text-[11px] border-b border-[#250C19] z-50 select-none">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
         {/* Left: Government of Maharashtra Statement */}
         <div className="flex items-center space-x-2">
           <div className="w-5 h-5 rounded-full bg-[#250C19] border border-[#FED17A]/40 flex items-center justify-center text-[10px] text-[#FFCA7C] font-bold shrink-0">
@@ -43,14 +43,14 @@ export default function TopUtilityBar() {
             {t("topbar.portal_title")}
           </span>
 
-          {/* Accessibility Font Size Toggle (↑A) */}
+          {/* Accessibility Font Size Toggle */}
           <button
             type="button"
             onClick={toggleFontSize}
-            className="flex items-center space-x-0.5 px-2 py-0.5 rounded bg-[#250C19] hover:bg-[#3D1420] text-[#FFCA7C] border border-[#FED17A]/30 transition-colors cursor-pointer"
+            className="flex items-center space-x-0.5 px-2 py-0.5 rounded bg-[#250C19] hover:bg-[#3D1420] text-[#FFCA7C] border border-[#FED17A]/30 transition-colors cursor-pointer font-bold text-[10px]"
             title={t("topbar.text_size")}
           >
-            <span className="text-[10px] font-bold">A+</span>
+            <span>{fontSizeLevel === "base" ? "A+" : fontSizeLevel === "lg" ? "A-" : "A"}</span>
           </button>
 
           {/* 3-Language Selector: English | मराठी | हिंदी */}

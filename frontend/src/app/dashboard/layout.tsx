@@ -22,6 +22,7 @@ import {
   Building2,
   ShieldCheck,
   Sparkles,
+  CalendarCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -31,15 +32,13 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, logout } = useAuth();
+  const { user, toggleRole, logout } = useAuth();
   const { t } = useLanguage();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isOfficer = user?.role === "officer";
-  // Demo role toggle for development
-  const [demoIsOfficer, setDemoIsOfficer] = useState(false);
 
   interface NavItem {
     label: string;
@@ -47,34 +46,36 @@ export default function DashboardLayout({
     icon: React.ComponentType<{ className?: string }>;
     badge?: string;
     highlight?: boolean;
+    aliases?: string[];
   }
 
   // Role‑based navigation configuration
   const navigationConfig: Record<string, NavItem[]> = {
     business: [
-      { label: t("dash.overview"), href: "/dashboard", icon: LayoutDashboard },
-      { label: t("dash.kya"), href: "/dashboard/kya", icon: Compass },
-      { label: t("dash.vault"), href: "/dashboard/vault", icon: FolderLock },
-      { label: t("dash.prevalidation"), href: "/dashboard/prevalidation", icon: FileCheck2 },
-      { label: t("dash.dag"), href: "/dashboard/dag", icon: GitFork },
-      { label: t("dash.sla"), href: "/dashboard/sla", icon: Clock },
-      { label: t("dash.grievances"), href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: t("dash.profile"), href: "/dashboard/profile", icon: User },
+      { label: t("dash.overview", "Overview"), href: "/dashboard", icon: LayoutDashboard },
+      { label: t("dash.kya", "Know Your Approvals"), href: "/dashboard/kya", icon: Compass },
+      { label: t("dash.vault", "Document Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
+      { label: t("dash.prevalidation", "Pre-Validation Gate"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+      { label: t("dash.dag", "Parallel Clearance DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+      { label: t("dash.sla", "SLA Tracker"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+      { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
+      { label: t("grievances.title", "Grievance Desk"), href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: t("profile.title", "Investor Profile"), href: "/dashboard/profile", icon: User },
     ],
     ministry: [
-      { label: t("dash.overview"), href: "/dashboard", icon: LayoutDashboard },
-      { label: t("dash.kya"), href: "/dashboard/kya", icon: Compass },
-      { label: t("dash.vault"), href: "/dashboard/vault", icon: FolderLock },
-      { label: t("dash.prevalidation"), href: "/dashboard/prevalidation", icon: FileCheck2 },
-      { label: t("dash.dag"), href: "/dashboard/dag", icon: GitFork },
-      { label: t("dash.sla"), href: "/dashboard/sla", icon: Clock },
-      { label: t("dash.grievances"), href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: t("dash.profile"), href: "/dashboard/profile", icon: User },
+      { label: t("officer.title", "Officer Scrutiny Queue"), href: "/dashboard/officer-workspace", icon: ShieldAlert, badge: "Officer", highlight: true },
+      { label: t("dash.overview", "Clearance Analytics"), href: "/dashboard", icon: LayoutDashboard },
+      { label: t("dash.dag", "Live Department DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+      { label: t("dash.sla", "Department SLA Monitor"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+      { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
+      { label: t("dash.vault", "Dossier Verification Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
+      { label: t("dash.prevalidation", "Cross-Doc Pre-Audit"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+      { label: t("grievances.title", "Dispute Resolution"), href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: t("profile.title", "Officer Profile"), href: "/dashboard/profile", icon: User },
     ],
   };
 
-  // Determine current role (demo switcher can modify this)
-  const currentRole = demoIsOfficer ? "ministry" : "business";
+  const currentRole = isOfficer ? "ministry" : "business";
   const navItems = navigationConfig[currentRole];
 
   return (
@@ -139,7 +140,7 @@ export default function DashboardLayout({
               const isActive =
                 item.href === "/dashboard"
                   ? pathname === "/dashboard"
-                  : pathname?.startsWith(item.href);
+                  : pathname?.startsWith(item.href) || (item.aliases && item.aliases.some((alias) => pathname?.startsWith(alias)));
 
               return (
                 <Link
@@ -198,14 +199,24 @@ export default function DashboardLayout({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={logout}
-              className="p-2 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center space-x-1">
+              <button
+                type="button"
+                onClick={toggleRole}
+                className="p-1.5 rounded-lg text-[#FFCA7C] hover:bg-[#250C19] text-[10px] font-bold border border-[#521C35] transition-colors"
+                title="Switch between Investor and Officer demo perspective"
+              >
+                {user?.role === "officer" ? "Switch to Investor" : "Switch to Officer"}
+              </button>
+              <button
+                type="button"
+                onClick={logout}
+                className="p-2 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -223,9 +234,14 @@ export default function DashboardLayout({
             <span className="text-xs font-bold text-[#16060E]">Workspace Menu</span>
           </button>
 
-          <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded-full cursor-pointer" title="Toggle demo role (Business/Ministry)" onClick={() => setDemoIsOfficer(!demoIsOfficer)}>
-            {user?.role === "officer" ? "Officer View" : "Investor View"}
-          </span>
+          <button
+            type="button"
+            className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2.5 py-1 rounded-full cursor-pointer hover:bg-[#FFE8CC] transition-colors"
+            title="Toggle between Investor and Officer perspective"
+            onClick={toggleRole}
+          >
+            {user?.role === "officer" ? "Officer View (Switch)" : "Investor View (Switch)"}
+          </button>
         </div>
 
         {/* Page Content */}
