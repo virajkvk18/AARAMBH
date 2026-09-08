@@ -35,21 +35,7 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden md:flex items-center space-x-6 text-xs font-bold text-[#E0C7BC]">
-            <Link href="/dashboard/kya" className="hover:text-[#FFCA7C] transition-colors">
-              {t("dash.kya", "Know Your Approvals")}
-            </Link>
-            <Link href="/dashboard/dag" className="hover:text-[#FFCA7C] transition-colors">
-              {t("dash.dag", "Parallel Clearance DAG")}
-            </Link>
-            <Link href="/dashboard/sla" className="hover:text-[#FFCA7C] transition-colors">
-              {t("dash.sla", "SLA Tracker")}
-            </Link>
-            <Link href="/dashboard/grievances" className="hover:text-[#FFCA7C] transition-colors">
-              {t("grievances.title", "Grievances")}
-            </Link>
-          </nav>
+
 
           {/* Desktop Right: Login & Signup OR Dashboard Link */}
           <div className="hidden sm:flex items-center space-x-3">

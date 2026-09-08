@@ -47,36 +47,89 @@ export default function DashboardLayout({
     badge?: string;
     highlight?: boolean;
     aliases?: string[];
+    id?: string;
   }
 
-  // Role‑based navigation configuration
-  const navigationConfig: Record<string, NavItem[]> = {
-    business: [
-      { label: t("dash.overview", "Overview"), href: "/dashboard", icon: LayoutDashboard },
-      { label: t("dash.kya", "Know Your Approvals"), href: "/dashboard/kya", icon: Compass },
-      { label: t("dash.vault", "Document Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
-      { label: t("dash.prevalidation", "Pre-Validation Gate"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-      { label: t("dash.dag", "Parallel Clearance DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-      { label: t("dash.sla", "SLA Tracker"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-      { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
-      { label: t("grievances.title", "Grievance Desk"), href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: t("profile.title", "Investor Profile"), href: "/dashboard/profile", icon: User },
-    ],
-    ministry: [
-      { label: t("officer.title", "Officer Scrutiny Queue"), href: "/dashboard/officer-workspace", icon: ShieldAlert, badge: "Officer", highlight: true },
-      { label: t("dash.overview", "Clearance Analytics"), href: "/dashboard", icon: LayoutDashboard },
-      { label: t("dash.dag", "Live Department DAG"), href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-      { label: t("dash.sla", "Department SLA Monitor"), href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-      { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
-      { label: t("dash.vault", "Dossier Verification Vault"), href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
-      { label: t("dash.prevalidation", "Cross-Doc Pre-Audit"), href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-      { label: t("grievances.title", "Dispute Resolution"), href: "/dashboard/grievances", icon: MessageSquareWarning },
-      { label: t("profile.title", "Officer Profile"), href: "/dashboard/profile", icon: User },
-    ],
-  };
+  // Role‑based navigation configuration with investor‑friendly labels and grouped sections
+  const businessSections = [
+    {
+      heading: "MAIN",
+      items: [{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard }],
+    },
+    {
+      heading: "APPLICATION",
+      items: [{ label: "Start Application", href: "/dashboard/kya", icon: Compass }],
+    },
+    {
+      heading: "DOCUMENTS",
+      items: [{ label: "My Documents", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] }],
+    },
+    {
+      heading: "TRACK",
+      items: [
+        { label: "Application Check", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+        { label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+      ],
+    },
+    {
+      heading: "SUPPORT",
+      items: [{ label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning }],
+    },
+    {
+      heading: "BUSINESS",
+      items: [{ label: "Business Profile", href: "/dashboard/profile", icon: User }],
+    },
+  ];
 
-  const currentRole = isOfficer ? "ministry" : "business";
-  const navItems = navigationConfig[currentRole];
+  const ministrySections = [
+    {
+      heading: "WORK QUEUE",
+      items: [{ label: "Pending Reviews", href: "/dashboard/officer-workspace", icon: ShieldAlert, badge: "Officer", highlight: true }],
+    },
+    {
+      heading: "APPLICATIONS",
+      items: [{ label: "All Applications", href: "/dashboard", icon: LayoutDashboard }],
+    },
+    {
+      heading: "VERIFICATION",
+      items: [
+        { label: "Document Verification", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
+        { label: "Application Review", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+      ],
+    },
+    {
+      heading: "APPROVALS",
+      items: [
+        { id: "track-approvals", label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { id: "department-approvals", label: "Department Approvals", href: "/dashboard/dag", icon: GitFork },
+      ],
+    },
+    {
+      heading: "MONITORING",
+      items: [{ label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] }],
+    },
+    {
+      heading: "SUPPORT",
+      items: [
+        { id: "help-support", label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { id: "grievances", label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+      ],
+    },
+    {
+      heading: "DEPARTMENT",
+      items: [{ label: "Department Profile", href: "/dashboard/profile", icon: User }],
+    },
+  ];
+
+  const sections = isOfficer ? ministrySections : businessSections;
+
+  // Helper to determine active state
+  const isItemActive = (item: NavItem) => {
+    return item.href === "/dashboard"
+      ? pathname === "/dashboard"
+      : pathname?.startsWith(item.href) || (item.aliases && item.aliases.some((a) => pathname?.startsWith(a)));
+  };
 
   return (
     <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC] flex">
@@ -133,56 +186,59 @@ export default function DashboardLayout({
             </button>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links with grouped sections */}
           <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-220px)]">
-            {navItems.map((item) => {
-              const IconComp = item.icon;
-              const isActive =
-                item.href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : pathname?.startsWith(item.href) || (item.aliases && item.aliases.some((alias) => pathname?.startsWith(alias)));
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  title={collapsed ? item.label : undefined}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white shadow-md shadow-[#9B2A48]/30"
-                      : item.highlight
-                      ? "text-[#FFCA7C] hover:bg-[#250C19] border border-[#521C35]"
-                      : "text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden">
-                    <IconComp
-                      className={`w-4 h-4 shrink-0 ${
-                        isActive ? "text-white" : item.highlight ? "text-[#FE7251]" : "text-[#C4A89C] group-hover:text-[#FE7251]"
-                      }`}
-                    />
-                    <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}>
-                      {item.label}
-                    </span>
-                  </div>
-
-                  {item.badge && !collapsed && (
-                    <span
-                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+            {sections.map((section, idx) => (
+              <div key={idx} className="mb-2">
+                <p className="text-xs font-medium text-[#FFCA7C] mt-2 mb-1 px-2">
+                  {section.heading}
+                </p>
+                {section.items.map((item) => {
+                  const IconComp = item.icon;
+                  const isActive = isItemActive(item);
+                  return (
+                    <Link
+                      key={item.id ?? item.href}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      title={collapsed ? item.label : undefined}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group ${
                         isActive
-                          ? "bg-[#16060E] text-[#FFCA7C]"
-                          : item.badge === "Officer"
-                          ? "bg-[#250C19] text-[#FFCA7C] border border-[#521C35]"
-                          : "bg-[#250C19] text-[#FE7251] border border-[#521C35]"
+                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white shadow-md shadow-[#9B2A48]/30"
+                          : item.highlight
+                          ? "text-[#FFCA7C] hover:bg-[#250C19] border border-[#521C35]"
+                          : "text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
                       }`}
                     >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+                      <div className="flex items-center space-x-3 overflow-hidden">
+                        <IconComp
+                          className={`w-4 h-4 shrink-0 ${
+                            isActive ? "text-white" : item.highlight ? "text-[#FE7251]" : "text-[#C4A89C] group-hover:text-[#FE7251]"
+                          }`}
+                        />
+                        <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}
+                        >
+                          {item.label}
+                        </span>
+                      </div>
+                      {item.badge && !collapsed && (
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                            isActive
+                              ? "bg-[#16060E] text-[#FFCA7C]"
+                              : item.badge === "Officer"
+                              ? "bg-[#250C19] text-[#FFCA7C] border border-[#521C35]"
+                              : "bg-[#250C19] text-[#FE7251] border border-[#521C35]"
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
         </div>
 
