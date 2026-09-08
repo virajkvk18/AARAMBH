@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   MessageCircle,
   X,
@@ -43,7 +44,7 @@ interface ActionItem {
   subtitle?: string;
 }
 
-const SUGGESTIONS_MAP: Record<string, string[]> = {
+const DASHBOARD_SUGGESTIONS_MAP: Record<string, string[]> = {
   en: [
     "I'm starting a fast food restaurant business",
     "What approvals do I need for my industry?",
@@ -70,29 +71,74 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
   ],
 };
 
-const WELCOME_MAP: Record<string, string> = {
-  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about starting any business (like restaurants, EV, factories, warehouses), clearances (FSSAI, MIDC, MPCB, Fire NOC, DISH), or PSI 2019 incentives!",
-  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला कोणत्याही व्यवसायाची सुरुवात (उदा. रेस्टॉरंट, ईव्ही, फॅक्टरी, वेअरहाऊस), परवाने (FSSAI, MIDC, MPCB, फायर NOC, DISH) किंवा सबसिडीबद्दल विचारा!",
-  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे कोई भी व्यवसाय शुरू करने (जैसे रेस्टोरेंट, ईवी, फैक्ट्री, गोदाम), अनुमोदन (FSSAI, MIDC, MPCB, फायर NOC, DISH) या सब्सिडी के बारे में पूछें!",
+const LANDING_SUGGESTIONS_MAP: Record<string, string[]> = {
+  en: [
+    "What is AARAMBH Single Window Portal?",
+    "What are the benefits under PSI 2019?",
+    "How does Maharashtra EV Policy 2021 work?",
+    "What is Deemed Approval under RTS Act 2015?",
+    "Explain MPCB CTE vs CTO approvals",
+    "How does the Investor Grievance mechanism work?",
+  ],
+  mr: [
+    "आरंभ एक खिडकी पोर्टल काय आहे?",
+    "PSI २०१९ अंतर्गत कोणते फायदे मिळतात?",
+    "महाराष्ट्र ईव्ही धोरण २०२१ कसे कार्य करते?",
+    "RTS कायदा २०१५ अंतर्गत डीम्ड मंजुरी काय आहे?",
+    "MPCB संमती आणि परवानग्यांची माहिती द्या",
+    "गुंतवणूकदार तक्रार निवारण कसे कार्य करते?",
+  ],
+  hi: [
+    "आरंभ सिंगल विंडो पोर्टल क्या है?",
+    "PSI 2019 के तहत क्या लाभ मिलते हैं?",
+    "महाराष्ट्र ईवी नीति 2021 कैसे काम करती है?",
+    "RTS अधिनियम 2015 के तहत डीम्ड अनुमोदन क्या है?",
+    "MPCB सहमति और अनुमोदन की जानकारी दें",
+    "निवेशक शिकायत निवारण कैसे काम करता है?",
+  ],
 };
 
-function extractActionItems(content: string, userQuery?: string): { cleanContent: string; actions: ActionItem[] } {
+const DASHBOARD_WELCOME_MAP: Record<string, string> = {
+  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about starting any business (like restaurants, EV, factories, warehouses), clearances (FSSAI, MIDC, MPCB, Fire NOC, DISH), or direct application approvals!",
+  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला कोणत्याही व्यवसायाची सुरुवात (उदा. रेस्टॉरंट, ईव्ही, फॅक्टरी, वेअरहाऊस), थेट परवाने अर्ज किंवा सबसिडीबद्दल विचारा!",
+  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे कोई भी व्यवसाय शुरू करने (जैसे रेस्टोरेंट, ईवी, फैक्ट्री, गोदाम), सीधे आवेदन अनुमोदन या सब्सिडी के बारे में पूछें!",
+};
+
+const LANDING_WELCOME_MAP: Record<string, string> = {
+  en: "Hi, I'm **AARAMBH** — your Maharashtra Single Window clearance assistant. Ask me about industrial policies (PSI 2019, EV 2021, Logistics 2024), statutory clearances, MIDC zones, or RTS Act deemed approval timelines.",
+  mr: "नमस्कार! मी **आरंभ** — आपला महाराष्ट्र एक खिडकी परवाना सहाय्यक. मला औद्योगिक धोरणे (PSI २०१९, ईव्ही २०२१, लॉजिस्टिक २०२४), विविध परवाने, MIDC झोन किंवा RTS कायद्याबद्दल विचारा.",
+  hi: "नमस्ते! मैं **आरंभ** — आपका महाराष्ट्र सिंगल विंडो क्लीयरेंस सहायक। मुझसे औद्योगिक नीतियों (PSI 2019, ईवी 2021, लॉजिस्टिक्स 2024), अनुमोदनों, MIDC क्षेत्रों या RTS अधिनियम के बारे में पूछें।",
+};
+
+function extractActionItems(
+  content: string,
+  userQuery?: string,
+  enableActions: boolean = true
+): { cleanContent: string; actions: ActionItem[] } {
   const actions: ActionItem[] = [];
   const actionRegex = /\[action:([^|\]]+)\|([^|\]]+)(?:\|([^\]]*))?\]/g;
 
-  let match;
-  while ((match = actionRegex.exec(content)) !== null) {
-    const url = match[1]?.trim();
-    const title = match[2]?.trim();
-    const subtitle = match[3]?.trim();
-    if (url && title && !actions.some((a) => a.url === url)) {
-      actions.push({ url, title, subtitle });
+  if (enableActions) {
+    let match;
+    while ((match = actionRegex.exec(content)) !== null) {
+      const url = match[1]?.trim();
+      const title = match[2]?.trim();
+      const subtitle = match[3]?.trim();
+      if (url && title && !actions.some((a) => a.url === url)) {
+        actions.push({ url, title, subtitle });
+      }
     }
   }
 
+  // Clean out any [action:...] tags from the message text so it renders as clean prose
   const cleanContent = content.replace(actionRegex, "").trim();
 
-  // Intelligent heuristic fallback if AI didn't emit structured tags
+  // If actions are disabled (landing page), return clean text with zero action buttons
+  if (!enableActions) {
+    return { cleanContent, actions: [] };
+  }
+
+  // Intelligent heuristic fallback only when enableActions is true (dashboard context)
   if (actions.length === 0) {
     const combinedText = `${userQuery || ""} ${content}`.toLowerCase();
 
@@ -268,14 +314,22 @@ function getActionIcon(url: string) {
 }
 
 export default function AskAarambhChatbot() {
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard") || pathname?.startsWith("/apply");
+
   const { language, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+
+  const welcomeText = isDashboard
+    ? DASHBOARD_WELCOME_MAP[language] || DASHBOARD_WELCOME_MAP.en
+    : LANDING_WELCOME_MAP[language] || LANDING_WELCOME_MAP.en;
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome-msg",
       role: "assistant",
-      content: WELCOME_MAP[language] || WELCOME_MAP.en,
+      content: welcomeText,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -284,22 +338,25 @@ export default function AskAarambhChatbot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Update greeting when language switches if no user chat history yet
+  // Update greeting when language or dashboard context switches if no user chat history yet
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length <= 1) {
+        const text = isDashboard
+          ? DASHBOARD_WELCOME_MAP[language] || DASHBOARD_WELCOME_MAP.en
+          : LANDING_WELCOME_MAP[language] || LANDING_WELCOME_MAP.en;
         return [
           {
             id: "welcome-msg",
             role: "assistant",
-            content: WELCOME_MAP[language] || WELCOME_MAP.en,
+            content: text,
             timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           },
         ];
       }
       return prev;
     });
-  }, [language]);
+  }, [language, isDashboard]);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -394,11 +451,15 @@ export default function AskAarambhChatbot() {
   };
 
   const handleResetChat = () => {
+    const text = isDashboard
+      ? DASHBOARD_WELCOME_MAP[language] || DASHBOARD_WELCOME_MAP.en
+      : LANDING_WELCOME_MAP[language] || LANDING_WELCOME_MAP.en;
+
     setMessages([
       {
         id: "welcome-msg",
         role: "assistant",
-        content: WELCOME_MAP[language] || WELCOME_MAP.en,
+        content: text,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       },
     ]);
@@ -467,6 +528,10 @@ export default function AskAarambhChatbot() {
     });
   };
 
+  const suggestions = isDashboard
+    ? DASHBOARD_SUGGESTIONS_MAP[language] || DASHBOARD_SUGGESTIONS_MAP.en
+    : LANDING_SUGGESTIONS_MAP[language] || LANDING_SUGGESTIONS_MAP.en;
+
   return (
     <>
       {/* 1. Floating Trigger Pill (Bottom Right) */}
@@ -507,7 +572,7 @@ export default function AskAarambhChatbot() {
                 <div className="flex items-center space-x-1.5">
                   <h3 className="text-xs font-black text-white tracking-wide">AARAMBH</h3>
                   <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30">
-                    Smart AI Advisory
+                    {isDashboard ? "Smart AI Advisory" : "General Helpdesk"}
                   </span>
                 </div>
                 <p className="text-[9px] text-[#C4A89C]">Single Window Statutory Assistant</p>
@@ -550,8 +615,8 @@ export default function AskAarambhChatbot() {
                 {messages.map((msg) => {
                   const { cleanContent, actions } =
                     msg.role === "assistant" && msg.id !== "welcome-msg"
-                      ? extractActionItems(msg.content, msg.userQueryContext)
-                      : { cleanContent: msg.content, actions: [] };
+                      ? extractActionItems(msg.content, msg.userQueryContext, isDashboard)
+                      : { cleanContent: msg.content.replace(/\[action:([^|\]]+)\|([^|\]]+)(?:\|([^\]]*))?\]/g, "").trim(), actions: [] };
 
                   return (
                     <div
@@ -581,8 +646,8 @@ export default function AskAarambhChatbot() {
                       >
                         <div className="space-y-1">{renderMessageContent(cleanContent)}</div>
 
-                        {/* Interactive Direct Navigation Action Buttons */}
-                        {actions && actions.length > 0 && (
+                        {/* Interactive Direct Navigation Action Buttons (Only rendered when inside Dashboard / Apply) */}
+                        {isDashboard && actions && actions.length > 0 && (
                           <div className="mt-3 pt-2.5 border-t border-[#F0E5E0] space-y-2">
                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#9B2A48] uppercase tracking-wider">
                               <Sparkles className="w-3 h-3 text-[#FE7251]" />
@@ -644,10 +709,10 @@ export default function AskAarambhChatbot() {
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.4s]"></span>
                       <span className="text-[10px] text-slate-500 font-medium ml-1">
                         {language === "mr"
-                          ? "आरंभ वैधानिक नियमावली तपासत आहे..."
+                          ? "आरंभ माहिती तपासत आहे..."
                           : language === "hi"
-                          ? "आरंभ वैधानिक रिकॉर्ड की जांच कर रहा है..."
-                          : "AARAMBH is consulting statutory records..."}
+                          ? "आरंभ जानकारी की जांच कर रहा है..."
+                          : "AARAMBH is consulting official records..."}
                       </span>
                     </div>
                   </div>
@@ -659,7 +724,7 @@ export default function AskAarambhChatbot() {
               {/* Quick Prompt Chips (Visible when only initial greeting exists) */}
               {messages.length <= 1 && (
                 <div className="px-3 py-2 bg-[#FFF7F0] border-t border-[#F0E5E0] flex flex-nowrap overflow-x-auto gap-1 shrink-0 scrollbar-none">
-                  {(SUGGESTIONS_MAP[language] || SUGGESTIONS_MAP.en).map((suggestion) => (
+                  {suggestions.map((suggestion) => (
                     <button
                       key={suggestion}
                       onClick={() => handleSendMessage(suggestion)}
@@ -679,10 +744,11 @@ export default function AskAarambhChatbot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={t(
-                      "chat.placeholder",
-                      "Ask about restaurant, EV, MIDC zones, PSI subsidies, or approvals..."
-                    )}
+                    placeholder={
+                      isDashboard
+                        ? t("chat.placeholder_dash", "Ask about clearances, MIDC zones, PSI subsidies, or approvals...")
+                        : t("chat.placeholder_general", "Ask any question about Maharashtra Single Window clearances...")
+                    }
                     className="flex-1 max-h-20 min-h-[36px] px-3 py-2 rounded-lg border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251] focus:outline-none resize-none"
                   />
                   <button
