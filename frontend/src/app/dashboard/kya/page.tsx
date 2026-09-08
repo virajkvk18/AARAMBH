@@ -29,6 +29,7 @@ import {
   SectorType,
   ClearanceItem,
 } from "@/store/enterpriseStore";
+import { useLanguage } from "@/context/LanguageContext";
 
 // --- Sector Options ---
 const sectorOptions: {
@@ -214,8 +215,9 @@ export default function KYAWizardPage() {
     isAssessed: storedIsAssessed,
     setFormData,
     setAssessmentResult,
-    reset,
+    resetAssessment,
   } = useEnterpriseStore();
+  const { t } = useLanguage();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [sector, setSector] = useState<SectorType>(storedSector || "Food Processing");
@@ -274,32 +276,10 @@ export default function KYAWizardPage() {
 
     setAssessmentResult(riskTrack, clearances, incentives);
     setShowResult(true);
-
-    // Call REST Backend to persist enterprise profile
-    try {
-      const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      await fetch(`${BACKEND_API_URL}/enterprise`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: "ENT-MH-2026-8891",
-          name: "Maharashtra Solvents & Chemicals Pvt Ltd",
-          sector,
-          location_zone: locationZone,
-          capex_cr: capexCr,
-          power_load_kva: powerLoadKva,
-          water_demand_kld: waterDemandKld,
-          workforce_size: workforceSize,
-          risk_track: riskTrack,
-          is_assessed: true,
-        }),
-      });
-    } catch (e) {
-      console.warn("Backend persistence call warning:", e);
-    }
   };
 
   const handleReassess = () => {
+    resetAssessment();
     setShowResult(false);
     setCurrentStep(1);
   };
@@ -805,7 +785,7 @@ export default function KYAWizardPage() {
 
             <div className="mt-8 pt-4 border-t border-[#FED17A]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="text-xs text-[#C4A89C]">
-                Data saved to your shared enterprise profile in <code>enterpriseStore</code>.
+                Data securely synchronized with your Single Window CAF Dossier.
               </div>
               <Link
                 href="/dashboard/vault"

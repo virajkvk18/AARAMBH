@@ -18,6 +18,7 @@ export interface ClearanceItem {
   mandatory: boolean;
   description: string;
   feeEstimate: string;
+  status?: "pending" | "submitted" | "in_review" | "approved" | "deemed_approved";
 }
 
 export interface ExtractedFieldItem {
@@ -53,6 +54,22 @@ export interface DigiLockerDocItem {
   verified: boolean;
 }
 
+export interface GrievanceTicket {
+  id: string;
+  subject: string;
+  department: string;
+  category?: string;
+  details: string;
+  description?: string;
+  status: "open" | "in_progress" | "resolved";
+  createdAt: string;
+  date?: string;
+  slaDays: number;
+  resolution?: string;
+}
+
+export type ApplicationStatus = "draft" | "submitted" | "under_review" | "approved";
+
 export interface EnterpriseState {
   sector: SectorType;
   locationZone: string;
@@ -65,6 +82,11 @@ export interface EnterpriseState {
   applicableIncentives: string[];
   isAssessed: boolean;
 
+  // Application Lifecycle State
+  applicationStatus: ApplicationStatus;
+  applicationRef: string;
+  submittedAt: string | null;
+
   // Document Vault State
   uploadedDocuments: UploadedDocument[];
   extractedFields: Record<string, ExtractedFieldItem>;
@@ -72,6 +94,13 @@ export interface EnterpriseState {
   digiLockerDocs: DigiLockerDocItem[];
   uploadedDocumentName: string | null;
 
+  // DAG Workflow State
+  dagNodeStatuses: Record<string, "locked" | "active" | "approved">;
+
+  // Grievances State
+  grievanceTickets: GrievanceTicket[];
+
+  // Actions
   setFormData: (
     data: Partial<
       Pick<
@@ -85,6 +114,7 @@ export interface EnterpriseState {
     clearances: ClearanceItem[],
     incentives: string[]
   ) => void;
+  submitApplication: (ref?: string) => void;
   addUploadedDocument: (doc: UploadedDocument) => void;
   addUploadedDocuments: (docs: UploadedDocument[]) => void;
   updateUploadedDocument: (id: string, updates: Partial<UploadedDocument>) => void;
@@ -95,12 +125,24 @@ export interface EnterpriseState {
     documentName: string
   ) => void;
   setDigiLockerDocs: (docs: DigiLockerDocItem[]) => void;
+  updateDAGNodeStatus: (nodeId: string, status: "locked" | "active" | "approved") => void;
+  setDAGNodeStatuses: (statuses: Record<string, "locked" | "active" | "approved">) => void;
+  resetDAGStatuses: () => void;
+  addGrievanceTicket: (ticket: {
+    subject: string;
+    department?: string;
+    category?: string;
+    details?: string;
+    description?: string;
+    status?: "open" | "in_progress" | "resolved";
+  }) => void;
+  resolveGrievanceTicket: (id: string, resolution?: string) => void;
+  resetAssessment: () => void;
   reset: () => void;
 }
 
 /**
- * Recalculate merged extracted fields strictly from the remaining documents.
- * If two documents have conflicting non-null values, flag the conflict instead of silently overwriting.
+ * Recalculate merged extracted fields strictly from remaining documents.
  */
 export function recalculateMergedFields(docs: UploadedDocument[]): {
   mergedFields: Record<string, ExtractedFieldItem>;
@@ -134,13 +176,15 @@ export function recalculateMergedFields(docs: UploadedDocument[]): {
   for (const [key, entries] of Object.entries(valuesByField)) {
     if (entries.length === 0) continue;
 
-    // Check for distinct non-null values
     const uniqueNormalized = Array.from(
       new Set(entries.map((e) => e.value.toLowerCase().replace(/\s+/g, " ")))
     );
 
+    const highestConfidence = entries.reduce((prev, curr) =>
+      curr.confidenceScore > prev.confidenceScore ? curr : prev
+    );
+
     if (uniqueNormalized.length > 1) {
-      // Conflict detected across documents!
       conflicts.push({
         fieldName: key,
         values: entries.map((e) => ({
@@ -151,15 +195,11 @@ export function recalculateMergedFields(docs: UploadedDocument[]): {
       });
 
       mergedFields[key] = {
-        value: entries.map((e) => `${e.documentName}: ${e.value}`).join(" vs "),
-        confidenceScore: 0,
+        value: highestConfidence.value,
+        confidenceScore: highestConfidence.confidenceScore,
         hasConflict: true,
       };
     } else {
-      // Consistent value across document(s)
-      const highestConfidence = entries.reduce((prev, curr) =>
-        curr.confidenceScore > prev.confidenceScore ? curr : prev
-      );
       mergedFields[key] = {
         value: highestConfidence.value,
         confidenceScore: highestConfidence.confidenceScore,
@@ -171,6 +211,86 @@ export function recalculateMergedFields(docs: UploadedDocument[]): {
   return { mergedFields, conflicts };
 }
 
+export const INITIAL_DEFAULT_CLEARANCES: ClearanceItem[] = [
+  {
+    id: "clr-midc-land",
+    name: "MIDC Plot Allotment & Building Plan Approval",
+    department: "MIDC Planning Wing",
+    slaDays: 15,
+    category: "Pre-Establishment",
+    mandatory: true,
+    description: "Zonal land allotment, architectural floor area ratio (FAR), and building plan sanction.",
+    feeEstimate: "₹25,000",
+    status: "in_review",
+  },
+  {
+    id: "clr-mpcb-cte",
+    name: "Consent to Establish (CTE) - Red/Orange Category",
+    department: "Maharashtra Pollution Control Board (MPCB)",
+    slaDays: 21,
+    category: "Pre-Establishment",
+    mandatory: true,
+    description: "Air, Water, and Hazardous waste pollution control clearance under Water & Air Acts.",
+    feeEstimate: "₹45,000",
+    status: "in_review",
+  },
+  {
+    id: "clr-fire-noc",
+    name: "Provisional Fire Safety NOC",
+    department: "Directorate of Maharashtra Fire Services",
+    slaDays: 14,
+    category: "Pre-Establishment",
+    mandatory: true,
+    description: "Fire prevention, static water tank capacity, and emergency egress plan verification.",
+    feeEstimate: "₹15,000",
+    status: "in_review",
+  },
+  {
+    id: "clr-water-alloc",
+    name: "Bulk Industrial Water Supply Allocation",
+    department: "Water Resources Dept / MIDC Water Wing",
+    slaDays: 7,
+    category: "Utility",
+    mandatory: true,
+    description: "Sanction of daily water quota intake (KLD) and pipeline connection point.",
+    feeEstimate: "₹10,000",
+    status: "in_review",
+  },
+  {
+    id: "clr-dish-license",
+    name: "Factory License & Safety Sign-off (DISH)",
+    department: "Directorate of Industrial Safety & Health",
+    slaDays: 15,
+    category: "Pre-Operation",
+    mandatory: true,
+    description: "Consolidated factory layout and worker occupational safety compliance certificate.",
+    feeEstimate: "₹20,000",
+    status: "pending",
+  },
+];
+
+const initialTickets: GrievanceTicket[] = [
+  {
+    id: "GRV-2026-098",
+    subject: "Provisional Fire NOC - Clarification on Underground Static Tank Capacity",
+    department: "State Directorate of Fire & Emergency Services",
+    details: "State Fire Directorate requested civil cross-sectional blueprint for 100kL underground storage tank. Scrutiny response due within statutory deadline.",
+    status: "open",
+    createdAt: "2026-09-02T10:30:00.000Z",
+    slaDays: 3,
+  },
+  {
+    id: "GRV-2026-042",
+    subject: "MIDC Land Allotment Boundary Coordinates Confirmation",
+    department: "MIDC Chakan Sub-Division",
+    details: "Zonal sub-division verified with Chakan industrial estate GIS survey map. Deemed boundary approval endorsed.",
+    status: "resolved",
+    createdAt: "2026-08-20T14:15:00.000Z",
+    slaDays: 5,
+    resolution: "Coordinates re-verified on GIS platform. Clear boundary certificate issued.",
+  },
+];
+
 const initialState = {
   sector: "Food Processing" as SectorType,
   locationZone: "Chakan MIDC (Pune)",
@@ -178,16 +298,41 @@ const initialState = {
   powerLoadKva: 150,
   waterDemandKld: 20,
   workforceSize: 75,
-  riskTrack: null as RiskTrack | null,
-  clearances: [] as ClearanceItem[],
-  applicableIncentives: [] as string[],
-  isAssessed: false,
+  riskTrack: "orange" as RiskTrack | null,
+  clearances: INITIAL_DEFAULT_CLEARANCES,
+  applicableIncentives: [
+    "Package Scheme of Incentives (PSI 2019) - 60% Industrial Promotion Subsidy",
+    "100% Electricity Duty Exemption for 7 Years",
+    "5% Interest Subvention on Term Loans for Green Tech",
+  ],
+  isAssessed: true,
+
+  applicationStatus: "under_review" as ApplicationStatus,
+  applicationRef: "MH-CAF-2026-00412",
+  submittedAt: "2026-09-01T09:00:00.000Z",
 
   uploadedDocuments: [] as UploadedDocument[],
-  extractedFields: {} as Record<string, ExtractedFieldItem>,
+  extractedFields: {
+    entity_name: { value: "Maharashtra Solvents & Chemicals Pvt Ltd", confidenceScore: 0.98, hasConflict: false },
+    pan: { value: "AAECS8891M", confidenceScore: 0.99, hasConflict: false },
+    gstin: { value: "27AAECS8891M1Z2", confidenceScore: 0.95, hasConflict: false },
+    plot_area_sqm: { value: "5000", confidenceScore: 0.94, hasConflict: false },
+    power_load_kva: { value: "250", confidenceScore: 0.91, hasConflict: false },
+    capex_amount: { value: "350000000", confidenceScore: 0.92, hasConflict: false },
+  } as Record<string, ExtractedFieldItem>,
   fieldConflicts: [] as FieldConflict[],
   digiLockerDocs: [] as DigiLockerDocItem[],
   uploadedDocumentName: null as string | null,
+
+  dagNodeStatuses: {
+    "node-root": "approved" as const,
+    "node-mpcb": "active" as const,
+    "node-fire": "active" as const,
+    "node-water": "active" as const,
+    "node-dish": "locked" as const,
+  },
+
+  grievanceTickets: initialTickets,
 };
 
 export const useEnterpriseStore = create<EnterpriseState>()(
@@ -202,11 +347,27 @@ export const useEnterpriseStore = create<EnterpriseState>()(
         })),
 
       setAssessmentResult: (riskTrack, clearances, incentives) =>
-        set(() => ({
+        set((state) => ({
+          ...state,
           riskTrack,
-          clearances,
+          clearances: clearances.length > 0 ? clearances : INITIAL_DEFAULT_CLEARANCES,
           applicableIncentives: incentives,
           isAssessed: true,
+        })),
+
+      submitApplication: (ref = "MH-CAF-2026-00412") =>
+        set((state) => ({
+          ...state,
+          applicationStatus: "submitted",
+          applicationRef: ref,
+          submittedAt: new Date().toISOString(),
+          dagNodeStatuses: {
+            "node-root": "active",
+            "node-mpcb": "locked",
+            "node-fire": "locked",
+            "node-water": "locked",
+            "node-dish": "locked",
+          },
         })),
 
       addUploadedDocument: (doc) =>
@@ -217,7 +378,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
             ...state,
             uploadedDocuments: newDocs,
             uploadedDocumentName: doc.name,
-            extractedFields: Object.keys(mergedFields).length > 0 ? mergedFields : state.extractedFields,
+            extractedFields: Object.keys(mergedFields).length > 0 ? { ...state.extractedFields, ...mergedFields } : state.extractedFields,
             fieldConflicts: conflicts,
           };
         }),
@@ -230,7 +391,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
             ...state,
             uploadedDocuments: newDocs,
             uploadedDocumentName: docs[docs.length - 1]?.name || state.uploadedDocumentName,
-            extractedFields: Object.keys(mergedFields).length > 0 ? mergedFields : state.extractedFields,
+            extractedFields: Object.keys(mergedFields).length > 0 ? { ...state.extractedFields, ...mergedFields } : state.extractedFields,
             fieldConflicts: conflicts,
           };
         }),
@@ -244,7 +405,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           return {
             ...state,
             uploadedDocuments: newDocs,
-            extractedFields: mergedFields,
+            extractedFields: Object.keys(mergedFields).length > 0 ? { ...state.extractedFields, ...mergedFields } : state.extractedFields,
             fieldConflicts: conflicts,
           };
         }),
@@ -257,7 +418,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
             ...state,
             uploadedDocuments: remainingDocs,
             uploadedDocumentName: remainingDocs.length > 0 ? remainingDocs[remainingDocs.length - 1].name : null,
-            extractedFields: mergedFields,
+            extractedFields: Object.keys(mergedFields).length > 0 ? mergedFields : state.extractedFields,
             fieldConflicts: conflicts,
           };
         }),
@@ -267,14 +428,13 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           ...state,
           uploadedDocuments: [],
           uploadedDocumentName: null,
-          extractedFields: {},
           fieldConflicts: [],
         })),
 
       setExtractedFields: (fields, documentName) =>
         set((state) => ({
           ...state,
-          extractedFields: fields,
+          extractedFields: { ...state.extractedFields, ...fields },
           uploadedDocumentName: documentName,
         })),
 
@@ -282,6 +442,87 @@ export const useEnterpriseStore = create<EnterpriseState>()(
         set((state) => ({
           ...state,
           digiLockerDocs: docs,
+        })),
+
+      updateDAGNodeStatus: (nodeId, status) =>
+        set((state) => {
+          const updated = { ...state.dagNodeStatuses, [nodeId]: status };
+
+          if (nodeId === "node-root" && status === "approved") {
+            if (updated["node-mpcb"] === "locked") updated["node-mpcb"] = "active";
+            if (updated["node-fire"] === "locked") updated["node-fire"] = "active";
+            if (updated["node-water"] === "locked") updated["node-water"] = "active";
+          }
+
+          const childrenApproved =
+            updated["node-mpcb"] === "approved" &&
+            updated["node-fire"] === "approved" &&
+            updated["node-water"] === "approved";
+
+          if (childrenApproved && updated["node-dish"] === "locked") {
+            updated["node-dish"] = "active";
+          }
+
+          const allApproved = updated["node-dish"] === "approved";
+
+          return {
+            ...state,
+            dagNodeStatuses: updated,
+            applicationStatus: allApproved ? "approved" : "under_review",
+          };
+        }),
+
+      setDAGNodeStatuses: (statuses) =>
+        set((state) => ({
+          ...state,
+          dagNodeStatuses: statuses,
+        })),
+
+      resetDAGStatuses: () =>
+        set((state) => ({
+          ...state,
+          dagNodeStatuses: {
+            "node-root": "active",
+            "node-mpcb": "locked",
+            "node-fire": "locked",
+            "node-water": "locked",
+            "node-dish": "locked",
+          },
+        })),
+
+      addGrievanceTicket: (ticketInput) =>
+        set((state) => {
+          const now = new Date();
+          const newTicket: GrievanceTicket = {
+            id: `GRV-2026-${Math.floor(100 + Math.random() * 900)}`,
+            subject: ticketInput.subject,
+            department: ticketInput.department || ticketInput.category || "General Clearance",
+            category: ticketInput.category || ticketInput.department || "General Clearance",
+            details: ticketInput.details || ticketInput.description || "",
+            description: ticketInput.description || ticketInput.details || "",
+            status: ticketInput.status || "in_progress",
+            createdAt: now.toISOString(),
+            date: now.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+            slaDays: 3,
+          };
+          return {
+            ...state,
+            grievanceTickets: [newTicket, ...state.grievanceTickets],
+          };
+        }),
+
+      resolveGrievanceTicket: (id, resolution) =>
+        set((state) => ({
+          ...state,
+          grievanceTickets: state.grievanceTickets.map((t) =>
+            t.id === id ? { ...t, status: "resolved", resolution: resolution || "Resolved by department" } : t
+          ),
+        })),
+
+      resetAssessment: () =>
+        set((state) => ({
+          ...state,
+          isAssessed: false,
         })),
 
       reset: () => set(() => ({ ...initialState })),

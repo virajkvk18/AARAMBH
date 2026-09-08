@@ -84,6 +84,9 @@ export default function PreValidationPage() {
     locationZone,
     capexCr,
     powerLoadKva,
+    applicationStatus,
+    applicationRef,
+    submitApplication,
   } = useEnterpriseStore();
 
   // Baseline Form Values (from store or initial default)
@@ -122,7 +125,7 @@ export default function PreValidationPage() {
     }));
   }, [extractedFields]);
 
-  const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(applicationStatus === "submitted" || applicationStatus === "under_review");
 
   // Live Reactive Comparison
   const comparisonResult = useMemo(() => {
@@ -150,6 +153,8 @@ export default function PreValidationPage() {
   const handleSubmitApplication = (e: React.FormEvent) => {
     e.preventDefault();
     if (isMismatch) return;
+    const ref = applicationRef || `MH-CAF-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    submitApplication(ref);
     setSubmissionSuccess(true);
   };
 
@@ -422,7 +427,7 @@ export default function PreValidationPage() {
           <div className="flex items-center space-x-2">
             <span className="text-xs text-slate-400">Source:</span>
             <span className="text-xs font-mono font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-1 rounded-md">
-              Zustand enterpriseStore
+              AI Vault Synchronized
             </span>
           </div>
         </div>
@@ -599,13 +604,38 @@ export default function PreValidationPage() {
 
           {/* Submission Feedback */}
           {submissionSuccess && (
-            <div className="p-4 rounded-xl bg-[#FFF2DF] border border-[#FED17A] flex items-center space-x-3 text-xs text-[#16060E]">
-              <CheckCircle2 className="w-5 h-5 text-[#9B2A48] shrink-0" />
-              <div>
-                <p className="font-bold text-[#9B2A48]">Application Successfully Pre-Validated & Queued!</p>
-                <p className="text-[#886A75] mt-0.5">
-                  Dossier MH-CAF-2026-00412 has passed quality gate and is ready for DAG Parallel Routing.
-                </p>
+            <div className="p-5 rounded-2xl bg-[#FFF2DF] border-2 border-[#FED17A] text-[#16060E] space-y-3">
+              <div className="flex items-start space-x-3">
+                <CheckCircle2 className="w-6 h-6 text-[#9B2A48] shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-2 justify-between">
+                    <p className="font-extrabold text-sm text-[#9B2A48]">
+                      Application Successfully Pre-Validated & Dispatched!
+                    </p>
+                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-[#9B2A48] text-[#FFCA7C]">
+                      Ref: {applicationRef || "MH-CAF-2026-00412"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#886A75] mt-1">
+                    Your Common Application Form has passed statutory gate scrutiny and is now actively flowing through the Maharashtra Parallel DAG Clearance Engine.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#FED17A]/60 flex flex-wrap gap-3 items-center">
+                <Link
+                  href="/dashboard/dag"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity cursor-pointer"
+                >
+                  <span>Track Parallel DAG Workflow</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  href="/dashboard/sla"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-white border border-[#FED17A] hover:bg-[#FFF7F0] text-[#9B2A48] text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+                >
+                  <span>Monitor SLA Clocks & Deemed Approvals</span>
+                </Link>
               </div>
             </div>
           )}

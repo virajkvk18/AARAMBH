@@ -112,10 +112,12 @@ export default function AskAarambhChatbot() {
     setLoading(true);
 
     try {
-      const history = [...messages, userMessage].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+      const history = [...messages, userMessage]
+        .filter((m) => !m.id.startsWith("err-"))
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
 
       const savedKey = typeof window !== "undefined" ? localStorage.getItem("aarambh_groq_api_key") : null;
 

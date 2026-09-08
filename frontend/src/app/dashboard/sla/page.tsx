@@ -69,6 +69,44 @@ export default function SLATrackerPage() {
   // Real React state for Acceleration Simulator (0 - 100)
   const [sliderValue, setSliderValue] = useState<number>(45);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [downloadedCertName, setDownloadedCertName] = useState<string | null>(null);
+
+  const handleDownloadDeemedCertificate = (app: ClearanceSLABar) => {
+    const certContent = `GOVERNMENT OF MAHARASHTRA
+DIRECTORATE OF INDUSTRIAL CLEARANCES & SINGLE WINDOW FACILITATION
+STATUTORY DEEMED APPROVAL ORDER
+(Issued under Section 10 of Maharashtra Right to Public Services Act, 2015)
+----------------------------------------------------------------------
+Clearance Reference: MH-DEEMED-${Date.now()}-${app.id.toUpperCase()}
+Subject: Statutory Deemed Clearance for ${app.name}
+Department: ${app.department}
+Statutory SLA Period: ${app.totalSlaDays} Working Days
+Elapsed Period: ${app.totalSlaDays} Working Days (100% SLA Elapsed)
+
+WHEREAS an application for "${app.name}" was submitted via the AARAMBH Single Window Clearance Portal;
+AND WHEREAS no adverse remarks, queries, or rejection orders were issued by the competent authority within the prescribed SLA statutory timeline of ${app.totalSlaDays} working days;
+
+NOW THEREFORE, by virtue of the powers conferred under the Maharashtra Right to Public Services Act 2015, the competent authority hereby certifies that DEEMED CLEARANCE is granted to the applicant enterprise for all statutory, banking, utility, and operational purposes.
+
+Signatory: State Single Window Automated Clearance Node, Mantralaya, Mumbai
+Digital Verification Hash: SHA256-${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}
+Issued On: ${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+Timestamp: ${new Date().toISOString()}
+----------------------------------------------------------------------`;
+
+    const blob = new Blob([certContent], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Deemed_Approval_${app.id.toUpperCase()}_Certificate.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setDownloadedCertName(app.name);
+    setTimeout(() => setDownloadedCertName(null), 4000);
+  };
 
   // Auto-play timer for presentation simulation
   useEffect(() => {
@@ -375,10 +413,11 @@ export default function SLATrackerPage() {
                   {itemPercent >= 100 && (
                     <button
                       type="button"
-                      onClick={() => alert(`Statutory Deemed Certificate for ${app.name} generated!`)}
+                      onClick={() => handleDownloadDeemedCertificate(app)}
                       className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] underline flex items-center space-x-1 cursor-pointer transition-colors"
                     >
-                      <span>Download Deemed Clearance Order</span>
+                      <FileCheck2 className="w-3.5 h-3.5 text-[#FE7251]" />
+                      <span>Download Deemed Clearance Order (.txt)</span>
                       <ArrowRight className="w-3 h-3" />
                     </button>
                   )}
@@ -387,6 +426,18 @@ export default function SLATrackerPage() {
             );
           })}
         </div>
+
+        {downloadedCertName && (
+          <div className="p-4 rounded-xl bg-[#FFF2DF] border border-[#FED17A] text-[#16060E] flex items-center space-x-3 text-xs animate-in fade-in">
+            <Award className="w-5 h-5 text-[#9B2A48] shrink-0" />
+            <div>
+              <p className="font-bold text-[#9B2A48]">Statutory Deemed Certificate Downloaded</p>
+              <p className="text-[#886A75] mt-0.5">
+                Cryptographically signed deemed approval dossier for &quot;{downloadedCertName}&quot; has been saved to your downloads.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

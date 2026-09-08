@@ -220,6 +220,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "Available Land:",
     "zones.check_approvals": "Check Approvals for this Zone",
 
+    // Grievances Page
+    "grievances.title": "Dispute Redressal & Officer Query Desk",
+    "grievances.sub": "Time-bound statutory resolution for delays, inspection queries, or payment reconciliations under Maharashtra RTS Act.",
+    "grievances.raise_ticket": "Raise New Ticket",
+    "grievances.active_scrutiny": "Under Active Scrutiny",
+    "grievances.resolved": "Resolved & Closed ✓",
+    "grievances.target_dept": "Target Department",
+    "grievances.subject": "Subject / Clear Query Summary",
+    "grievances.details": "Detailed Description",
+    "grievances.submit_btn": "Submit Grievance",
+    "grievances.modal_title": "Raise Grievance or Officer Query",
+    "grievances.modal_sub": "Your ticket will be routed directly to the designated nodal officer.",
+
+    // Officer Workspace
+    "officer.console_tag": "Department Officer Scrutiny Console",
+    "officer.title": "Officer Review Queue",
+    "officer.sub": "Review incoming Common Application Forms (CAF), verify AI OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.",
+    "officer.queue_ref": "Application Ref",
+    "officer.queue_enterprise": "Enterprise Name",
+    "officer.queue_clearance": "Clearance Requested",
+    "officer.queue_sla": "SLA Due Date",
+    "officer.queue_action": "Review Action",
+    "officer.endorse_approve": "Endorse & Approve",
+    "officer.raise_query": "Raise Query",
+    "officer.approved": "Approved ✓",
+    "officer.restricted_title": "Restricted Officer Access",
+    "officer.restricted_sub": "This workspace is exclusively for verified Department Scrutiny Officers. Toggle 'Officer View' on the top bar for testing.",
+
+    // Profile Page
+    "profile.title": "Investor Profile",
+    "profile.single_window_id": "Enterprise Single Window ID",
+    "profile.role_tier": "Role / Access Tier",
+    "profile.registered_sector": "Registered Sector",
+    "profile.industrial_zone": "Industrial Zone (MIDC)",
+    "profile.active_badge": "Active Verified Profile",
+    "profile.digi_badge": "DigiLocker Linked",
+    "profile.edit_profile": "Edit Profile Details",
+    "profile.save_changes": "Save Changes",
+
+    // Common UI Elements
+    "common.cancel": "Cancel",
+    "common.close": "Close",
+    "common.download": "Download",
+    "common.view": "View",
+    "common.remove": "Remove",
+    "common.submit": "Submit",
+    "common.back": "Back",
+    "common.next": "Next",
+    "common.loading": "Loading...",
+
     // Auth & Form
     "auth.sign_in": "Sign In",
     "auth.sign_in_sub": "To access your dashboard and apply for approvals.",
@@ -241,6 +291,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.address": "Enter your Address",
     "auth.validate_pan": "Validate your Permanent Account Number (PAN)",
     "auth.legal_entity": "Select your legal entity type",
+    "auth.login_title": "Welcome back to AARAMBH",
+    "auth.login_sub": "Sign in with your enterprise credentials to manage your approvals.",
+    "auth.signup_title": "Setup your profile",
+    "auth.signup_sub": "Register your enterprise on the Maharashtra Single Window Portal.",
   },
   mr: {
     // Top Bar & Government statement
@@ -451,6 +505,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "उपलब्ध जमीन:",
     "zones.check_approvals": "या क्षेत्रासाठी परवाने तपासा",
 
+    // Grievances Page
+    "grievances.title": "तक्रार निवारण व अधिकारी चौकशी कक्ष",
+    "grievances.sub": "महाराष्ट्र लोकसेवा हक्क अधिनियमांतर्गत विलंब, तपासणी प्रश्न किंवा शुल्काचे वेळेत वैधानिक निराकरण.",
+    "grievances.raise_ticket": "नवीन तिकीट तयार करा",
+    "grievances.active_scrutiny": "सक्रिय तपासणी सुरू आहे",
+    "grievances.resolved": "निराकरण झाले व बंद ✓",
+    "grievances.target_dept": "संबंधित विभाग",
+    "grievances.subject": "विषय / स्पष्ट सारांश",
+    "grievances.details": "तपशीलवार वर्णन",
+    "grievances.submit_btn": "तक्रार दाखल करा",
+    "grievances.modal_title": "तक्रार किंवा अधिकारी चौकशी दाखल करा",
+    "grievances.modal_sub": "आपले तिकीट थेट नियुक्त नोडल अधिकाऱ्याकडे पाठवले जाईल.",
+
+    // Officer Workspace
+    "officer.console_tag": "विभागीय अधिकारी तपासणी कन्सोल",
+    "officer.title": "अधिकारी पुनरावलोकन कतार",
+    "officer.sub": "येणारे सामायिक अर्ज (CAF) तपासा, AI OCR निष्कर्षण सत्यापित करा, तपासणी अहवाल द्या किंवा डिजिटल मंजुरी प्रमाणपत्रे जारी करा.",
+    "officer.queue_ref": "अर्ज संदर्भ क्रमांक",
+    "officer.queue_enterprise": "उद्योगाचे नाव",
+    "officer.queue_clearance": "मागितलेला परवाना",
+    "officer.queue_sla": "SLA अंतिम तारीख",
+    "officer.queue_action": "पुनरावलोकन कृती",
+    "officer.endorse_approve": "मंजूर करा",
+    "officer.raise_query": "प्रश्न उपस्थित करा",
+    "officer.approved": "मंजूर ✓",
+    "officer.restricted_title": "मर्यादित अधिकारी प्रवेश",
+    "officer.restricted_sub": "हे वर्कस्पेस केवळ सत्यापित विभागीय अधिकाऱ्यांसाठी आहे. चाचणीसाठी वरील 'Officer View' टॉगल करा.",
+
+    // Profile Page
+    "profile.title": "उद्योजक प्रोफाइल",
+    "profile.single_window_id": "उद्यम सिंगल विंडो आयडी",
+    "profile.role_tier": "प्रवेश स्तर / भूमिका",
+    "profile.registered_sector": "नोंदणीकृत उद्योग क्षेत्र",
+    "profile.industrial_zone": "औद्योगिक क्षेत्र (MIDC)",
+    "profile.active_badge": "सक्रिय सत्यापित प्रोफाइल",
+    "profile.digi_badge": "डिजिलॉकर जोडलेले",
+    "profile.edit_profile": "प्रोफाइल तपशील संपादित करा",
+    "profile.save_changes": "बदल सेव्ह करा",
+
+    // Common UI Elements
+    "common.cancel": "रद्द करा",
+    "common.close": "बंद करा",
+    "common.download": "डाउनलोड करा",
+    "common.view": "पहा",
+    "common.remove": "काढून टाका",
+    "common.submit": "सादर करा",
+    "common.back": "मागे",
+    "common.next": "पुढे",
+    "common.loading": "लोड होत आहे...",
+
     // Auth & Form
     "auth.sign_in": "लॉग इन करा",
     "auth.sign_in_sub": "डॅशबोर्डमध्ये प्रवेश करण्यासाठी आणि परवान्यांसाठी अर्ज करण्यासाठी.",
@@ -472,6 +576,10 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.address": "आपला पत्ता प्रविष्ट करा",
     "auth.validate_pan": "पॅन (PAN) नंबर प्रमाणित करा",
     "auth.legal_entity": "आपल्या संस्थेचा कायदेशीर प्रकार निवडा",
+    "auth.login_title": "आरंभ पोर्टलवर आपले स्वागत आहे",
+    "auth.login_sub": "आपल्या परवान्यांचे व्यवस्थापन करण्यासाठी आपल्या उद्यम क्रेडेंशियल्सने लॉगिन करा.",
+    "auth.signup_title": "आपले प्रोफाइल सेट करा",
+    "auth.signup_sub": "महाराष्ट्र सिंगल विंडो पोर्टलवर आपल्या उद्योगाची नोंदणी करा.",
   },
   hi: {
     // Top Bar & Government statement
@@ -682,6 +790,56 @@ export const translations: Record<Language, Record<string, string>> = {
     "zones.available_land": "उपलब्ध भूमि:",
     "zones.check_approvals": "इस क्षेत्र के लिए स्वीकृतियां जांचें",
 
+    // Grievances Page
+    "grievances.title": "शिकायत निवारण एवं अधिकारी प्रश्न डेस्क",
+    "grievances.sub": "महाराष्ट्र लोक सेवा अधिकार अधिनियम के तहत देरी, निरीक्षण प्रश्नों या भुगतान सुलह का समयबद्ध वैधानिक समाधान।",
+    "grievances.raise_ticket": "नया टिकट बनाएं",
+    "grievances.active_scrutiny": "सक्रिय समीक्षा जारी",
+    "grievances.resolved": "समाधान पूर्ण एवं बंद ✓",
+    "grievances.target_dept": "संबंधित विभाग",
+    "grievances.subject": "विषय / स्पष्ट सारांश",
+    "grievances.details": "विस्तृत विवरण",
+    "grievances.submit_btn": "शिकायत दर्ज करें",
+    "grievances.modal_title": "शिकायत या अधिकारी प्रश्न दर्ज करें",
+    "grievances.modal_sub": "आपका टिकट सीधे नामित नोडल अधिकारी को भेजा जाएगा।",
+
+    // Officer Workspace
+    "officer.console_tag": "विभागीय अधिकारी समीक्षा कंसोल",
+    "officer.title": "अधिकारी समीक्षा कतार",
+    "officer.sub": "आने वाले सामान्य आवेदन पत्र (CAF) की समीक्षा करें, AI OCR निष्कर्षण सत्यापित करें, निरीक्षण रिपोर्ट दें या डिजिटल अनुमोदन प्रमाणपत्र जारी करें।",
+    "officer.queue_ref": "आवेदन संदर्भ",
+    "officer.queue_enterprise": "उद्यम का नाम",
+    "officer.queue_clearance": "वांछित स्वीकृति",
+    "officer.queue_sla": "SLA देय तिथि",
+    "officer.queue_action": "समीक्षा कार्रवाई",
+    "officer.endorse_approve": "स्वीकृत करें",
+    "officer.raise_query": "प्रश्न पूछें",
+    "officer.approved": "स्वीकृत ✓",
+    "officer.restricted_title": "सीमित अधिकारी पहुंच",
+    "officer.restricted_sub": "यह कार्यक्षेत्र केवल सत्यापित विभागीय अधिकारियों के लिए है। परीक्षण के लिए ऊपर 'Officer View' टॉगल करें।",
+
+    // Profile Page
+    "profile.title": "निवेशक प्रोफाइल",
+    "profile.single_window_id": "उद्यम सिंगल विंडो आईडी",
+    "profile.role_tier": "पहुंच स्तर / भूमिका",
+    "profile.registered_sector": "पंजीकृत उद्योग क्षेत्र",
+    "profile.industrial_zone": "औद्योगिक क्षेत्र (MIDC)",
+    "profile.active_badge": "सक्रिय सत्यापित प्रोफाइल",
+    "profile.digi_badge": "डिजिलॉकर लिंक किया गया",
+    "profile.edit_profile": "प्रोफाइल विवरण संपादित करें",
+    "profile.save_changes": "परिवर्तन सहेजें",
+
+    // Common UI Elements
+    "common.cancel": "रद्द करें",
+    "common.close": "बंद करें",
+    "common.download": "डाउनलोड करें",
+    "common.view": "देखें",
+    "common.remove": "हटाएं",
+    "common.submit": "जमा करें",
+    "common.back": "पीछे",
+    "common.next": "आगे",
+    "common.loading": "लोड हो रहा है...",
+
     // Auth & Form
     "auth.sign_in": "साइन इन करें",
     "auth.sign_in_sub": "अपने डैशबोर्ड तक पहुंचने और स्वीकृतियों के लिए आवेदन करने हेतु।",
@@ -705,7 +863,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "auth.legal_entity": "अपनी इकाई का कानूनी प्रकार चुनें",
     "auth.login_title": "आरंभ पोर्टल में पुनः स्वागत है",
     "auth.login_sub": "अपने उद्यम क्रेडेंशियल से लॉगिन करें और स्वीकृतियां प्रबंधित करें।",
-    "auth.signup_title": "नया उद्यम खाता बनाएं",
+    "auth.signup_title": "अपना प्रोफाइल सेट करें",
     "auth.signup_sub": "महाराष्ट्र सिंगल विंडो पोर्टल पर अपने उद्योग को पंजीकृत करें।",
   },
 };

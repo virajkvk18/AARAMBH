@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Compass,
   Search,
@@ -158,6 +159,7 @@ interface BenefitItem {
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   tag: string;
+  href: string;
 }
 
 const benefitsData: BenefitItem[] = [
@@ -168,6 +170,7 @@ const benefitsData: BenefitItem[] = [
       "A single integrated Common Application Form (CAF) replacing dozens of disparate departmental portals across Maharashtra.",
     icon: Layers,
     tag: "Unified Single Window",
+    href: "/dashboard/prevalidation",
   },
   {
     id: "status-tracking",
@@ -176,6 +179,7 @@ const benefitsData: BenefitItem[] = [
       "Stage-by-stage transparent milestone tracking with statutory SLA countdown timers and automated SMS/Email notifications.",
     icon: Clock,
     tag: "100% Transparent",
+    href: "/dashboard/dag",
   },
   {
     id: "secure-vault",
@@ -184,14 +188,16 @@ const benefitsData: BenefitItem[] = [
       "DigiLocker-integrated digital locker with automated AI extraction and pre-validation, eliminating duplicate uploads.",
     icon: ShieldCheck,
     tag: "DigiLocker & AI OCR",
+    href: "/dashboard/vault",
   },
   {
     id: "easy-renewals",
-    title: "Easy Renewals",
+    title: "Easy Renewals & SLA Enforcement",
     description:
       "Automated advance alerts 90 days prior to license expiry with one-click pre-populated renewal submissions.",
     icon: RefreshCw,
     tag: "Zero Downtime",
+    href: "/dashboard/sla",
   },
   {
     id: "fast-resolution",
@@ -200,6 +206,7 @@ const benefitsData: BenefitItem[] = [
       "Direct interactive query desk with time-bound statutory redressal under the Maharashtra Right to Public Services Act.",
     icon: MessageSquareCheck,
     tag: "Time-Bound SLA",
+    href: "/dashboard/grievances",
   },
   {
     id: "ai-kya",
@@ -208,6 +215,7 @@ const benefitsData: BenefitItem[] = [
       "Intelligent rule engine dynamically determines the exact pre-establishment, operational clearances and incentives.",
     icon: Sparkles,
     tag: "Smart Clearance Wizard",
+    href: "/dashboard/kya",
   },
 ];
 
@@ -303,6 +311,7 @@ const industrialZones = [
 ];
 
 export default function HomePage() {
+  const router = useRouter();
   const { t, language } = useLanguage();
 
   // State for search filter dropdown
@@ -339,7 +348,13 @@ export default function HomePage() {
             </p>
 
             {/* Unified Search Bar */}
-            <div className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2.5 sm:p-3 shadow-2xl shadow-black/40 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 text-slate-800">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                router.push(`/dashboard/kya?search=${encodeURIComponent(searchQuery)}&cat=${encodeURIComponent(searchCategory)}`);
+              }}
+              className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2.5 sm:p-3 shadow-2xl shadow-black/40 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 text-slate-800"
+            >
               {/* Category Dropdown */}
               <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-3">
                 <select
@@ -368,14 +383,14 @@ export default function HomePage() {
               </div>
 
               {/* Coral / Burgundy Explore All Button */}
-              <Link
-                href="/dashboard/kya"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02]"
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02] cursor-pointer"
               >
                 <span>{t("hero.explore_all", "EXPLORE ALL")}</span>
                 <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+              </button>
+            </form>
 
             {/* Secondary Callout Bar ("Click Here & Know Your Approvals") */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3.5">
@@ -447,9 +462,10 @@ export default function HomePage() {
           {benefitsData.map((benefit) => {
             const IconComp = benefit.icon;
             return (
-              <div
+              <Link
                 key={benefit.id}
-                className="bg-white rounded-2xl p-7 border border-[#F0E5E0] shadow-xs hover:shadow-xl hover:border-[#FE7251]/60 transition-all duration-200 flex flex-col justify-between group"
+                href={benefit.href}
+                className="bg-white rounded-2xl p-7 border border-[#F0E5E0] shadow-xs hover:shadow-xl hover:border-[#FE7251]/60 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
@@ -475,7 +491,7 @@ export default function HomePage() {
                   <span>{t("benefits.explore_feature", "Explore Feature")}</span>
                   <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
@@ -497,7 +513,7 @@ export default function HomePage() {
           </div>
           <div className="flex items-center space-x-3 shrink-0">
             <Link
-              href="/dashboard/workflows"
+              href="/dashboard/grievances"
               className="px-5 py-2.5 rounded-xl bg-[#250C19] hover:bg-[#381326] text-[#FFE8DE] font-bold text-xs border border-[#521C35] transition-colors"
             >
               {t("benefits.raise_query", "Raise a Query")}
@@ -534,7 +550,7 @@ export default function HomePage() {
               {/* View All Approvals CTA */}
               <div className="mt-8 relative z-10">
                 <Link
-                  href="/dashboard/workflows"
+                  href="/dashboard/kya"
                   className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/50 transition-transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   <span>{t("clearances.view_all", "VIEW ALL APPROVALS")}</span>
@@ -716,7 +732,7 @@ export default function HomePage() {
               </p>
             </div>
             <Link
-              href="/dashboard/workflows"
+              href="/dashboard/kya"
               className="inline-flex items-center space-x-2 text-xs font-bold text-[#9B2A48] hover:text-[#FE7251]"
             >
               <span>{t("zones.view_all_districts", "View All 36 Districts")}</span>

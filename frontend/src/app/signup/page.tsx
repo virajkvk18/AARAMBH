@@ -15,22 +15,23 @@ import {
   ShieldCheck,
   HelpCircle,
   Sparkles,
-  Search,
-  Check,
-  ChevronDown,
+  AlertCircle,
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
 
 type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
 export default function SignupPage() {
   const { loginAsApplicant, loginWithDigiLocker } = useAuth();
   const { t } = useLanguage();
+  const { setFormData, setExtractedFields } = useEnterpriseStore();
 
-  // Current Step: 1 = Initial Credentials, 2 = Entity Type (Img 2), 3 = PAN Validation (Img 3), 4 = Address (Img 4)
-  const [currentStep, setCurrentStep] = useState<number>(2);
+  // Current Step: 1 = Initial Credentials, 2 = Entity Type, 3 = PAN Validation, 4 = Address
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [stepError, setStepError] = useState<string | null>(null);
 
   // Form State
   const [applicantName, setApplicantName] = useState("Sanjay Deshmukh");
@@ -51,14 +52,99 @@ export default function SignupPage() {
   // Step 4 State
   const [addressLine1, setAddressLine1] = useState("Plot No. A-42, Sector 10");
   const [addressLine2, setAddressLine2] = useState("MIDC Chakan Phase-II");
+  const [showSecondAddress, setShowSecondAddress] = useState(false);
   const [country, setCountry] = useState("India");
   const [pinCode, setPinCode] = useState("410501");
   const [stateName, setStateName] = useState("Maharashtra");
   const [district, setDistrict] = useState("Pune");
 
+  // Validation Helpers
+  const validateStep1 = () => {
+    setStepError(null);
+    if (!applicantName.trim() || applicantName.trim().length < 3) {
+      setStepError("Please enter the full legal name of the authorized signatory.");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setStepError("Please enter a valid business email address.");
+      return false;
+    }
+    const phoneClean = mobile.replace(/\D/g, "");
+    if (phoneClean.length < 10) {
+      setStepError("Please enter a valid 10-digit mobile number.");
+      return false;
+    }
+    if (password.length < 6) {
+      setStepError("Password must be at least 6 characters.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    setStepError(null);
+    if (!businessName.trim() || businessName.trim().length < 2) {
+      setStepError("Please enter your registered enterprise / business name.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep3 = () => {
+    setStepError(null);
+    const panClean = panNumber.trim().toUpperCase();
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!panRegex.test(panClean)) {
+      setStepError("Please enter a valid 10-character Permanent Account Number (e.g. AAECS8891M).");
+      return false;
+    }
+    if (!panVerified) {
+      setStepError("Please click 'GET DETAILS' to validate your PAN with Income Tax records.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep4 = () => {
+    setStepError(null);
+    if (!addressLine1.trim()) {
+      setStepError("Please enter your primary address / plot number.");
+      return false;
+    }
+    if (!pinCode.trim() || pinCode.replace(/\D/g, "").length !== 6) {
+      setStepError("Please enter a valid 6-digit postal PIN code.");
+      return false;
+    }
+    if (!district.trim()) {
+      setStepError("Please select the industrial district in Maharashtra.");
+      return false;
+    }
+    return true;
+  };
+
+  const goToStep = (targetStep: number) => {
+    if (targetStep < currentStep) {
+      setStepError(null);
+      setCurrentStep(targetStep);
+      return;
+    }
+    if (currentStep === 1 && !validateStep1()) return;
+    if (currentStep === 2 && !validateStep2()) return;
+    if (currentStep === 3 && !validateStep3()) return;
+    setStepError(null);
+    setCurrentStep(targetStep);
+  };
+
   // Verify PAN handler
   const handleVerifyPan = () => {
-    if (!panNumber.trim()) return;
+    const panClean = panNumber.trim().toUpperCase();
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!panRegex.test(panClean)) {
+      setStepError("Please enter a valid 10-character PAN format before verifying.");
+      return;
+    }
+    setStepError(null);
     setPanLoading(true);
     setTimeout(() => {
       setPanLoading(false);
@@ -68,7 +154,29 @@ export default function SignupPage() {
 
   // Complete Registration
   const handleCompleteRegistration = () => {
-    loginAsApplicant(email, applicantName, businessName);
+    if (!validateStep4()) return;
+
+    // 1. Sync full user profile with AuthContext
+    loginAsApplicant(email, applicantName, businessName, {
+      phone: mobile,
+      panNumber: panNumber.toUpperCase(),
+      entityType: legalEntity,
+      addressLine1,
+      addressLine2,
+      pinCode,
+      district,
+      state: stateName,
+      enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    });
+
+    // 2. Sync with Enterprise Store
+    setFormData({
+      locationZone: `${district} MIDC Industrial Area`,
+    });
+    setExtractedFields({
+      entity_name: { value: businessName, confidenceScore: 1.0, hasConflict: false },
+      pan: { value: panNumber.toUpperCase(), confidenceScore: 1.0, hasConflict: false },
+    }, "Onboarding Registration Dossier");
   };
 
   return (
@@ -113,20 +221,34 @@ export default function SignupPage() {
             {[1, 2, 3, 4].map((stepNum) => (
               <button
                 key={stepNum}
-                onClick={() => setCurrentStep(stepNum)}
+                onClick={() => goToStep(stepNum)}
                 className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
                   currentStep === stepNum
                     ? "bg-[#FE7251] text-white shadow-sm"
                     : currentStep > stepNum
                     ? "bg-[#FFF2DF] text-[#9B2A48]"
-                    : "bg-slate-200 text-slate-500"
+                    : "bg-slate-200 text-slate-500 hover:bg-slate-300"
                 }`}
+                title={`Go to Step ${stepNum}`}
               >
                 {currentStep > stepNum ? "✓" : stepNum}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Validation Error Banner */}
+        {stepError && (
+          <div className="mx-6 sm:mx-10 mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-between text-rose-900 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="font-semibold">{stepError}</span>
+            </div>
+            <button onClick={() => setStepError(null)} className="text-rose-500 hover:text-rose-700">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* ========================================================================= */}
         {/* STEP 1: BASIC CREDENTIALS */}
@@ -236,10 +358,10 @@ export default function SignupPage() {
               <div className="pt-6 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(2)}
+                  onClick={() => goToStep(2)}
                   className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                 >
-                  <span>NEXT</span>
+                  <span>{t("common.next", "NEXT")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -410,17 +532,17 @@ export default function SignupPage() {
               <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => goToStep(1)}
                   className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
                 >
-                  ◀ GO BACK
+                  ◀ {t("auth.back", "GO BACK")}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => goToStep(3)}
                   className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                 >
-                  <span>NEXT</span>
+                  <span>{t("common.next", "NEXT")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -587,17 +709,17 @@ export default function SignupPage() {
               <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(2)}
+                  onClick={() => goToStep(2)}
                   className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
                 >
-                  ◀ GO BACK
+                  ◀ {t("auth.back", "GO BACK")}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(4)}
+                  onClick={() => goToStep(4)}
                   className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                 >
-                  <span>NEXT</span>
+                  <span>{t("common.next", "NEXT")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -768,13 +890,38 @@ export default function SignupPage() {
 
                   {/* Add Registered Address + Option */}
                   <div className="pt-2">
-                    <button
-                      type="button"
-                      className="text-xs font-bold text-slate-700 hover:text-[#FE7251] flex items-center space-x-1 cursor-pointer"
-                    >
-                      <span>Add Registered Address</span>
-                      <span className="text-[#FE7251] font-black text-sm">+</span>
-                    </button>
+                    {showSecondAddress ? (
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-xs font-bold text-slate-700">
+                            Registered Corporate Office Address
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setShowSecondAddress(false)}
+                            className="text-[11px] text-rose-600 font-bold hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          value={addressLine2}
+                          onChange={(e) => setAddressLine2(e.target.value)}
+                          placeholder="Corporate / Registered Headquarters Address"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setShowSecondAddress(true)}
+                        className="text-xs font-bold text-slate-700 hover:text-[#FE7251] flex items-center space-x-1 cursor-pointer"
+                      >
+                        <span>Add Alternate / Registered Address</span>
+                        <span className="text-[#FE7251] font-black text-sm">+</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -783,17 +930,17 @@ export default function SignupPage() {
               <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => goToStep(3)}
                   className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
                 >
-                  ◀ GO BACK
+                  ◀ {t("auth.back", "GO BACK")}
                 </button>
                 <button
                   type="button"
                   onClick={handleCompleteRegistration}
                   className="inline-flex items-center space-x-2 px-9 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                 >
-                  <span>COMPLETE REGISTRATION</span>
+                  <span>{t("auth.complete_reg", "COMPLETE REGISTRATION")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
