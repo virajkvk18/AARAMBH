@@ -102,7 +102,7 @@ export default function DashboardLayout({
       heading: "APPROVALS",
       items: [
         { id: "track-approvals", label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-        { id: "department-approvals", label: "Department Approvals", href: "/dashboard/dag", icon: GitFork },
+        { id: "department-approvals", label: "Department Approvals", href: "/dashboard/department-approvals", icon: GitFork },
       ],
     },
     {
@@ -112,7 +112,7 @@ export default function DashboardLayout({
     {
       heading: "SUPPORT",
       items: [
-        { id: "help-support", label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { id: "help-support", label: "Help & Support", href: "/dashboard/help-support", icon: MessageSquareWarning },
         { id: "grievances", label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
       ],
     },
@@ -126,9 +126,13 @@ export default function DashboardLayout({
 
   // Helper to determine active state
   const isItemActive = (item: NavItem) => {
-    return item.href === "/dashboard"
-      ? pathname === "/dashboard"
-      : pathname?.startsWith(item.href) || (item.aliases && item.aliases.some((a) => pathname?.startsWith(a)));
+    // Exact match for the route or its alias ensures only one sidebar item is active at a time
+    if (item.href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    const exactMatch = pathname === item.href;
+    const aliasMatch = item.aliases?.some((a) => pathname === a);
+    return exactMatch || !!aliasMatch;
   };
 
   return (
