@@ -20,6 +20,15 @@ import {
 
 dotenv.config({ path: path.resolve(__dirname, "..", "..", ".env") });
 
+import {
+  MasterCAFPayload,
+  DepartmentDeltas,
+} from "./caf/cafSchema";
+import {
+  previewCAFMapping,
+  submitUnifiedCAF,
+} from "./caf/integrationGateway";
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
@@ -621,6 +630,147 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
     }
   } catch (error: any) {
     res.status(500).json({ error: "Failed to process the document." });
+  }
+});
+
+// ==========================================
+// 6. SYSTEM INTEGRATION GATEWAY (CAF & ADAPTERS)
+// ==========================================
+
+/**
+ * POST /api/caf/preview
+ * Auto-maps Master CAF + Delta inputs into department payloads with % auto-fill stats
+ */
+app.post("/api/caf/preview", (req: Request, res: Response): void => {
+  try {
+    const {
+      caf,
+      deltas = {},
+      departments = ["mpcb", "fire", "midc", "dish"],
+    } = req.body;
+
+    if (!caf || !caf.companyDetails) {
+      res.status(400).json({ error: "Invalid request: 'caf' master object is required." });
+      return;
+    }
+
+    const preview = previewCAFMapping(caf as MasterCAFPayload, deltas as DepartmentDeltas, departments);
+    res.json({
+      status: "success",
+      preview,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to generate CAF preview" });
+  }
+});
+
+/**
+ * POST /api/caf/submit
+ * Parallel Multi-Department Dispatcher across state and central gateways
+ */
+app.post("/api/caf/submit", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      caf,
+      deltas = {},
+      departments = ["mpcb", "fire", "midc", "dish"],
+      enterprise_id = "ENT-MH-2026-8891",
+    } = req.body;
+
+    if (!caf || !caf.companyDetails) {
+      res.status(400).json({ error: "Invalid request: 'caf' master object is required." });
+      return;
+    }
+
+    const submissionResult = await submitUnifiedCAF(
+      caf as MasterCAFPayload,
+      deltas as DepartmentDeltas,
+      departments
+    );
+
+    // Synchronize DAG pipeline nodes with the new CAF submission
+    const existingNodes = Array.from(localDb.dagNodes.values()).filter(
+      (n) => n.enterprise_id === enterprise_id
+    );
+    if (existingNodes.length === 0) {
+      initializeDagNodesForEnterprise(enterprise_id);
+    }
+
+    // Persist application in localDb
+    localDb.enterprises.set(enterprise_id, {
+      id: enterprise_id,
+      name: caf.companyDetails.companyName,
+      sector: caf.projectSpecs.sector || "General Manufacturing",
+      location: `${caf.locationDetails.district}, Maharashtra`,
+      status: "UNDER_SCRUTINY",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    res.status(200).json(submissionResult);
+  } catch (err: any) {
+    console.error("CAF Unified Submission error:", err);
+    res.status(500).json({ error: err.message || "Failed to dispatch unified application" });
+  }
+});
+
+/**
+ * GET /api/caf/receipt/:ref
+ * Download / view unified statutory acknowledgment receipt
+ */
+app.get("/api/caf/receipt/:ref", (req: Request, res: Response): void => {
+  try {
+    const ref = String(req.params.ref);
+    const receiptText = `========================================================================
+     GOVERNMENT OF MAHARASHTRA • INDUSTRY & LABOUR DEPARTMENT
+        SINGLE WINDOW CLEARANCE SYSTEM (AARAMBH 2.0 PORTAL)
+           UNIFIED COMMON APPLICATION FORM (CAF) RECEIPT
+========================================================================
+
+Master Application Ref : ${ref}
+Filing Date & Time     : ${new Date().toISOString()}
+Filing Type            : Combined Multi-Department Statutory Fast-Track
+Statutory Protection   : Maharashtra Right to Public Services Act (RTS 2015)
+
+------------------------------------------------------------------------
+INTEGRATED DEPARTMENT DISPATCH SUMMARY:
+------------------------------------------------------------------------
+1. Maharashtra Pollution Control Board (MPCB)
+   • Clearance: Consent to Establish (CTE)
+   • Tracking ID: MPCB-TRK-2026-${Math.floor(1000 + Math.random() * 9000)}
+   • Statutory SLA: 30 Working Days
+   • Mode: Direct REST API (https://api.mpcb.gov.in/v1/applications/submit)
+
+2. Maharashtra Fire Services (MahaFire)
+   • Clearance: Provisional Fire NOC
+   • Tracking ID: MAHAFIRE-TRK-2026-${Math.floor(1000 + Math.random() * 9000)}
+   • Statutory SLA: 14 Working Days
+   • Mode: Direct REST API (https://api.mahafire.gov.in/v1/noc-apply)
+
+3. Maharashtra Industrial Development Corporation (MIDC)
+   • Clearance: Industrial Land Lease & Building Sanction
+   • Tracking ID: MIDC-TRK-2026-${Math.floor(1000 + Math.random() * 9000)}
+   • Statutory SLA: 15 Working Days
+   • Mode: Direct REST API (https://api.midcindia.org/v2/plan-sanction/submit)
+
+4. Directorate of Industrial Safety & Health (DISH)
+   • Clearance: Factory Safety & Operational License
+   • Tracking ID: DISH-TRK-2026-${Math.floor(1000 + Math.random() * 9000)}
+   • Statutory SLA: 10 Working Days
+   • Mode: Webhook Event Dispatch (https://dish.maharashtra.gov.in/api/v1/factory-reg)
+
+------------------------------------------------------------------------
+DEEMED APPROVAL CLAUSE (RTS ACT 2015):
+If any competent authority fails to issue a formal query or approval 
+within the specified statutory SLA working days, the clearance certificate 
+shall be deemed granted automatically by law without further notice.
+========================================================================
+`;
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="AARAMBH_CAF_Receipt_${ref}.txt"`);
+    res.send(receiptText);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to generate receipt." });
   }
 });
 

@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   Sparkles,
   CalendarCheck,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -58,7 +59,10 @@ export default function DashboardLayout({
     },
     {
       heading: "APPLICATION",
-      items: [{ label: "Start Application", href: "/dashboard/kya", icon: Compass }],
+      items: [
+        { label: "Know Your Approvals", href: "/dashboard/kya", icon: Compass },
+        { label: "Unified CAF (One-Form)", href: "/dashboard/caf", icon: FileSpreadsheet, badge: "New" },
+      ],
     },
     {
       heading: "DOCUMENTS",
@@ -70,6 +74,7 @@ export default function DashboardLayout({
         { label: "Application Check", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
         { label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
         { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
     {
@@ -89,13 +94,17 @@ export default function DashboardLayout({
     },
     {
       heading: "APPLICATIONS",
-      items: [{ label: "All Applications", href: "/dashboard", icon: LayoutDashboard }],
+      items: [
+        { label: "All Applications", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Master CAF Dossiers", href: "/dashboard/caf", icon: FileSpreadsheet, badge: "Gateway" },
+      ],
     },
     {
       heading: "VERIFICATION",
       items: [
         { label: "Document Verification", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
         { label: "Application Review", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+        { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
     {

@@ -18,6 +18,8 @@ import {
   Layers,
   Award,
   Zap,
+  FileSpreadsheet,
+  CalendarCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -90,13 +92,22 @@ export default function DashboardHomePage() {
       iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
+      title: "Unified Common Application Form",
+      subtitle: "Single Master Form dispatching to 5+ State & Central Departments",
+      href: "/dashboard/caf",
+      icon: FileSpreadsheet,
+      btnLabel: "Fill Unified CAF",
+      accent: "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white",
+      iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
+    },
+    {
       title: t("dash.vault", "Document Vault"),
       subtitle: "OCR verification & DigiLocker document sync",
       href: "/dashboard/vault",
       icon: FolderLock,
       btnLabel: "Manage Vault",
       accent: "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white",
-      iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
+      iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
       title: t("dash.dag", "Parallel Clearance DAG"),
@@ -105,7 +116,7 @@ export default function DashboardHomePage() {
       icon: GitFork,
       btnLabel: "View Pipelines",
       accent: "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white",
-      iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
+      iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
     {
       title: t("dash.sla", "SLA Tracker & Deemed Approvals"),
@@ -113,6 +124,15 @@ export default function DashboardHomePage() {
       href: "/dashboard/sla",
       icon: Clock,
       btnLabel: "Track Timelines",
+      accent: "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white",
+      iconColor: "text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A]/60",
+    },
+    {
+      title: "Joint Department Inspections",
+      subtitle: "Synchronized MPCB, Fire & DISH site inspection scheduler",
+      href: "/dashboard/inspections",
+      icon: CalendarCheck,
+      btnLabel: "Inspect Calendar",
       accent: "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white",
       iconColor: "text-[#FE7251] bg-[#FFF2DF] border border-[#FED17A]/60",
     },
@@ -151,21 +171,21 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* 2. KPI CARDS ROW (4 CARDS) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* 2. STATS OVERVIEW CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiData.map((kpi, idx) => {
           const IconComp = kpi.icon;
           return (
             <div
               key={idx}
-              className="bg-white rounded-2xl p-6 border border-[#F0E5E0] shadow-xs hover:shadow-md hover:border-[#FE7251]/40 transition-all flex flex-col justify-between"
+              className="bg-white rounded-2xl p-5 border border-[#F0E5E0] shadow-xs flex flex-col justify-between"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     {kpi.title}
                   </p>
-                  <div className="mt-2 flex items-baseline">
+                  <div className="flex items-baseline mt-2">
                     <span className="text-3xl font-black text-[#18080E] tracking-tight">
                       {kpi.value}
                     </span>
@@ -188,7 +208,7 @@ export default function DashboardHomePage() {
         })}
       </div>
 
-      {/* 3. QUICK-ACTION BUTTON ROW (4 CORE FEATURES) */}
+      {/* 3. QUICK-ACTION BUTTON ROW (6 CORE FEATURES) */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -197,7 +217,7 @@ export default function DashboardHomePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickActions.map((action, idx) => {
             const IconComp = action.icon;
             return (

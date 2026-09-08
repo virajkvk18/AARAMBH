@@ -233,6 +233,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "grievances.modal_title": "Raise Grievance or Officer Query",
     "grievances.modal_sub": "Your ticket will be routed directly to the designated nodal officer.",
 
+    // Dashboard & Modules
+    "dash.caf": "Unified Common Application Form",
+
     // Officer Workspace
     "officer.console_tag": "Department Officer Scrutiny Console",
     "officer.title": "Officer Review Queue",
@@ -518,6 +521,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "grievances.modal_title": "तक्रार किंवा अधिकारी चौकशी दाखल करा",
     "grievances.modal_sub": "आपले तिकीट थेट नियुक्त नोडल अधिकाऱ्याकडे पाठवले जाईल.",
 
+    // Dashboard & Modules
+    "dash.caf": "एकत्रित सामान्य अर्ज (CAF)",
+
     // Officer Workspace
     "officer.console_tag": "विभागीय अधिकारी तपासणी कन्सोल",
     "officer.title": "अधिकारी पुनरावलोकन कतार",
@@ -802,6 +808,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "grievances.submit_btn": "शिकायत दर्ज करें",
     "grievances.modal_title": "शिकायत या अधिकारी प्रश्न दर्ज करें",
     "grievances.modal_sub": "आपका टिकट सीधे नामित नोडल अधिकारी को भेजा जाएगा।",
+
+    // Dashboard & Modules
+    "dash.caf": "एकीकृत साझा आवेदन पत्र (CAF)",
 
     // Officer Workspace
     "officer.console_tag": "विभागीय अधिकारी समीक्षा कंसोल",

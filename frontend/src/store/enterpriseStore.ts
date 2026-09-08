@@ -92,6 +92,104 @@ export interface JointInspection {
 
 export type ApplicationStatus = "draft" | "submitted" | "under_review" | "approved";
 
+export interface MasterCAFPayload {
+  companyDetails: {
+    companyName: string;
+    pan: string;
+    gstin: string;
+    cin: string;
+    entityType: "Pvt Ltd" | "Public Ltd" | "LLP" | "Proprietorship" | "Partnership";
+    signatoryName: string;
+    signatoryEmail: string;
+    signatoryMobile: string;
+  };
+  locationDetails: {
+    state: string;
+    district: string;
+    taluka?: string;
+    address: string;
+    pincode: string;
+    plotAreaSqMeters: number;
+    midcZoneName: string;
+    midcPlotNo: string;
+  };
+  projectSpecs: {
+    industryType: string;
+    sector: string;
+    capitalInvestmentInr: number;
+    powerRequirementKw: number;
+    waterRequirementKlpd: number;
+    hazardCategory: "Red" | "Orange" | "Green" | "White";
+    maxBuildingHeightMeters: number;
+    totalOccupants: number;
+    expectedCommissioningDate?: string;
+  };
+  documentVault: {
+    panCardUrl: string;
+    gstCertUrl: string;
+    landDeedUrl: string;
+    sitePlanUrl: string;
+    udyamCertUrl?: string;
+  };
+}
+
+export interface DepartmentDeltas {
+  mpcb?: {
+    etpProposed: boolean;
+    hazardousWasteTpa: number;
+    chimneyHeightMeters: number;
+    airPollutionControlSystem: string;
+  };
+  fire?: {
+    extinguisherType: string;
+    hasUgTank: boolean;
+    undergroundTankCapacityLiters: number;
+    sprinklerSystemFitted: boolean;
+    emergencyExitsCount: number;
+  };
+  midc?: {
+    proposedBuiltupAreaSqm: number;
+    industrialParkingBays: number;
+    effluentDischargePointRequired: boolean;
+    substationSpaceAllotted: boolean;
+  };
+  dish?: {
+    boilerInstalled: boolean;
+    safetyOfficerAppointed: boolean;
+    shiftPattern: "1 Shift" | "2 Shifts" | "3 Shifts (24x7)";
+    firstAidRoomProvided: boolean;
+  };
+  dpiit?: {
+    foreignCollaborationRequired: boolean;
+    fdiEquityPercent: number;
+    exportOrientedUnit: boolean;
+  };
+}
+
+export interface DepartmentSubmissionResult {
+  departmentId: string;
+  departmentName: string;
+  clearanceName: string;
+  portalEndpoint: string;
+  integrationMode: "REST_API" | "WEBHOOK_EVENT" | "SSO_PREFILL_PAYLOAD";
+  trackingId: string;
+  status: "SUBMITTED" | "AUTO_ACKNOWLEDGED" | "UNDER_SCRUTINY";
+  slaDays: number;
+  statutoryDueDate: string;
+  digitalEndorsementToken: string;
+  autoFilledPercentage: number;
+}
+
+export interface CAFSubmissionResponse {
+  status: "SUCCESS" | "PARTIAL_SUCCESS" | "ERROR";
+  masterApplicationRef: string;
+  timestamp: string;
+  enterpriseName: string;
+  totalDepartmentsSubmitted: number;
+  departments: DepartmentSubmissionResult[];
+  summaryReceiptPdfUrl?: string;
+}
+
 export interface EnterpriseState {
   sector: SectorType;
   locationZone: string;
@@ -125,7 +223,15 @@ export interface EnterpriseState {
   // Joint Inspections State
   jointInspections: JointInspection[];
 
+  // Master CAF & Integration Gateway State
+  masterCAF: MasterCAFPayload;
+  departmentDeltas: DepartmentDeltas;
+  cafSubmissionReceipt: CAFSubmissionResponse | null;
+
   // Actions
+  updateMasterCAF: (data: Partial<MasterCAFPayload>) => void;
+  updateDepartmentDelta: (dept: keyof DepartmentDeltas, deltaData: any) => void;
+  setCAFSubmissionReceipt: (receipt: CAFSubmissionResponse | null) => void;
   setFormData: (
     data: Partial<
       Pick<
@@ -407,12 +513,134 @@ const initialState = {
 
   grievanceTickets: initialTickets,
   jointInspections: initialInspections,
+
+  masterCAF: {
+    companyDetails: {
+      companyName: "Maharashtra Solvents & Chemicals Pvt Ltd",
+      pan: "AAECS8891M",
+      gstin: "27AAECS8891M1Z2",
+      cin: "U24299MH2026PTC104921",
+      entityType: "Pvt Ltd" as const,
+      signatoryName: "Rajesh V. Shinde",
+      signatoryEmail: "investor@maharashtra-solvents.com",
+      signatoryMobile: "+91 98220 12345",
+    },
+    locationDetails: {
+      state: "Maharashtra",
+      district: "Pune",
+      taluka: "Khed",
+      address: "Plot No. A-42, MIDC Chakan Phase-II Industrial Area",
+      pincode: "410501",
+      plotAreaSqMeters: 5000,
+      midcZoneName: "Chakan Industrial Zone Phase II (Pune)",
+      midcPlotNo: "Plot A-42/12",
+    },
+    projectSpecs: {
+      industryType: "Chemical Manufacturing",
+      sector: "Specialty Chemicals & Bio-Solvents",
+      capitalInvestmentInr: 350000000,
+      powerRequirementKw: 250,
+      waterRequirementKlpd: 20,
+      hazardCategory: "Red" as const,
+      maxBuildingHeightMeters: 12.5,
+      totalOccupants: 120,
+      expectedCommissioningDate: "2026-12-31",
+    },
+    documentVault: {
+      panCardUrl: "/api/documents/DL-PAN-2026-001/file",
+      gstCertUrl: "/api/documents/DL-GST-2026-002/file",
+      landDeedUrl: "/api/documents/DL-MIDC-2026-302/file",
+      sitePlanUrl: "/api/documents/DL-PLAN-2026-004/file",
+      udyamCertUrl: "/api/documents/DL-UDYAM-2026-881/file",
+    },
+  } as MasterCAFPayload,
+
+  departmentDeltas: {
+    mpcb: {
+      etpProposed: true,
+      hazardousWasteTpa: 2.5,
+      chimneyHeightMeters: 30,
+      airPollutionControlSystem: "Wet Scrubber + Bag Filter Array",
+    },
+    fire: {
+      extinguisherType: "CO2 & ABC Multi-Purpose Powder (IS 15683)",
+      hasUgTank: true,
+      undergroundTankCapacityLiters: 100000,
+      sprinklerSystemFitted: true,
+      emergencyExitsCount: 4,
+    },
+    midc: {
+      proposedBuiltupAreaSqm: 3200,
+      industrialParkingBays: 18,
+      effluentDischargePointRequired: true,
+      substationSpaceAllotted: true,
+    },
+    dish: {
+      boilerInstalled: false,
+      safetyOfficerAppointed: true,
+      shiftPattern: "3 Shifts (24x7)" as const,
+      firstAidRoomProvided: true,
+    },
+    dpiit: {
+      foreignCollaborationRequired: false,
+      fdiEquityPercent: 0,
+      exportOrientedUnit: false,
+    },
+  } as DepartmentDeltas,
+
+  cafSubmissionReceipt: null as CAFSubmissionResponse | null,
 };
 
 export const useEnterpriseStore = create<EnterpriseState>()(
   persist(
     (set) => ({
       ...initialState,
+
+      updateMasterCAF: (data) =>
+        set((state) => ({
+          ...state,
+          masterCAF: {
+            ...state.masterCAF,
+            ...data,
+            companyDetails: {
+              ...state.masterCAF.companyDetails,
+              ...(data.companyDetails || {}),
+            },
+            locationDetails: {
+              ...state.masterCAF.locationDetails,
+              ...(data.locationDetails || {}),
+            },
+            projectSpecs: {
+              ...state.masterCAF.projectSpecs,
+              ...(data.projectSpecs || {}),
+            },
+            documentVault: {
+              ...state.masterCAF.documentVault,
+              ...(data.documentVault || {}),
+            },
+          },
+        })),
+
+      updateDepartmentDelta: (dept, deltaData) =>
+        set((state) => ({
+          ...state,
+          departmentDeltas: {
+            ...state.departmentDeltas,
+            [dept]: {
+              ...(state.departmentDeltas[dept] || {}),
+              ...deltaData,
+            },
+          },
+        })),
+
+      setCAFSubmissionReceipt: (receipt) =>
+        set((state) => ({
+          ...state,
+          cafSubmissionReceipt: receipt,
+          applicationStatus: "submitted",
+          applicationRef: receipt?.masterApplicationRef || state.applicationRef,
+          submittedAt: receipt?.timestamp || new Date().toISOString(),
+        })),
 
       setFormData: (data) =>
         set((state) => ({
