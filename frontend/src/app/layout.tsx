@@ -20,8 +20,7 @@ export const metadata: Metadata = {
     "Unified Single Window System for rapid industrial clearances, approvals, schemes, and intelligent document validation in Maharashtra.",
   icons: {
     icon: [
-      { url: "/aarambh-logo-new.png" },
-      { url: "/icon.png" },
+      { url: "/aarambh-logo-new.png" }
     ],
     shortcut: "/aarambh-logo-new.png",
     apple: "/aarambh-logo-new.png",
