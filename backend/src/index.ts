@@ -28,6 +28,14 @@ import {
   previewCAFMapping,
   submitUnifiedCAF,
 } from "./caf/integrationGateway";
+import {
+  evaluatePolicyIncentives,
+  MAHARASHTRA_DISTRICT_TALUKAS,
+  SECTOR_POLICY_REGISTRY,
+} from "./rules/policyRulesEngine";
+import {
+  generateClearanceWorkflow,
+} from "./rules/workflowRuleEngine";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -777,6 +785,112 @@ shall be deemed granted automatically by law without further notice.
   } catch (err: any) {
     res.status(500).json({ error: "Failed to generate receipt." });
   }
+});
+
+// ==========================================
+// 8. MAHARASHTRA STATUTORY & POLICY RULES ENGINE ENDPOINTS
+// ==========================================
+
+/**
+ * Evaluates fiscal incentives, power subsidies, and SGST IPS under Maharashtra GRs
+ */
+app.post("/api/rules/evaluate", (req: Request, res: Response) => {
+  try {
+    const {
+      sector = "general_manufacturing",
+      district = "Pune",
+      taluka,
+      capexCr = 10,
+      workforceSize = 50,
+      powerLoadKw = 100,
+      isScStOrWoman = false,
+      isExpansion = false,
+      isGreenCertified = false,
+    } = req.body;
+
+    const result = evaluatePolicyIncentives({
+      sector,
+      district,
+      taluka,
+      capexCr: Number(capexCr),
+      workforceSize: Number(workforceSize),
+      powerLoadKw: Number(powerLoadKw),
+      isScStOrWoman: Boolean(isScStOrWoman),
+      isExpansion: Boolean(isExpansion),
+      isGreenCertified: Boolean(isGreenCertified),
+    });
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || "Failed to evaluate policy incentives" });
+  }
+});
+
+/**
+ * Evaluates statutory clearance workflow and generates dynamic DAG with critical path
+ */
+app.post("/api/rules/workflow", (req: Request, res: Response) => {
+  try {
+    const {
+      sector = "general_manufacturing",
+      hazardCategory = "Orange",
+      powerLoadKw = 100,
+      buildingHeightMeters = 12,
+      occupantsCount = 50,
+      boilerInstalled = false,
+      isMidcLand = true,
+    } = req.body;
+
+    const workflow = generateClearanceWorkflow({
+      sector,
+      hazardCategory,
+      powerLoadKw: Number(powerLoadKw),
+      buildingHeightMeters: Number(buildingHeightMeters),
+      occupantsCount: Number(occupantsCount),
+      boilerInstalled: Boolean(boilerInstalled),
+      isMidcLand: Boolean(isMidcLand),
+    });
+
+    res.json({
+      success: true,
+      data: workflow,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || "Failed to generate clearance workflow" });
+  }
+});
+
+/**
+ * Returns list of all ingested Maharashtra Industrial Policies
+ */
+app.get("/api/rules/policies", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    policies: Object.values(SECTOR_POLICY_REGISTRY),
+  });
+});
+
+/**
+ * Returns talukas and their PSI classification for a given district
+ */
+app.get("/api/rules/talukas/:district", (req: Request, res: Response) => {
+  const rawDistrict = req.params.district;
+  const districtName = Array.isArray(rawDistrict) ? rawDistrict[0] : (rawDistrict || "");
+  const match = MAHARASHTRA_DISTRICT_TALUKAS.find(
+    (d) => d.district.toLowerCase() === districtName.toLowerCase()
+  );
+  if (!match) {
+    return res.status(404).json({ success: false, error: "District not found in Maharashtra classification" });
+  }
+  res.json({
+    success: true,
+    district: match.district,
+    division: match.division,
+    talukas: match.talukas,
+  });
 });
 
 app.listen(PORT, () => {

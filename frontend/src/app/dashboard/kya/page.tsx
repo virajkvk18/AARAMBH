@@ -22,6 +22,14 @@ import {
   Coins,
   ChevronRight,
   FileCheck2,
+  Plane,
+  Truck,
+  FileText,
+  BadgePercent,
+  Banknote,
+  Cpu,
+  Leaf,
+  Landmark,
 } from "lucide-react";
 import {
   useEnterpriseStore,
@@ -30,181 +38,99 @@ import {
   ClearanceItem,
 } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+  evaluatePolicyIncentives,
+  MAHARASHTRA_DISTRICT_TALUKAS,
+  SECTOR_POLICY_REGISTRY,
+  CalculatedIncentives,
+} from "@/data/policyRulesEngine";
+import {
+  generateClearanceWorkflow,
+  GeneratedWorkflowDAG,
+} from "@/data/workflowRuleEngine";
 
-// --- Sector Options ---
-const sectorOptions: {
-  value: SectorType;
-  label: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  defaultRiskHint: string;
-}[] = [
+// --- Official Sector Options based on Government Resolutions ---
+const sectorOptions = [
   {
-    value: "Food Processing",
-    label: "Food Processing & Agro-Tech",
-    description: "Grain milling, cold chains, dairy, packaged foods, and bio-agriculture.",
-    icon: Droplets,
-    defaultRiskHint: "Typically Green / Orange category",
-  },
-  {
-    value: "Chemical Manufacturing",
-    label: "Chemicals, Solvents & Pharma",
-    description: "Specialty chemicals, bulk active ingredients, paints, synthetic resins.",
-    icon: Factory,
-    defaultRiskHint: "High Environmental Impact (Red Category)",
-  },
-  {
-    value: "Engineering",
-    label: "Automotive, Fabrication & Engineering",
-    description: "Machine tools, casting, auto components, stamping and electrical gear.",
-    icon: Building2,
-    defaultRiskHint: "Typically Orange / Green category",
-  },
-  {
-    value: "Textile",
-    label: "Textiles, Weaving & Apparels",
-    description: "Spinning, garment manufacturing, processing units and technical textiles.",
-    icon: Layers,
-    defaultRiskHint: "Orange if wet-processing/dyeing involved",
-  },
-  {
-    value: "IT/ITeS",
-    label: "IT, Data Centers & Electronics",
-    description: "Software export parks, data center infrastructure, PCB assembly.",
+    value: "ev_manufacturing",
+    label: "Electric Vehicle & Battery Ecosystem",
+    description: "BEV assembly, ACC battery gigafactories, charging stations, components.",
     icon: Zap,
-    defaultRiskHint: "Fast-Track White / Green Category",
+    policyTag: "Maharashtra EV Policy 2021",
+    policyGr: "MSEVP-2021/CR 25/TC-4",
+  },
+  {
+    value: "aerospace_defence",
+    label: "Aerospace & Defence Manufacturing",
+    description: "OEM weapons, avionics, ammunition, MRO facilities, UAVs & radar gear.",
+    icon: Plane,
+    policyTag: "Aerospace & Defence Policy 2018",
+    policyGr: "IDL-2017/CR 188/IND-2",
+  },
+  {
+    value: "fintech",
+    label: "FinTech & Digital Financial Services",
+    description: "Payment gateways, RegTech, blockchain DLT, cloud banking, sandbox pilots.",
+    icon: Landmark,
+    policyTag: "Maharashtra FinTech Policy 2018",
+    policyGr: "DIT-2018/CR 17/D-1/39",
+  },
+  {
+    value: "logistics_warehousing",
+    label: "Logistics, Cold Chain & Warehousing",
+    description: "Integrated logistics parks, silos, multi-storey hubs, smart warehouses.",
+    icon: Truck,
+    policyTag: "Maharashtra Logistics Policy 2024",
+    policyGr: "Industries Dept Resolution 2024",
+  },
+  {
+    value: "textiles_garmenting",
+    label: "Textiles, Spinning & Technical Textiles",
+    description: "Ginning, weaving, knitting, non-conventional yarn (bamboo/banana), apparel.",
+    icon: Layers,
+    policyTag: "State Textile Policy 2018-23",
+    policyGr: "Policy 2017/CR 6/Text-5",
+  },
+  {
+    value: "agro_food_processing",
+    label: "Agro & Food Processing (Secondary/Tertiary)",
+    description: "Mini food parks, cold storages, grain milling, fruit pulp, dairy packaging.",
+    icon: Droplets,
+    policyTag: "PSI 2019 (Thrust Sector)",
+    policyGr: "PSI-2019/CR 46/IND-8",
+  },
+  {
+    value: "industry_4_0_ai",
+    label: "Industry 4.0, Robotics & AI Hub",
+    description: "IoT hardware, 3D printing, advanced robotics, nanotechnology, sensors.",
+    icon: Cpu,
+    policyTag: "PSI 2019 (Thrust Sector)",
+    policyGr: "PSI-2019/CR 46/IND-8",
+  },
+  {
+    value: "green_energy_biofuel",
+    label: "Green Energy, Solar & Bio-Fuel Production",
+    description: "Solar farms, green hydrogen, ethanol distillation, biomass power.",
+    icon: Leaf,
+    policyTag: "PSI 2019 (Thrust Sector)",
+    policyGr: "PSI-2019/CR 46/IND-8",
+  },
+  {
+    value: "general_manufacturing",
+    label: "General Industrial Engineering & Chemicals",
+    description: "Specialty chemicals, steel fabrication, heavy machinery, plastics.",
+    icon: Factory,
+    policyTag: "PSI 2019 Standard Matrix",
+    policyGr: "PSI-2019/CR 46/IND-8",
   },
 ];
-
-// --- Industrial Zones ---
-const zoneOptions = [
-  "Chakan MIDC (Pune)",
-  "Taloja Industrial Area (Navi Mumbai)",
-  "Butibori MIDC (Nagpur)",
-  "Waluj MIDC (Chhatrapati Sambhaji Nagar)",
-  "Kagal MIDC (Kolhapur)",
-  "Ranjangaon MIDC (Pune)",
-  "Additional Ambernath MIDC (Thane)",
-  "Non-MIDC / Private Industrial Zone",
-];
-
-// --- Client-side Rule Engine Function ---
-export function evaluateRiskAndClearances(
-  sector: SectorType,
-  capexCr: number,
-  powerLoadKva: number,
-  waterDemandKld: number,
-  workforceSize: number,
-  locationZone: string
-): {
-  riskTrack: RiskTrack;
-  clearances: ClearanceItem[];
-  incentives: string[];
-} {
-  // 1. Core Rule Logic
-  let riskTrack: RiskTrack = "green";
-
-  if (capexCr > 50 || sector === "Chemical Manufacturing") {
-    riskTrack = "red";
-  } else if (capexCr > 10) {
-    riskTrack = "orange";
-  } else {
-    riskTrack = "green";
-  }
-
-  // 2. Dynamic Statutory Clearances Checklist Generation
-  const mpcbSla = riskTrack === "red" ? 30 : riskTrack === "orange" ? 21 : 15;
-  const mpcbCategoryLabel =
-    riskTrack === "red"
-      ? "Red (High Pollution Index)"
-      : riskTrack === "orange"
-      ? "Orange (Moderate Pollution Index)"
-      : "Green (Low Pollution Index)";
-
-  const clearances: ClearanceItem[] = [
-    {
-      id: "midc-allotment",
-      name: "MIDC Land Allotment & Building Plan Approval",
-      department: "Maharashtra Industrial Development Corporation (MIDC)",
-      slaDays: 15,
-      category: "Pre-Establishment",
-      mandatory: true,
-      description: `Zonal allocation, FAR verification, and provisional boundary approval for ${locationZone}.`,
-      feeEstimate: capexCr > 50 ? "₹1,50,000" : "₹50,000",
-    },
-    {
-      id: "mpcb-cte",
-      name: `MPCB Consent to Establish (CTE) - ${mpcbCategoryLabel}`,
-      department: "Maharashtra Pollution Control Board (MPCB)",
-      slaDays: mpcbSla,
-      category: "Pre-Establishment",
-      mandatory: true,
-      description: `Statutory emission, effluent treatment standards, and environmental clearance compliance.`,
-      feeEstimate: capexCr > 50 ? "₹2,00,000" : capexCr > 10 ? "₹75,000" : "₹25,000",
-    },
-    {
-      id: "fire-noc",
-      name: "Provisional Fire Safety & High-Hazard NOC",
-      department: "Directorate of Maharashtra Fire Services",
-      slaDays: 14,
-      category: "Pre-Establishment",
-      mandatory: true,
-      description: "Hydrant network layout, static water storage tanks, and provisional fire NOC.",
-      feeEstimate: "₹35,000",
-    },
-    {
-      id: "water-quota",
-      name: "Bulk Industrial Water Supply Allocation",
-      department: "MIDC / Water Resources Department",
-      slaDays: 7,
-      category: "Utility",
-      mandatory: waterDemandKld > 5,
-      description: `Sanction for ${waterDemandKld} KLD daily intake connection and drainage network connectivity.`,
-      feeEstimate: "₹15,000",
-    },
-    {
-      id: "dish-license",
-      name: "Factory Registration & Safety Sign-off (DISH)",
-      department: "Directorate of Industrial Safety & Health (DISH)",
-      slaDays: 15,
-      category: "Pre-Operation",
-      mandatory: workforceSize >= 10,
-      description: `Workplace health, boiler stability, and worker safety approvals for ${workforceSize} staff.`,
-      feeEstimate: "₹20,000",
-    },
-    {
-      id: "power-sanction",
-      name: "HT/LT Power Sanction Feasibility",
-      department: "MSEDCL (State Electricity Distribution)",
-      slaDays: 7,
-      category: "Utility",
-      mandatory: powerLoadKva > 0,
-      description: `Sanctioned grid substation feeder load approval for ${powerLoadKva} kVA.`,
-      feeEstimate: "₹40,000",
-    },
-  ];
-
-  // 3. Eligible Incentives & Subsidies Determination (Maharashtra Package Scheme of Incentives - PSI 2019)
-  const incentives: string[] = [];
-  if (capexCr >= 50) {
-    incentives.push("PSI 2019 Mega Project Status (Capital Subsidy up to 40% of Capex)");
-    incentives.push("100% Electricity Duty Exemption for 10 Years");
-  } else if (capexCr >= 10) {
-    incentives.push("PSI 2019 Large Enterprise Incentive (Capital Subsidy up to 25%)");
-    incentives.push("Power Tariff Concession of ₹1.50 per unit for 5 Years");
-  } else {
-    incentives.push("MSME Special Subsidy (Capital Subsidy up to 15%)");
-    incentives.push("Interest Subvention of 5% on Term Loans for 5 Years");
-  }
-  incentives.push("100% Stamp Duty Waiver on MIDC Land Lease Deeds");
-
-  return { riskTrack, clearances, incentives };
-}
 
 export default function KYAWizardPage() {
   const {
     sector: storedSector,
     locationZone: storedLocation,
+    district: storedDistrict,
+    taluka: storedTaluka,
     capexCr: storedCapex,
     powerLoadKva: storedPower,
     waterDemandKld: storedWater,
@@ -212,6 +138,7 @@ export default function KYAWizardPage() {
     riskTrack: storedRiskTrack,
     clearances: storedClearances,
     applicableIncentives: storedIncentives,
+    policyIncentiveDetails: storedPolicyDetails,
     isAssessed: storedIsAssessed,
     setFormData,
     setAssessmentResult,
@@ -220,30 +147,47 @@ export default function KYAWizardPage() {
   const { t } = useLanguage();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [sector, setSector] = useState<SectorType>(storedSector || "Food Processing");
-  const [locationZone, setLocationZone] = useState(storedLocation || "Chakan MIDC (Pune)");
-  const [capexCr, setCapexCr] = useState<number>(storedCapex ?? 25);
-  const [powerLoadKva, setPowerLoadKva] = useState<number>(storedPower ?? 150);
+  const [selectedSectorKey, setSelectedSectorKey] = useState<string>("ev_manufacturing");
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(storedDistrict || "Pune");
+  const [selectedTaluka, setSelectedTaluka] = useState<string>(storedTaluka || "Khed (Chakan PMR)");
+  const [locationZone, setLocationZone] = useState<string>(storedLocation || "Chakan MIDC Phase II (Pune)");
+  const [capexCr, setCapexCr] = useState<number>(storedCapex ?? 35);
+  const [powerLoadKva, setPowerLoadKva] = useState<number>(storedPower ?? 250);
   const [waterDemandKld, setWaterDemandKld] = useState<number>(storedWater ?? 20);
-  const [workforceSize, setWorkforceSize] = useState<number>(storedWorkforce ?? 75);
+  const [workforceSize, setWorkforceSize] = useState<number>(storedWorkforce ?? 120);
+  const [isExpansion, setIsExpansion] = useState<boolean>(false);
+  const [boilerInstalled, setBoilerInstalled] = useState<boolean>(false);
+  const [buildingHeightMeters, setBuildingHeightMeters] = useState<number>(12);
 
-  const [showResult, setShowResult] = useState(storedIsAssessed);
+  const [calculatedIncentives, setCalculatedIncentives] = useState<CalculatedIncentives | null>(
+    storedPolicyDetails || null
+  );
+  const [workflowDAG, setWorkflowDAG] = useState<GeneratedWorkflowDAG | null>(null);
+  const [showResult, setShowResult] = useState<boolean>(storedIsAssessed);
+
+  // Get talukas for selected district
+  const currentDistrictObj =
+    MAHARASHTRA_DISTRICT_TALUKAS.find((d) => d.district.toLowerCase() === selectedDistrict.toLowerCase()) ||
+    MAHARASHTRA_DISTRICT_TALUKAS[0];
 
   useEffect(() => {
-    if (storedIsAssessed) {
+    if (storedIsAssessed && storedPolicyDetails) {
+      setCalculatedIncentives(storedPolicyDetails);
       setShowResult(true);
     }
-  }, [storedIsAssessed]);
+  }, [storedIsAssessed, storedPolicyDetails]);
+
+  // When district changes, update taluka to first taluka of that district
+  const handleDistrictChange = (newDistrict: string) => {
+    setSelectedDistrict(newDistrict);
+    const distObj = MAHARASHTRA_DISTRICT_TALUKAS.find((d) => d.district.toLowerCase() === newDistrict.toLowerCase());
+    if (distObj && distObj.talukas.length > 0) {
+      setSelectedTaluka(distObj.talukas[0].name);
+      setLocationZone(`${distObj.talukas[0].name} Industrial Area (${distObj.district})`);
+    }
+  };
 
   const handleNext = () => {
-    setFormData({
-      sector,
-      locationZone,
-      capexCr,
-      powerLoadKva,
-      waterDemandKld,
-      workforceSize,
-    });
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
@@ -255,26 +199,82 @@ export default function KYAWizardPage() {
     }
   };
 
-  const handleRunAssessment = async () => {
-    const { riskTrack, clearances, incentives } = evaluateRiskAndClearances(
-      sector,
+  const handleRunAssessment = () => {
+    // 1. Evaluate policy rules & financial incentives
+    const incentivesResult = evaluatePolicyIncentives({
+      sector: selectedSectorKey,
+      district: selectedDistrict,
+      taluka: selectedTaluka,
       capexCr,
-      powerLoadKva,
-      waterDemandKld,
       workforceSize,
-      locationZone
-    );
+      powerLoadKw: powerLoadKva,
+      isExpansion,
+    });
+
+    // 2. Determine hazard category for workflow
+    let hazardCategory: "Red" | "Orange" | "Green" | "White" = "Orange";
+    if (selectedSectorKey === "general_manufacturing" || capexCr > 100) {
+      hazardCategory = "Red";
+    } else if (selectedSectorKey === "fintech" || selectedSectorKey === "industry_4_0_ai") {
+      hazardCategory = "White";
+    } else if (selectedSectorKey === "ev_manufacturing" || selectedSectorKey === "logistics_warehousing") {
+      hazardCategory = "Green";
+    }
+
+    // 3. Generate dynamic DAG workflow
+    const dagResult = generateClearanceWorkflow({
+      sector: selectedSectorKey,
+      hazardCategory,
+      powerLoadKw: powerLoadKva,
+      buildingHeightMeters,
+      occupantsCount: workforceSize,
+      boilerInstalled,
+      isMidcLand: true,
+    });
+
+    // 4. Map clearances to enterprise store items
+    const storeClearances: ClearanceItem[] = dagResult.clearances.map((c) => ({
+      id: c.id,
+      name: c.name,
+      department: c.department,
+      slaDays: c.slaDays,
+      category: c.category === "pre_operation" ? "Pre-Operation" : c.category === "environmental" ? "Pre-Establishment" : "Pre-Establishment",
+      mandatory: true,
+      description: `${c.statutoryAct} compliance. Deemed approval in ${c.slaDays} days.`,
+      feeEstimate: capexCr > 50 ? "₹1,50,000" : capexCr > 10 ? "₹75,000" : "₹25,000",
+    }));
+
+    const riskTrack: RiskTrack = hazardCategory === "Red" ? "red" : hazardCategory === "Orange" ? "orange" : "green";
+
+    const incentiveSummaryList: string[] = [
+      `${incentivesResult.governingPolicy} - Category ${incentivesResult.category} (${incentivesResult.scale})`,
+      `Capital Subsidy Ceiling: ${incentivesResult.fciCeilingPct}% of FCI (Up to ₹${incentivesResult.maxIncentiveAmountCr} Crores)`,
+      `Eligibility Period: ${incentivesResult.eligibilityYears} Years (Disbursement Cap: ₹${incentivesResult.annualDisbursementCapCr} Cr/yr)`,
+      `Industrial Promotion Subsidy (IPS): ${incentivesResult.sgstIpsRefundPct}% Gross SGST Refund`,
+      `Power Tariff Subsidy: ₹${incentivesResult.powerSubsidyRatePerUnit}/unit for 3 Years`,
+      `Stamp Duty Exemption: ${incentivesResult.stampDutyWaiverPct}% on Land Lease & Term Loans`,
+      `Electricity Duty: ${incentivesResult.electricityDutyExempt ? "100% Exempted" : "Standard Tariff"}`,
+    ];
+
+    setCalculatedIncentives(incentivesResult);
+    setWorkflowDAG(dagResult);
+
+    // Save to global store
+    const selectedOption = sectorOptions.find((s) => s.value === selectedSectorKey);
+    const sectorDisplay = (selectedOption ? selectedOption.label : "General Manufacturing") as SectorType;
 
     setFormData({
-      sector,
+      sector: sectorDisplay,
       locationZone,
+      district: selectedDistrict,
+      taluka: selectedTaluka,
       capexCr,
       powerLoadKva,
       waterDemandKld,
       workforceSize,
     });
 
-    setAssessmentResult(riskTrack, clearances, incentives);
+    setAssessmentResult(riskTrack, storeClearances, incentiveSummaryList, incentivesResult);
     setShowResult(true);
   };
 
@@ -285,19 +285,19 @@ export default function KYAWizardPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-12">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12">
       {/* Top Title Banner */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>Statutory Clearance Determination</span>
+            <span>Official Maharashtra Policy Rule Engine</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Know Your Approvals (KYA) Wizard
+            Know Your Approvals (KYA) & Policy Incentive Calculator
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Dynamic rule-based statutory clearance and subsidy evaluation for Maharashtra industries.
+            Evaluates statutory clearances, RTS Act SLAs, and exact subsidies under PSI 2019, EV 2021, Logistics 2024, Aerospace 2018, FinTech 2018 & Textile 2018-23.
           </p>
         </div>
 
@@ -320,10 +320,10 @@ export default function KYAWizardPage() {
           <div className="bg-[#FFF9F5] border-b border-[#F0E5E0] p-4 sm:p-6">
             <div className="grid grid-cols-4 gap-2 text-center text-xs">
               {[
-                { num: 1, label: "Sector Selection" },
-                { num: 2, label: "Location & Zone" },
-                { num: 3, label: "Capital Expenditure" },
-                { num: 4, label: "Resource Demand" },
+                { num: 1, label: "1. Policy & Sector" },
+                { num: 2, label: "2. District & Taluka" },
+                { num: 3, label: "3. Capex & Scale" },
+                { num: 4, label: "4. Utilities & DAG" },
               ].map((step) => {
                 const isCurrent = currentStep === step.num;
                 const isPassed = currentStep > step.num;
@@ -358,24 +358,24 @@ export default function KYAWizardPage() {
 
           {/* Form Step Body */}
           <div className="p-6 sm:p-8">
-            {/* STEP 1: SECTOR */}
+            {/* STEP 1: SECTOR SELECTION */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 1: Select Your Industry Sector</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 1: Select Your Industry Sector & Policy Track</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Department clearance dependencies and pollution categories heavily depend on your manufacturing domain.
+                    Maharashtra offers sector-specific Government Resolutions (GRs) with targeted capital subsidies, power tariffs, and fast-track approvals.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {sectorOptions.map((option) => {
                     const IconComp = option.icon;
-                    const isSelected = sector === option.value;
+                    const isSelected = selectedSectorKey === option.value;
                     return (
                       <div
                         key={option.value}
-                        onClick={() => setSector(option.value)}
+                        onClick={() => setSelectedSectorKey(option.value)}
                         className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-150 flex flex-col justify-between ${
                           isSelected
                             ? "border-[#FE7251] bg-[#FFF7F0] shadow-xs"
@@ -396,11 +396,13 @@ export default function KYAWizardPage() {
                             )}
                           </div>
                           <h4 className="text-sm font-bold text-[#16060E]">{option.label}</h4>
-                          <p className="text-xs text-slate-500 mt-1">{option.description}</p>
+                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">{option.description}</p>
                         </div>
-                        <span className="mt-4 text-[10px] font-semibold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-0.5 rounded-md inline-block self-start">
-                          {option.defaultRiskHint}
-                        </span>
+                        <div className="mt-4 pt-3 border-t border-[#F0E5E0]/60">
+                          <span className="text-[10px] font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-0.5 rounded-md inline-block">
+                            {option.policyTag}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
@@ -408,146 +410,156 @@ export default function KYAWizardPage() {
               </div>
             )}
 
-            {/* STEP 2: LOCATION / ZONE */}
+            {/* STEP 2: DISTRICT & TALUKA CLASSIFICATION */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 2: Proposed Location & Industrial Zone</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 2: Select Proposed Location (District & Taluka)</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Select the designated MIDC industrial estate or municipal jurisdiction for your unit.
+                    Under Maharashtra PSI 2019, fiscal incentive ceilings (30% to 100%) and eligibility periods are graded by Taluka classification (Group A, B, C, D, D+, No Industry, Naxal, Aspirational).
                   </p>
                 </div>
 
-                <div className="max-w-xl space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+                  {/* District Dropdown */}
                   <div>
                     <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
-                      Maharashtra Industrial Development Zone
+                      Maharashtra District
                     </label>
                     <select
-                      value={locationZone}
-                      onChange={(e) => setLocationZone(e.target.value)}
-                      className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251] focus:border-[#FE7251]"
+                      value={selectedDistrict}
+                      onChange={(e) => handleDistrictChange(e.target.value)}
+                      className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     >
-                      {zoneOptions.map((zone) => (
-                        <option key={zone} value={zone}>
-                          {zone}
+                      {MAHARASHTRA_DISTRICT_TALUKAS.map((d) => (
+                        <option key={d.district} value={d.district}>
+                          {d.district} ({d.division} Division)
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  <div className="p-4 bg-[#FFF7F0] border border-[#FED17A] rounded-xl text-xs text-[#16060E] flex items-start space-x-2.5">
-                    <Building2 className="w-4 h-4 text-[#9B2A48] mt-0.5 shrink-0" />
-                    <div>
-                      <p className="font-bold text-[#9B2A48]">Fast-Track MIDC Zone Detected</p>
-                      <p className="text-[11px] text-[#886A75] mt-0.5">
-                        MIDC lands come with pre-vetted power sub-stations, industrial drainage canals, and deemed land use conversion.
-                      </p>
-                    </div>
+                  {/* Taluka Dropdown */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                      Taluka / Sub-District
+                    </label>
+                    <select
+                      value={selectedTaluka}
+                      onChange={(e) => {
+                        setSelectedTaluka(e.target.value);
+                        setLocationZone(`${e.target.value} Industrial Zone (${selectedDistrict})`);
+                      }}
+                      className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
+                    >
+                      {currentDistrictObj.talukas.map((t) => (
+                        <option key={t.name} value={t.name}>
+                          {t.name} — Group {t.category}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+                </div>
+
+                {/* Location Zone Details */}
+                <div className="max-w-2xl">
+                  <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                    Industrial Estate / MIDC Park Name
+                  </label>
+                  <input
+                    type="text"
+                    value={locationZone}
+                    onChange={(e) => setLocationZone(e.target.value)}
+                    className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
+                    placeholder="e.g. Chakan MIDC Phase II, Waluj MIDC, Butibori MIDC"
+                  />
                 </div>
               </div>
             )}
 
-            {/* STEP 3: CAPITAL EXPENDITURE */}
+            {/* STEP 3: CAPEX & SCALE */}
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 3: Proposed Capital Expenditure (Capex)</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 3: Proposed Fixed Capital Investment (FCI)</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Total project investment in plant, machinery, building, and civil infrastructure.
+                    Specify plant and machinery investments to calculate statutory scale (MSME, LSI, Mega, Ultra-Mega) and annual grant caps.
                   </p>
                 </div>
 
-                <div className="max-w-xl space-y-6">
+                <div className="max-w-2xl space-y-6">
                   <div>
-                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
-                      Total Project Investment (in ₹ Crores)
-                    </label>
-                    <div className="relative rounded-xl shadow-xs">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#9B2A48] font-bold text-base">
-                        ₹
-                      </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs font-bold text-[#16060E] uppercase tracking-wider">
+                        Capital Expenditure (Fixed Assets in ₹ Crores)
+                      </label>
+                      <span className="text-base font-black text-[#9B2A48]">₹{capexCr} Crores</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={1}
+                      max={500}
+                      step={1}
+                      value={capexCr}
+                      onChange={(e) => setCapexCr(Number(e.target.value))}
+                      className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#FE7251]"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
+                      <span>₹1 Cr (Micro)</span>
+                      <span>₹10 Cr (Small)</span>
+                      <span>₹50 Cr (Medium/LSI)</span>
+                      <span>₹100 Cr+ (Mega)</span>
+                      <span>₹500 Cr</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                        Direct Employment (Workforce Count)
+                      </label>
                       <input
                         type="number"
-                        min={1}
-                        max={1000}
-                        value={capexCr}
-                        onChange={(e) => setCapexCr(Number(e.target.value))}
-                        className="block w-full pl-9 pr-24 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-lg font-black text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251] focus:border-[#FE7251]"
+                        min={5}
+                        value={workforceSize}
+                        onChange={(e) => setWorkforceSize(Number(e.target.value))}
+                        className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                       />
-                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-xs font-bold text-slate-500 uppercase">
-                        Crores INR
-                      </div>
                     </div>
-                  </div>
 
-                  {/* Preset Quick Pills */}
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 mb-2">Quick Select Scale:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {[5, 15, 30, 65, 120].map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setCapexCr(val)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
-                            capexCr === val
-                              ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-transparent"
-                              : "bg-[#FFF7F0] text-[#16060E] border-[#F0E5E0] hover:bg-[#FFF2DF]"
-                          }`}
-                        >
-                          ₹{val} Cr {val >= 50 ? "(Mega)" : val >= 10 ? "(Large)" : "(MSME)"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Dynamic Risk Impact Preview */}
-                  <div
-                    className={`p-4 rounded-xl border text-xs flex items-start space-x-2.5 ${
-                      capexCr > 50
-                        ? "bg-rose-50 border-rose-200 text-rose-900"
-                        : capexCr > 10
-                        ? "bg-[#FFF7F0] border-[#FED17A] text-[#9B2A48]"
-                        : "bg-[#FFF2DF] border-[#FED17A] text-[#9B2A48]"
-                    }`}
-                  >
-                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-[#FE7251]" />
-                    <div>
-                      <p className="font-bold">
-                        Calculated Tier: {capexCr > 50 ? "Red Track (Capex > 50 Cr)" : capexCr > 10 ? "Orange Track (Capex > 10 Cr)" : "Green Track (Capex ≤ 10 Cr)"}
-                      </p>
-                      <p className="text-[11px] opacity-90 mt-0.5">
-                        {capexCr > 50
-                          ? "Requires State Level Technical Committee Scrutiny (30-day SLA)."
-                          : capexCr > 10
-                          ? "Standard Regional Officer Level Clearances (21-day SLA)."
-                          : "Fast-track district single window clearances (15-day SLA)."}
-                      </p>
+                    <div className="flex items-center space-x-3 p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] mt-6">
+                      <input
+                        type="checkbox"
+                        id="expansionCheck"
+                        checked={isExpansion}
+                        onChange={(e) => setIsExpansion(e.target.checked)}
+                        className="w-4 h-4 text-[#FE7251] rounded-sm focus:ring-[#FE7251]"
+                      />
+                      <label htmlFor="expansionCheck" className="text-xs font-bold text-[#16060E] cursor-pointer">
+                        Expansion / Diversification Unit (+25% capacity)
+                      </label>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* STEP 4: RESOURCE DEMANDS */}
+            {/* STEP 4: UTILITIES & DAG */}
             {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 4: Utility & Operational Requirements</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 4: Utility Quotas & Structural Safety</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Determine electricity transformer capacities, industrial water intake quota, and DISH safety thresholds.
+                    Determine electricity transformer feeder capacities, water intake quota, and DISH / Fire safety triggers.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Power Load */}
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Zap className="w-4 h-4 text-[#FE7251]" />
                       <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
-                        Power Load (kVA)
+                        Power Load (kVA / kW)
                       </label>
                     </div>
                     <input
@@ -560,7 +572,6 @@ export default function KYAWizardPage() {
                     <p className="text-[10px] text-slate-500 mt-1">MSEDCL Feasibility trigger</p>
                   </div>
 
-                  {/* Water Demand */}
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Droplets className="w-4 h-4 text-[#FE7251]" />
@@ -575,26 +586,38 @@ export default function KYAWizardPage() {
                       onChange={(e) => setWaterDemandKld(Number(e.target.value))}
                       className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">Kilo Liters Per Day</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Kilo Liters Per Day (MIDC)</p>
                   </div>
 
-                  {/* Workforce Size */}
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
-                      <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
+                      <Flame className="w-4 h-4 text-[#FE7251]" />
                       <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
-                        Workforce Size
+                        Building Height (m)
                       </label>
                     </div>
                     <input
                       type="number"
-                      min={1}
-                      value={workforceSize}
-                      onChange={(e) => setWorkforceSize(Number(e.target.value))}
+                      min={5}
+                      value={buildingHeightMeters}
+                      onChange={(e) => setBuildingHeightMeters(Number(e.target.value))}
                       className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">DISH Factory Act Threshold (&gt;10)</p>
+                    <p className="text-[10px] text-slate-500 mt-1">MahaFire Safety NOC (&gt;9m)</p>
                   </div>
+                </div>
+
+                <div className="p-4 bg-white rounded-xl border border-[#F0E5E0] flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="boilerCheck"
+                    checked={boilerInstalled}
+                    onChange={(e) => setBoilerInstalled(e.target.checked)}
+                    className="w-4 h-4 text-[#FE7251] rounded-sm focus:ring-[#FE7251]"
+                  />
+                  <label htmlFor="boilerCheck" className="text-xs font-bold text-[#16060E] cursor-pointer">
+                    Steam Boiler / Thermal Pressure Vessel Installed (Triggers Directorate of Steam Boilers Registration)
+                  </label>
                 </div>
               </div>
             )}
@@ -609,7 +632,7 @@ export default function KYAWizardPage() {
               className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#16060E] disabled:opacity-30 hover:bg-[#FFF2DF] transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Previous Step</span>
+              <span>Previous</span>
             </button>
 
             {currentStep < 4 ? (
@@ -628,172 +651,166 @@ export default function KYAWizardPage() {
                 className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Evaluate & Generate Clearances</span>
+                <span>Evaluate & Generate Policy Incentives</span>
               </button>
             )}
           </div>
         </div>
       ) : (
         /* --- KYA EVALUATION RESULTS VIEW --- */
-        <div className="space-y-6">
-          {/* Top Risk Badge Banner */}
-          <div
-            className={`rounded-2xl p-6 border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 ${
-              storedRiskTrack === "red"
-                ? "bg-rose-50/80 border-rose-200 text-rose-950"
-                : storedRiskTrack === "orange"
-                ? "bg-[#FFF7F0] border-[#FED17A] text-[#16060E]"
-                : "bg-[#FFF2DF] border-[#FED17A] text-[#16060E]"
-            }`}
-          >
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <span
-                  className={`inline-flex items-center space-x-1.5 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${
-                    storedRiskTrack === "red"
-                      ? "bg-[#9B2A48] text-white"
-                      : storedRiskTrack === "orange"
-                      ? "bg-[#FE7251] text-white"
-                      : "bg-[#9B2A48] text-[#FFCA7C]"
-                  }`}
-                >
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>{storedRiskTrack?.toUpperCase()} CATEGORY CLEARANCE TRACK</span>
-                </span>
-                <span className="text-xs font-bold text-[#886A75]">
-                  {storedSector} • ₹{storedCapex} Cr Capex
-                </span>
+        <div className="space-y-8">
+          {/* 1. TOP POLICY & INCENTIVE SUMMARY BANNER */}
+          {calculatedIncentives && (
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#FED17A] shadow-md bg-gradient-to-br from-white via-[#FFF9F5] to-[#FFF2DF]/40 space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#FED17A]/60 pb-6">
+                <div>
+                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider mb-2">
+                    <Award className="w-3.5 h-3.5 text-[#FFCA7C]" />
+                    <span>{calculatedIncentives.governingPolicy} • GR: {calculatedIncentives.grReference}</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
+                    Eligible for Category '{calculatedIncentives.category}' Package ({calculatedIncentives.scale})
+                  </h2>
+                  <p className="text-xs text-slate-600 mt-1">
+                    Location: {storedLocation || locationZone} • Fixed Capital Investment: ₹{capexCr} Crores
+                  </p>
+                </div>
+
+                <div className="text-right shrink-0 bg-white p-4 rounded-xl border border-[#FED17A] shadow-xs">
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Total Capital Subsidy Cap</p>
+                  <p className="text-2xl sm:text-3xl font-black text-[#9B2A48]">₹{calculatedIncentives.maxIncentiveAmountCr} Cr</p>
+                  <p className="text-[11px] font-bold text-[#FE7251]">{calculatedIncentives.fciCeilingPct}% of Fixed Capital Investment</p>
+                </div>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#16060E]">
-                {storedRiskTrack === "red"
-                  ? "High Environmental & Statutory Impact Clearance Track"
-                  : storedRiskTrack === "orange"
-                  ? "Moderate Impact Multi-Department Clearance Track"
-                  : "Fast-Track Low Environmental Impact Clearance Track"}
-              </h2>
-              <p className="text-xs mt-1 opacity-90 max-w-2xl leading-relaxed text-[#886A75]">
-                {storedRiskTrack === "red"
-                  ? "Requires Full Environmental Committee review, HazMat safety plans, and 30-day statutory SLA scrutiny."
-                  : storedRiskTrack === "orange"
-                  ? "Standard parallel departmental processing across MIDC, MPCB, and Fire Services within 21 days."
-                  : "Fast-track district level approvals with 15-day deemed approval assurance."}
-              </p>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard/vault"
-                className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all shrink-0"
-              >
-                <span>Proceed to Document Vault</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
+              {/* 4 Financial Subsidies Breakdown */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 rounded-xl bg-white border border-[#F0E5E0] shadow-xs">
+                  <div className="flex items-center space-x-2 text-[#9B2A48] mb-1">
+                    <Banknote className="w-4 h-4 text-[#FE7251]" />
+                    <span className="text-xs font-bold uppercase">SGST IPS Refund</span>
+                  </div>
+                  <p className="text-xl font-black text-[#16060E]">{calculatedIncentives.sgstIpsRefundPct}%</p>
+                  <p className="text-[10px] text-slate-500">Gross SGST refund on first sales</p>
+                </div>
 
-          {/* Generated Clearances Table */}
+                <div className="p-4 rounded-xl bg-white border border-[#F0E5E0] shadow-xs">
+                  <div className="flex items-center space-x-2 text-[#9B2A48] mb-1">
+                    <Clock className="w-4 h-4 text-[#FE7251]" />
+                    <span className="text-xs font-bold uppercase">Eligibility Tenure</span>
+                  </div>
+                  <p className="text-xl font-black text-[#16060E]">{calculatedIncentives.eligibilityYears} Years</p>
+                  <p className="text-[10px] text-slate-500">Max ₹{calculatedIncentives.annualDisbursementCapCr} Cr / Year</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white border border-[#F0E5E0] shadow-xs">
+                  <div className="flex items-center space-x-2 text-[#9B2A48] mb-1">
+                    <Zap className="w-4 h-4 text-[#FE7251]" />
+                    <span className="text-xs font-bold uppercase">Power Tariff Subsidy</span>
+                  </div>
+                  <p className="text-xl font-black text-[#16060E]">₹{calculatedIncentives.powerSubsidyRatePerUnit} / unit</p>
+                  <p className="text-[10px] text-slate-500">For 3 years from commercial prod.</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white border border-[#F0E5E0] shadow-xs">
+                  <div className="flex items-center space-x-2 text-[#9B2A48] mb-1">
+                    <BadgePercent className="w-4 h-4 text-[#FE7251]" />
+                    <span className="text-xs font-bold uppercase">Stamp & Electricity Duty</span>
+                  </div>
+                  <p className="text-xl font-black text-[#16060E]">{calculatedIncentives.stampDutyWaiverPct}% Waiver</p>
+                  <p className="text-[10px] text-slate-500">
+                    {calculatedIncentives.electricityDutyExempt ? "100% Electricity Duty Exemption" : "Standard duty"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Special Policy Benefits List */}
+              {calculatedIncentives.specialPerks && calculatedIncentives.specialPerks.length > 0 && (
+                <div className="p-4 bg-[#FFF7F0] rounded-xl border border-[#FED17A]">
+                  <h4 className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
+                    <span>Special Sector Provisions ({calculatedIncentives.governingPolicy})</span>
+                  </h4>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-700">
+                    {calculatedIncentives.specialPerks.map((perk, idx) => (
+                      <li key={idx} className="flex items-start space-x-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#9B2A48] mt-0.5 shrink-0" />
+                        <span>{perk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 2. STATUTORY CLEARANCES & DAG WORKFLOW */}
           <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
-            <div className="p-6 border-b border-[#F0E5E0] flex items-center justify-between">
+            <div className="p-6 border-b border-[#F0E5E0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-base font-bold text-[#16060E]">
-                  Mandatory Statutory Clearances Checklist ({storedClearances.length} Clearances)
+                <h3 className="text-lg font-bold text-[#16060E]">
+                  Mandatory Statutory Clearances Checklist ({storedClearances.length} Approvals)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Pre-establishment and utility approvals assembled specifically for your parameters
+                  Generated dynamically under Maharashtra Right to Public Services Act (RTS Act)
                 </p>
               </div>
-              <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] px-2.5 py-1 rounded-full border border-[#FED17A]">
-                Parallel Execution Ready
-              </span>
+
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/dashboard/caf"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Fill Unified CAF (One-Form)</span>
+                </Link>
+              </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-[#F0E5E0] text-xs">
-                <thead className="bg-[#FFF9F5] text-[#9B2A48] font-bold uppercase tracking-wider text-[10px]">
-                  <tr>
-                    <th className="px-6 py-3 text-left">Clearance Name</th>
-                    <th className="px-6 py-3 text-left">Department</th>
-                    <th className="px-6 py-3 text-left">Category</th>
-                    <th className="px-6 py-3 text-center">Statutory SLA</th>
-                    <th className="px-6 py-3 text-right">Est. Govt Fee</th>
-                    <th className="px-6 py-3 text-center">Mandatory</th>
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-[#FFF9F5] text-[#9B2A48] uppercase tracking-wider font-bold border-b border-[#F0E5E0]">
+                    <th className="py-3 px-4">Approval Name & Stage</th>
+                    <th className="py-3 px-4">Competent Department</th>
+                    <th className="py-3 px-4 text-center">Statutory SLA</th>
+                    <th className="py-3 px-4 text-center">Deemed Approval</th>
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F0E5E0] font-medium text-slate-800">
-                  {storedClearances.map((item) => (
-                    <tr key={item.id} className="hover:bg-[#FFF7F0]/40 transition-colors">
-                      <td className="px-6 py-4">
-                        <p className="font-bold text-[#16060E] text-sm">{item.name}</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">{item.description}</p>
+                <tbody className="divide-y divide-[#F0E5E0]">
+                  {storedClearances.map((c, i) => (
+                    <tr key={c.id || i} className="hover:bg-[#FFFDFC] transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-[#16060E]">{c.name}</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">{c.description}</div>
                       </td>
-                      <td className="px-6 py-4 text-slate-600 font-semibold">{item.department}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                          {item.category}
+                      <td className="py-3.5 px-4 font-semibold text-slate-700">{c.department}</td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] font-bold text-[11px] border border-[#FED17A]">
+                          <Clock className="w-3 h-3 text-[#FE7251]" />
+                          <span>{c.slaDays} Days</span>
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className="font-black text-[#9B2A48] text-sm">
-                          {item.slaDays} Days
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Guaranteed</span>
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right font-mono font-bold text-[#16060E]">
-                        {item.feeEstimate}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        {item.mandatory ? (
-                          <span className="text-[10px] font-bold text-[#FE7251] bg-[#FFF2DF] px-2 py-0.5 rounded-full border border-[#FED17A]">
-                            Required
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                            Conditional
-                          </span>
-                        )}
+                      <td className="py-3.5 px-4 text-right">
+                        <Link
+                          href={`/apply/${c.id}`}
+                          className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#9B2A48] hover:bg-[#7D1E36] text-white font-bold text-[11px] transition-colors"
+                        >
+                          <span>Apply</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          {/* Incentives & Subsidies Summary Card */}
-          <div className="bg-gradient-to-br from-[#16060E] via-[#250C19] to-[#14050B] text-white rounded-2xl p-6 sm:p-8 border border-[#FED17A]/30 shadow-lg">
-            <div className="flex items-center space-x-2 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider mb-2">
-              <Award className="w-4 h-4 text-[#FE7251]" />
-              <span>Maharashtra Package Scheme of Incentives (PSI 2019)</span>
-            </div>
-            <h3 className="text-lg sm:text-xl font-black">
-              Eligible Industrial Subsidies & Benefits
-            </h3>
-            <p className="text-xs text-[#C4A89C] mt-1 max-w-2xl">
-              Based on your ₹{storedCapex} Cr investment in {storedLocation}, you qualify for the following state subsidies:
-            </p>
-
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {storedIncentives.map((incentive, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl bg-[#2D1222]/80 border border-[#FED17A]/20 flex items-start space-x-3"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-[#FFCA7C] mt-0.5 shrink-0" />
-                  <span className="text-xs font-semibold text-slate-200">{incentive}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-[#FED17A]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="text-xs text-[#C4A89C]">
-                Data securely synchronized with your Single Window CAF Dossier.
-              </div>
-              <Link
-                href="/dashboard/vault"
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
-              >
-                <span>Upload Documents for these Clearances</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         </div>

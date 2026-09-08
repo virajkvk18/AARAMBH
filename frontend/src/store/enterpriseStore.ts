@@ -7,7 +7,15 @@ export type SectorType =
   | "Chemical Manufacturing"
   | "IT/ITeS"
   | "Textile"
-  | "Engineering";
+  | "Engineering"
+  | "Electric Vehicles"
+  | "Aerospace & Defence"
+  | "FinTech"
+  | "Logistics & Warehousing"
+  | "Industry 4.0 & AI"
+  | "Green Energy & Biofuel"
+  | "General Manufacturing"
+  | string;
 
 export interface ClearanceItem {
   id: string;
@@ -193,6 +201,8 @@ export interface CAFSubmissionResponse {
 export interface EnterpriseState {
   sector: SectorType;
   locationZone: string;
+  district?: string;
+  taluka?: string;
   capexCr: number;
   powerLoadKva: number;
   waterDemandKld: number;
@@ -200,6 +210,7 @@ export interface EnterpriseState {
   riskTrack: RiskTrack | null;
   clearances: ClearanceItem[];
   applicableIncentives: string[];
+  policyIncentiveDetails?: any;
   isAssessed: boolean;
 
   // Application Lifecycle State
@@ -232,18 +243,20 @@ export interface EnterpriseState {
   updateMasterCAF: (data: Partial<MasterCAFPayload>) => void;
   updateDepartmentDelta: (dept: keyof DepartmentDeltas, deltaData: any) => void;
   setCAFSubmissionReceipt: (receipt: CAFSubmissionResponse | null) => void;
+  setPolicyIncentiveDetails: (details: any) => void;
   setFormData: (
     data: Partial<
       Pick<
         EnterpriseState,
-        "sector" | "locationZone" | "capexCr" | "powerLoadKva" | "waterDemandKld" | "workforceSize"
+        "sector" | "locationZone" | "district" | "taluka" | "capexCr" | "powerLoadKva" | "waterDemandKld" | "workforceSize"
       >
     >
   ) => void;
   setAssessmentResult: (
     riskTrack: RiskTrack,
     clearances: ClearanceItem[],
-    incentives: string[]
+    incentives: string[],
+    policyDetails?: any
   ) => void;
   submitApplication: (ref?: string) => void;
   addUploadedDocument: (doc: UploadedDocument) => void;
@@ -642,18 +655,25 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           submittedAt: receipt?.timestamp || new Date().toISOString(),
         })),
 
+      setPolicyIncentiveDetails: (details) =>
+        set((state) => ({
+          ...state,
+          policyIncentiveDetails: details,
+        })),
+
       setFormData: (data) =>
         set((state) => ({
           ...state,
           ...data,
         })),
 
-      setAssessmentResult: (riskTrack, clearances, incentives) =>
+      setAssessmentResult: (riskTrack, clearances, incentives, policyDetails) =>
         set((state) => ({
           ...state,
           riskTrack,
           clearances: clearances.length > 0 ? clearances : INITIAL_DEFAULT_CLEARANCES,
           applicableIncentives: incentives,
+          policyIncentiveDetails: policyDetails || state.policyIncentiveDetails,
           isAssessed: true,
         })),
 
