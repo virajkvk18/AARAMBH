@@ -39,7 +39,7 @@ export function mapToMPCB(
     // Delta fields unique to MPCB
     effluent_treatment_plant_proposed: delta?.etpProposed ?? true,
     hazardous_waste_generation_tpa: delta?.hazardousWasteTpa ?? 2.5,
-    chimneyHeightMeters: delta?.chimneyHeightMeters ?? 30,
+    chimney_height_meters: delta?.chimneyHeightMeters ?? 30,
     air_pollution_control_system: delta?.airPollutionControlSystem ?? "Wet Scrubber + Bag Filter Array",
   };
 }

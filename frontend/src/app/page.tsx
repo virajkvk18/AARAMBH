@@ -170,7 +170,7 @@ const benefitsData: BenefitItem[] = [
       "A single integrated Common Application Form (CAF) replacing dozens of disparate departmental portals across Maharashtra.",
     icon: Layers,
     tag: "Unified Single Window",
-    href: "/dashboard/prevalidation",
+    href: "/apply",
   },
   {
     id: "status-tracking",
@@ -241,7 +241,7 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Direct plot allotment, building blueprint approval, and provisional possession across Maharashtra industrial estates.",
-    href: "/dashboard/prevalidation",
+    href: "/apply/midc-land-allotment",
   },
   {
     id: "mpcb-cte",
@@ -252,7 +252,7 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Statutory environmental consent categorization (Red/Orange/Green/White) before commencement of industrial construction.",
-    href: "/dashboard/prevalidation",
+    href: "/apply/mpcb-consent",
   },
   {
     id: "fire-noc",
@@ -263,7 +263,7 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Establishment",
     description:
       "Fire safety system compliance inspection, high-hazard factory clearance, and provisional firefighting certificate.",
-    href: "/dashboard/prevalidation",
+    href: "/apply/fire-safety-noc",
   },
   {
     id: "dish-license",
@@ -274,7 +274,7 @@ const keyApprovalsData: KeyApproval[] = [
     category: "Pre-Operation",
     description:
       "Industrial factory license approval, boiler registration, and occupational worker safety compliance sign-off.",
-    href: "/dashboard/prevalidation",
+    href: "/apply/dish-factory-license",
   },
 ];
 
@@ -411,10 +411,10 @@ export default function HomePage() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
               <span className="text-[#FFCA7C] font-bold">{t("hero.popular_clearances", "Popular Clearances:")}</span>
               {[
-                { name: language === "mr" ? "MIDC जमीन वाटप" : language === "hi" ? "MIDC भूमि आवंटन" : "MIDC Land Allotment", href: "/dashboard/prevalidation" },
-                { name: language === "mr" ? "MPCB प्रदूषण संमती" : language === "hi" ? "MPCB प्रदूषण सहमति" : "MPCB CTE", href: "/dashboard/prevalidation" },
-                { name: language === "mr" ? "अग्निशमन NOC" : language === "hi" ? "फायर NOC" : "Fire NOC", href: "/dashboard/prevalidation" },
-                { name: language === "mr" ? "DISH फॅक्टरी परवाना" : language === "hi" ? "DISH कारखाना लाइसेंस" : "DISH Factory License", href: "/dashboard/prevalidation" },
+                { name: language === "mr" ? "MIDC जमीन वाटप" : language === "hi" ? "MIDC भूमि आवंटन" : "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
+                { name: language === "mr" ? "MPCB प्रदूषण संमती" : language === "hi" ? "MPCB प्रदूषण सहमति" : "MPCB CTE", href: "/apply/mpcb-consent" },
+                { name: language === "mr" ? "अग्निशमन NOC" : language === "hi" ? "फायर NOC" : "Fire NOC", href: "/apply/fire-safety-noc" },
+                { name: language === "mr" ? "DISH फॅक्टरी परवाना" : language === "hi" ? "DISH कारखाना लाइसेंस" : "DISH Factory License", href: "/apply/dish-factory-license" },
                 { name: language === "mr" ? "HT वीज मंजुरी" : language === "hi" ? "HT विद्युत स्वीकृति" : "HT Power Sanction", href: "/dashboard/dag" },
               ].map((chip) => (
                 <Link

@@ -51,8 +51,13 @@ export default function DashboardLayout({
     id?: string;
   }
 
+  interface NavSection {
+    heading: string;
+    items: NavItem[];
+  }
+
   // Role‑based navigation configuration with investor‑friendly labels and grouped sections
-  const businessSections = [
+  const businessSections: NavSection[] = [
     {
       heading: "MAIN",
       items: [{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard }],
@@ -87,7 +92,7 @@ export default function DashboardLayout({
     },
   ];
 
-  const ministrySections = [
+  const ministrySections: NavSection[] = [
     {
       heading: "WORK QUEUE",
       items: [{ label: "Pending Reviews", href: "/dashboard/officer-workspace", icon: ShieldAlert, badge: "Officer", highlight: true }],
