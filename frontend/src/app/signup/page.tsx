@@ -46,6 +46,19 @@ function SignupForm() {
   // Step 2 State
   const [legalEntity, setLegalEntity] = useState<LegalEntityType>("proprietor");
   const [businessName, setBusinessName] = useState("Smart Electronics");
+  const [primarySector, setPrimarySector] = useState<string>("agro_food_processing");
+
+  const SIGNUP_SECTORS = [
+    { value: "agro_food_processing", label: "Food Processing, Restaurants & QSR" },
+    { value: "ev_manufacturing", label: "Electric Vehicle & Clean Tech" },
+    { value: "fintech", label: "FinTech, IT & Digital Services" },
+    { value: "logistics_warehousing", label: "Logistics, Warehousing & Cold Chain" },
+    { value: "textiles_garmenting", label: "Textiles, Garments & Spinning" },
+    { value: "green_energy_biofuel", label: "Solar Energy & Biofuels" },
+    { value: "aerospace_defence", label: "Aerospace & Defence" },
+    { value: "general_manufacturing", label: "General Manufacturing & Chemicals" },
+    { value: "services_retail", label: "Retail & Commercial Services" },
+  ];
 
   // Step 3 State
   const [panNumber, setPanNumber] = useState("AAECS8891M");
@@ -183,9 +196,13 @@ function SignupForm() {
     );
 
     // 3. Sync with Enterprise Store & Master CAF
+    const selectedSectorObj = SIGNUP_SECTORS.find((s) => s.value === primarySector);
+    const sectorDisplayName = selectedSectorObj?.label || "Food Processing, Restaurants & QSR";
+
     setFormData({
       district,
-      locationZone: `${district} MIDC Industrial Area`,
+      sector: sectorDisplayName,
+      locationZone: `${district} Industrial & Commercial Zone`,
     });
 
     updateMasterCAF({
@@ -205,16 +222,16 @@ function SignupForm() {
         address: `${addressLine1}, ${addressLine2}`,
         pincode: pinCode,
         plotAreaSqMeters: 0,
-        midcZoneName: `${district} MIDC Industrial Area`,
+        midcZoneName: `${district} Industrial & Commercial Zone`,
         midcPlotNo: "",
       },
       projectSpecs: {
-        industryType: "",
-        sector: "",
+        industryType: primarySector,
+        sector: sectorDisplayName,
         capitalInvestmentInr: 0,
         powerRequirementKw: 0,
         waterRequirementKlpd: 0,
-        hazardCategory: "Orange",
+        hazardCategory: primarySector === "fintech" ? "White" : primarySector === "agro_food_processing" || primarySector === "services_retail" ? "Green" : "Orange",
         maxBuildingHeightMeters: 0,
         totalOccupants: 0,
       },
@@ -569,9 +586,30 @@ function SignupForm() {
                     type="text"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Smart Electronics"
+                    placeholder="e.g. Smart Electronics / Shri Ganesh Fast Food"
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:ring-2 focus:ring-[#FE7251]/20 focus:outline-none transition-all font-semibold"
                   />
+                </div>
+
+                {/* Primary Business Sector Selection */}
+                <div className="mt-4">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Primary Industry / Business Category *
+                  </label>
+                  <select
+                    value={primarySector}
+                    onChange={(e) => setPrimarySector(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:ring-2 focus:ring-[#FE7251]/20 focus:outline-none transition-all font-semibold bg-white"
+                  >
+                    {SIGNUP_SECTORS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Used to automatically tailor your Know Your Approvals (KYA) statutory roadmap and subsidies.
+                  </p>
                 </div>
               </div>
 

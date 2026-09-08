@@ -22,11 +22,12 @@ export interface ClearanceItem {
   name: string;
   department: string;
   slaDays: number;
-  category: "Pre-Establishment" | "Pre-Operation" | "Utility";
+  category: "Pre-Establishment" | "Pre-Operation" | "Utility" | string;
   mandatory: boolean;
   description: string;
   feeEstimate: string;
   status?: "pending" | "submitted" | "in_review" | "approved" | "deemed_approved";
+  approvalSlug?: string;
 }
 
 export interface ExtractedFieldItem {

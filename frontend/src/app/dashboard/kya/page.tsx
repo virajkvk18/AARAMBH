@@ -31,6 +31,8 @@ import {
   Leaf,
   Landmark,
   FolderLock,
+  Utensils,
+  Store,
 } from "lucide-react";
 import {
   useEnterpriseStore,
@@ -53,20 +55,31 @@ import {
 // --- Official Sector Options based on Government Resolutions ---
 const sectorOptions = [
   {
+    value: "agro_food_processing",
+    label: "Food Processing, Restaurants & QSR",
+    description: "Fast food restaurants, cloud kitchens, bakeries, food processing, cold chain.",
+    icon: Utensils,
+    policyTag: "PSI 2019 (Thrust Sector)",
+    policyGr: "PSI-2019/CR 46/IND-8",
+    defaults: { capexCr: 2, power: 35, water: 10, workforce: 25, height: 8, boiler: false, hazard: "Green" as const },
+  },
+  {
+    value: "services_retail",
+    label: "Commercial & Retail Establishments",
+    description: "Retail showrooms, commercial offices, hospitality, service centers.",
+    icon: Store,
+    policyTag: "Shops & Est Act 2017",
+    policyGr: "Labour Dept Notification",
+    defaults: { capexCr: 1.5, power: 25, water: 5, workforce: 15, height: 9, boiler: false, hazard: "Green" as const },
+  },
+  {
     value: "ev_manufacturing",
     label: "Electric Vehicle & Battery Ecosystem",
     description: "BEV assembly, ACC battery gigafactories, charging stations, components.",
     icon: Zap,
     policyTag: "Maharashtra EV Policy 2021",
     policyGr: "MSEVP-2021/CR 25/TC-4",
-  },
-  {
-    value: "aerospace_defence",
-    label: "Aerospace & Defence Manufacturing",
-    description: "OEM weapons, avionics, ammunition, MRO facilities, UAVs & radar gear.",
-    icon: Plane,
-    policyTag: "Aerospace & Defence Policy 2018",
-    policyGr: "IDL-2017/CR 188/IND-2",
+    defaults: { capexCr: 45, power: 300, water: 25, workforce: 140, height: 12, boiler: false, hazard: "Green" as const },
   },
   {
     value: "fintech",
@@ -75,6 +88,7 @@ const sectorOptions = [
     icon: Landmark,
     policyTag: "Maharashtra FinTech Policy 2018",
     policyGr: "DIT-2018/CR 17/D-1/39",
+    defaults: { capexCr: 8, power: 40, water: 5, workforce: 60, height: 12, boiler: false, hazard: "White" as const },
   },
   {
     value: "logistics_warehousing",
@@ -83,6 +97,7 @@ const sectorOptions = [
     icon: Truck,
     policyTag: "Maharashtra Logistics Policy 2024",
     policyGr: "Industries Dept Resolution 2024",
+    defaults: { capexCr: 30, power: 120, water: 15, workforce: 80, height: 14, boiler: false, hazard: "Green" as const },
   },
   {
     value: "textiles_garmenting",
@@ -91,22 +106,7 @@ const sectorOptions = [
     icon: Layers,
     policyTag: "State Textile Policy 2018-23",
     policyGr: "Policy 2017/CR 6/Text-5",
-  },
-  {
-    value: "agro_food_processing",
-    label: "Agro & Food Processing (Secondary/Tertiary)",
-    description: "Mini food parks, cold storages, grain milling, fruit pulp, dairy packaging.",
-    icon: Droplets,
-    policyTag: "PSI 2019 (Thrust Sector)",
-    policyGr: "PSI-2019/CR 46/IND-8",
-  },
-  {
-    value: "industry_4_0_ai",
-    label: "Industry 4.0, Robotics & AI Hub",
-    description: "IoT hardware, 3D printing, advanced robotics, nanotechnology, sensors.",
-    icon: Cpu,
-    policyTag: "PSI 2019 (Thrust Sector)",
-    policyGr: "PSI-2019/CR 46/IND-8",
+    defaults: { capexCr: 25, power: 200, water: 30, workforce: 150, height: 10, boiler: true, hazard: "Orange" as const },
   },
   {
     value: "green_energy_biofuel",
@@ -115,6 +115,25 @@ const sectorOptions = [
     icon: Leaf,
     policyTag: "PSI 2019 (Thrust Sector)",
     policyGr: "PSI-2019/CR 46/IND-8",
+    defaults: { capexCr: 60, power: 100, water: 40, workforce: 50, height: 10, boiler: true, hazard: "Orange" as const },
+  },
+  {
+    value: "aerospace_defence",
+    label: "Aerospace & Defence Manufacturing",
+    description: "OEM weapons, avionics, ammunition, MRO facilities, UAVs & radar gear.",
+    icon: Plane,
+    policyTag: "Aerospace & Defence Policy 2018",
+    policyGr: "IDL-2017/CR 188/IND-2",
+    defaults: { capexCr: 100, power: 500, water: 50, workforce: 250, height: 16, boiler: false, hazard: "Orange" as const },
+  },
+  {
+    value: "industry_4_0_ai",
+    label: "Industry 4.0, Robotics & AI Hub",
+    description: "IoT hardware, 3D printing, advanced robotics, nanotechnology, sensors.",
+    icon: Cpu,
+    policyTag: "PSI 2019 (Thrust Sector)",
+    policyGr: "PSI-2019/CR 46/IND-8",
+    defaults: { capexCr: 15, power: 80, water: 10, workforce: 75, height: 10, boiler: false, hazard: "White" as const },
   },
   {
     value: "general_manufacturing",
@@ -123,8 +142,29 @@ const sectorOptions = [
     icon: Factory,
     policyTag: "PSI 2019 Standard Matrix",
     policyGr: "PSI-2019/CR 46/IND-8",
+    defaults: { capexCr: 50, power: 350, water: 60, workforce: 180, height: 14, boiler: true, hazard: "Red" as const },
   },
 ];
+
+function resolveInitialSectorKey(storedSector?: string, masterSectorKey?: string): string {
+  if (masterSectorKey && sectorOptions.some((s) => s.value === masterSectorKey)) {
+    return masterSectorKey;
+  }
+  if (storedSector) {
+    const sLow = storedSector.toLowerCase();
+    if (sLow.includes("food") || sLow.includes("restaurant") || sLow.includes("qsr") || sLow.includes("agro")) return "agro_food_processing";
+    if (sLow.includes("retail") || sLow.includes("commercial") || sLow.includes("shop")) return "services_retail";
+    if (sLow.includes("ev") || sLow.includes("electric") || sLow.includes("battery")) return "ev_manufacturing";
+    if (sLow.includes("fintech") || sLow.includes("digital") || sLow.includes("software") || sLow.includes("it")) return "fintech";
+    if (sLow.includes("logistics") || sLow.includes("warehouse") || sLow.includes("cold chain")) return "logistics_warehousing";
+    if (sLow.includes("textile") || sLow.includes("garment") || sLow.includes("spinning")) return "textiles_garmenting";
+    if (sLow.includes("green") || sLow.includes("solar") || sLow.includes("biofuel")) return "green_energy_biofuel";
+    if (sLow.includes("aerospace") || sLow.includes("defence")) return "aerospace_defence";
+    if (sLow.includes("robotics") || sLow.includes("ai")) return "industry_4_0_ai";
+    if (sLow.includes("chemical") || sLow.includes("engineering") || sLow.includes("manufacturing")) return "general_manufacturing";
+  }
+  return "agro_food_processing";
+}
 
 export default function KYAWizardPage() {
   const {
@@ -149,18 +189,22 @@ export default function KYAWizardPage() {
   } = useEnterpriseStore();
   const { t } = useLanguage();
 
+  const initialSectorKey = resolveInitialSectorKey(storedSector, masterCAF?.projectSpecs?.industryType);
+  const matchedSectorOption = sectorOptions.find((s) => s.value === initialSectorKey) || sectorOptions[0];
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedSectorKey, setSelectedSectorKey] = useState<string>("ev_manufacturing");
-  const [selectedDistrict, setSelectedDistrict] = useState<string>(storedDistrict || "Pune");
-  const [selectedTaluka, setSelectedTaluka] = useState<string>(storedTaluka || "Khed (Chakan PMR)");
-  const [locationZone, setLocationZone] = useState<string>(storedLocation || "Chakan MIDC Phase II (Pune)");
-  const [capexCr, setCapexCr] = useState<number>(storedCapex ?? 35);
-  const [powerLoadKva, setPowerLoadKva] = useState<number>(storedPower ?? 250);
-  const [waterDemandKld, setWaterDemandKld] = useState<number>(storedWater ?? 20);
-  const [workforceSize, setWorkforceSize] = useState<number>(storedWorkforce ?? 120);
+  const [selectedSectorKey, setSelectedSectorKey] = useState<string>(initialSectorKey);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(storedDistrict || masterCAF?.locationDetails?.district || "Pune");
+  const [selectedTaluka, setSelectedTaluka] = useState<string>(storedTaluka || masterCAF?.locationDetails?.taluka || "Khed (Chakan PMR)");
+  const [locationZone, setLocationZone] = useState<string>(storedLocation || masterCAF?.locationDetails?.midcZoneName || "Pune Industrial & Commercial Zone");
+
+  const [capexCr, setCapexCr] = useState<number>(storedCapex ?? matchedSectorOption.defaults.capexCr);
+  const [powerLoadKva, setPowerLoadKva] = useState<number>(storedPower ?? matchedSectorOption.defaults.power);
+  const [waterDemandKld, setWaterDemandKld] = useState<number>(storedWater ?? matchedSectorOption.defaults.water);
+  const [workforceSize, setWorkforceSize] = useState<number>(storedWorkforce ?? matchedSectorOption.defaults.workforce);
   const [isExpansion, setIsExpansion] = useState<boolean>(false);
-  const [boilerInstalled, setBoilerInstalled] = useState<boolean>(false);
-  const [buildingHeightMeters, setBuildingHeightMeters] = useState<number>(12);
+  const [boilerInstalled, setBoilerInstalled] = useState<boolean>(matchedSectorOption.defaults.boiler);
+  const [buildingHeightMeters, setBuildingHeightMeters] = useState<number>(matchedSectorOption.defaults.height);
 
   const [calculatedIncentives, setCalculatedIncentives] = useState<CalculatedIncentives | null>(
     storedPolicyDetails || null
@@ -180,13 +224,27 @@ export default function KYAWizardPage() {
     }
   }, [storedIsAssessed, storedPolicyDetails]);
 
+  // When sector changes, dynamically adjust parameters to realistic defaults for that sector
+  const handleSelectSector = (sectorKey: string) => {
+    setSelectedSectorKey(sectorKey);
+    const sec = sectorOptions.find((s) => s.value === sectorKey);
+    if (sec) {
+      setCapexCr(sec.defaults.capexCr);
+      setPowerLoadKva(sec.defaults.power);
+      setWaterDemandKld(sec.defaults.water);
+      setWorkforceSize(sec.defaults.workforce);
+      setBuildingHeightMeters(sec.defaults.height);
+      setBoilerInstalled(sec.defaults.boiler);
+    }
+  };
+
   // When district changes, update taluka to first taluka of that district
   const handleDistrictChange = (newDistrict: string) => {
     setSelectedDistrict(newDistrict);
     const distObj = MAHARASHTRA_DISTRICT_TALUKAS.find((d) => d.district.toLowerCase() === newDistrict.toLowerCase());
     if (distObj && distObj.talukas.length > 0) {
       setSelectedTaluka(distObj.talukas[0].name);
-      setLocationZone(`${distObj.talukas[0].name} Industrial Area (${distObj.district})`);
+      setLocationZone(`${distObj.talukas[0].name} Zone (${distObj.district})`);
     }
   };
 
@@ -214,17 +272,21 @@ export default function KYAWizardPage() {
       isExpansion,
     });
 
-    // 2. Determine hazard category for workflow
-    let hazardCategory: "Red" | "Orange" | "Green" | "White" = "Orange";
-    if (selectedSectorKey === "general_manufacturing" || capexCr > 100) {
-      hazardCategory = "Red";
+    // 2. Determine hazard category for statutory workflow
+    let hazardCategory: "Red" | "Orange" | "Green" | "White" = "Green";
+    if (selectedSectorKey === "general_manufacturing") {
+      hazardCategory = capexCr > 50 ? "Red" : "Orange";
+    } else if (selectedSectorKey === "aerospace_defence") {
+      hazardCategory = capexCr > 50 ? "Red" : "Orange";
+    } else if (selectedSectorKey === "textiles_garmenting" || selectedSectorKey === "green_energy_biofuel") {
+      hazardCategory = "Orange";
     } else if (selectedSectorKey === "fintech" || selectedSectorKey === "industry_4_0_ai") {
       hazardCategory = "White";
-    } else if (selectedSectorKey === "ev_manufacturing" || selectedSectorKey === "logistics_warehousing") {
+    } else if (selectedSectorKey === "agro_food_processing" || selectedSectorKey === "services_retail" || selectedSectorKey === "ev_manufacturing" || selectedSectorKey === "logistics_warehousing") {
       hazardCategory = "Green";
     }
 
-    // 3. Generate dynamic DAG workflow
+    // 3. Generate dynamic sector-specific DAG workflow
     const dagResult = generateClearanceWorkflow({
       sector: selectedSectorKey,
       hazardCategory,
@@ -235,16 +297,31 @@ export default function KYAWizardPage() {
       isMidcLand: true,
     });
 
-    // 4. Map clearances to enterprise store items
+    // 4. Map clearances to enterprise store items with direct approvalSlug
     const storeClearances: ClearanceItem[] = dagResult.clearances.map((c) => ({
       id: c.id,
       name: c.name,
       department: c.department,
       slaDays: c.slaDays,
-      category: c.category === "pre_operation" ? "Pre-Operation" : c.category === "environmental" ? "Pre-Establishment" : "Pre-Establishment",
+      category:
+        c.category === "pre_operation"
+          ? "Pre-Operation"
+          : c.category === "environmental"
+          ? "Pre-Establishment"
+          : "Pre-Establishment",
       mandatory: true,
-      description: `${c.statutoryAct} compliance. Deemed approval in ${c.slaDays} days.`,
-      feeEstimate: capexCr > 50 ? "₹1,50,000" : capexCr > 10 ? "₹75,000" : "₹25,000",
+      description: `${c.statutoryAct} compliance. Statutory SLA: ${c.slaDays} days under Maharashtra RTS Act.`,
+      feeEstimate:
+        c.approvalSlug === "fssai-food-license"
+          ? "₹2,000 - ₹7,500"
+          : c.approvalSlug === "gumasta-license"
+          ? "₹0 - ₹1,500"
+          : capexCr > 50
+          ? "₹1,50,000"
+          : capexCr > 10
+          ? "₹75,000"
+          : "₹25,000",
+      approvalSlug: c.approvalSlug || c.id,
     }));
 
     const riskTrack: RiskTrack = hazardCategory === "Red" ? "red" : hazardCategory === "Orange" ? "orange" : "green";
@@ -264,7 +341,7 @@ export default function KYAWizardPage() {
 
     // Save to global store & sync Master CAF
     const selectedOption = sectorOptions.find((s) => s.value === selectedSectorKey);
-    const sectorDisplay = (selectedOption ? selectedOption.label : "General Manufacturing") as SectorType;
+    const sectorDisplay = (selectedOption ? selectedOption.label : "Food Processing, Restaurants & QSR") as SectorType;
 
     setFormData({
       sector: sectorDisplay,
@@ -301,130 +378,120 @@ export default function KYAWizardPage() {
     setShowResult(true);
   };
 
-  const handleReassess = () => {
+  const handleReset = () => {
     resetAssessment();
     setShowResult(false);
     setCurrentStep(1);
+    setCalculatedIncentives(null);
+    setWorkflowDAG(null);
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-12">
-      {/* Top Title Banner */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>Official Maharashtra Policy Rule Engine</span>
+          <div className="flex items-center space-x-2">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#9B2A48]/10 text-[#9B2A48] border border-[#9B2A48]/20">
+              Statutory Rules Engine
+            </span>
+            <span className="text-xs text-slate-500 font-medium">
+              Know Your Approvals (KYA) & Policy Subsidies
+            </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Know Your Approvals (KYA) & Policy Incentive Calculator
+          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight mt-1">
+            Dynamic Clearances & Policy Incentives Assessment
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Evaluates statutory clearances, RTS Act SLAs, and exact subsidies under PSI 2019, EV 2021, Logistics 2024, Aerospace 2018, FinTech 2018 & Textile 2018-23.
+          <p className="text-xs text-slate-500 mt-1 max-w-3xl">
+            Calculates mandatory statutory approvals, RTS Act deemed approval SLA countdowns, and financial subsidies tailored to your business.
           </p>
         </div>
 
         {showResult && (
           <button
             type="button"
-            onClick={handleReassess}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF7F0] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer shrink-0"
+            onClick={handleReset}
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-[#FED17A] bg-white text-[#9B2A48] hover:bg-[#FFF7F0] text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Modify Parameters</span>
+            <RotateCcw className="w-3.5 h-3.5 text-[#FE7251]" />
+            <span>Re-evaluate Parameters</span>
           </button>
         )}
       </div>
 
+      {/* --- WIZARD FORM VIEW --- */}
       {!showResult ? (
-        /* --- 4-STEP MULTI-STEP WIZARD FORM --- */
         <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
-          {/* Step Progress Header */}
-          <div className="bg-[#FFF9F5] border-b border-[#F0E5E0] p-4 sm:p-6">
+          {/* Wizard Step Progress Bar */}
+          <div className="border-b border-[#F0E5E0] bg-[#FFFDFC] px-6 py-4">
             <div className="grid grid-cols-4 gap-2 text-center text-xs">
               {[
-                { num: 1, label: "1. Policy & Sector" },
-                { num: 2, label: "2. District & Taluka" },
-                { num: 3, label: "3. Capex & Scale" },
-                { num: 4, label: "4. Utilities & DAG" },
-              ].map((step) => {
-                const isCurrent = currentStep === step.num;
-                const isPassed = currentStep > step.num;
-                return (
-                  <div
-                    key={step.num}
-                    className={`flex flex-col items-center p-2 rounded-xl transition-all ${
-                      isCurrent
-                        ? "bg-white border border-[#FED17A] shadow-xs text-[#9B2A48] font-bold"
-                        : isPassed
-                        ? "text-[#9B2A48] font-semibold"
-                        : "text-[#886A75]"
-                    }`}
-                  >
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${
-                        isCurrent
-                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white"
-                          : isPassed
-                          ? "bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]"
-                          : "bg-slate-200 text-slate-600"
-                      }`}
-                    >
-                      {isPassed ? "✓" : step.num}
-                    </div>
-                    <span className="text-[11px] truncate hidden sm:inline">{step.label}</span>
+                { step: 1, label: "1. Line of Business", sub: "Industry Sector" },
+                { step: 2, label: "2. Location & Zonal", sub: "Taluka Category" },
+                { step: 3, label: "3. Investment & Scale", sub: "FCI & Workforce" },
+                { step: 4, label: "4. Utilities & Safety", sub: "Power, Water, Fire" },
+              ].map((s) => (
+                <div
+                  key={s.step}
+                  onClick={() => setCurrentStep(s.step)}
+                  className={`cursor-pointer pb-2 border-b-2 transition-all ${
+                    currentStep === s.step
+                      ? "border-[#9B2A48] text-[#9B2A48] font-bold"
+                      : currentStep > s.step
+                      ? "border-emerald-500 text-emerald-700 font-medium"
+                      : "border-transparent text-slate-400 font-normal"
+                  }`}
+                >
+                  <div className="flex items-center justify-center space-x-1">
+                    {currentStep > s.step && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                    <span>{s.label}</span>
                   </div>
-                );
-              })}
+                  <div className="text-[10px] text-slate-400 hidden sm:block">{s.sub}</div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Form Step Body */}
           <div className="p-6 sm:p-8">
-            {/* STEP 1: SECTOR SELECTION */}
+            {/* STEP 1: LINE OF BUSINESS */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 1: Select Your Industry Sector & Policy Track</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 1: Select Your Business & Industry Category</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Maharashtra offers sector-specific Government Resolutions (GRs) with targeted capital subsidies, power tariffs, and fast-track approvals.
+                    Select the business line you are starting in Maharashtra. Approvals, document checklists, and policy benefits will dynamically adapt.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {sectorOptions.map((option) => {
-                    const IconComp = option.icon;
-                    const isSelected = selectedSectorKey === option.value;
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  {sectorOptions.map((opt) => {
+                    const IconComp = opt.icon;
+                    const isSelected = selectedSectorKey === opt.value;
                     return (
                       <div
-                        key={option.value}
-                        onClick={() => setSelectedSectorKey(option.value)}
-                        className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-150 flex flex-col justify-between ${
+                        key={opt.value}
+                        onClick={() => handleSelectSector(opt.value)}
+                        className={`p-4 rounded-xl border transition-all cursor-pointer text-left flex flex-col justify-between ${
                           isSelected
-                            ? "border-[#FE7251] bg-[#FFF7F0] shadow-xs"
-                            : "border-[#F0E5E0] hover:border-[#FE7251]/60 bg-white"
+                            ? "bg-gradient-to-br from-[#FFF7F0] to-[#FFF0E6] border-[#FE7251] shadow-md ring-2 ring-[#FE7251]/20"
+                            : "bg-white border-[#F0E5E0] hover:border-[#FED17A] hover:bg-[#FFFDFC]"
                         }`}
                       >
                         <div>
-                          <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center justify-between mb-2">
                             <div
-                              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                                isSelected ? "bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-white" : "bg-[#FFF2DF] text-[#9B2A48]"
+                              className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                                isSelected ? "bg-[#9B2A48] text-white" : "bg-[#FFF9F5] text-[#9B2A48] border border-[#F0E5E0]"
                               }`}
                             >
-                              <IconComp className="w-5 h-5" />
+                              <IconComp className="w-4 h-4" />
                             </div>
-                            {isSelected && (
-                              <CheckCircle2 className="w-5 h-5 text-[#FE7251]" />
-                            )}
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white border border-[#FED17A] text-[#9B2A48]">
+                              {opt.policyTag}
+                            </span>
                           </div>
-                          <h4 className="text-sm font-bold text-[#16060E]">{option.label}</h4>
-                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">{option.description}</p>
-                        </div>
-                        <div className="mt-4 pt-3 border-t border-[#F0E5E0]/60">
-                          <span className="text-[10px] font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2 py-0.5 rounded-md inline-block">
-                            {option.policyTag}
-                          </span>
+                          <h4 className="text-xs font-bold text-[#16060E] line-clamp-1">{opt.label}</h4>
+                          <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">{opt.description}</p>
                         </div>
                       </div>
                     );
@@ -433,18 +500,17 @@ export default function KYAWizardPage() {
               </div>
             )}
 
-            {/* STEP 2: DISTRICT & TALUKA CLASSIFICATION */}
+            {/* STEP 2: LOCATION & ZONAL */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-[#16060E]">Step 2: Select Proposed Location (District & Taluka)</h3>
+                  <h3 className="text-lg font-bold text-[#16060E]">Step 2: Choose Establishment Location & District</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Under Maharashtra PSI 2019, fiscal incentive ceilings (30% to 100%) and eligibility periods are graded by Taluka classification (Group A, B, C, D, D+, No Industry, Naxal, Aspirational).
+                    Select district and taluka. Package Scheme of Incentives (PSI 2019) categorizes Maharashtra into Groups A, B, C, D, D+, and Aspirational districts.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
-                  {/* District Dropdown */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
                   <div>
                     <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Maharashtra District
@@ -462,7 +528,6 @@ export default function KYAWizardPage() {
                     </select>
                   </div>
 
-                  {/* Taluka Dropdown */}
                   <div>
                     <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Taluka / Sub-District
@@ -471,30 +536,31 @@ export default function KYAWizardPage() {
                       value={selectedTaluka}
                       onChange={(e) => {
                         setSelectedTaluka(e.target.value);
-                        setLocationZone(`${e.target.value} Industrial Zone (${selectedDistrict})`);
+                        setLocationZone(`${e.target.value} Zone (${selectedDistrict})`);
                       }}
                       className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     >
                       {currentDistrictObj.talukas.map((t) => (
                         <option key={t.name} value={t.name}>
-                          {t.name} — Group {t.category}
+                          {t.name} (Category {t.category}
+                          {t.isNaxal ? " • Naxal" : ""}
+                          {t.isAspirational ? " • Aspirational" : ""})
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* Location Zone Details */}
                 <div className="max-w-2xl">
                   <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
-                    Industrial Estate / MIDC Park Name
+                    Commercial Area / Industrial Zone Details
                   </label>
                   <input
                     type="text"
                     value={locationZone}
                     onChange={(e) => setLocationZone(e.target.value)}
+                    placeholder="e.g. FC Road / MIDC Chakan / Kharadi IT Park"
                     className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
-                    placeholder="e.g. Chakan MIDC Phase II, Waluj MIDC, Butibori MIDC"
                   />
                 </div>
               </div>
@@ -506,7 +572,7 @@ export default function KYAWizardPage() {
                 <div>
                   <h3 className="text-lg font-bold text-[#16060E]">Step 3: Proposed Fixed Capital Investment (FCI)</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Specify plant and machinery investments to calculate statutory scale (MSME, LSI, Mega, Ultra-Mega) and annual grant caps.
+                    Specify proposed setup investment to calculate MSME scale and capital subsidy ceilings.
                   </p>
                 </div>
 
@@ -520,19 +586,18 @@ export default function KYAWizardPage() {
                     </div>
                     <input
                       type="range"
-                      min={1}
-                      max={500}
-                      step={1}
+                      min={0.5}
+                      max={250}
+                      step={0.5}
                       value={capexCr}
                       onChange={(e) => setCapexCr(Number(e.target.value))}
                       className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#FE7251]"
                     />
                     <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
-                      <span>₹1 Cr (Micro)</span>
-                      <span>₹10 Cr (Small)</span>
-                      <span>₹50 Cr (Medium/LSI)</span>
+                      <span>₹0.5 Cr (Micro/QSR)</span>
+                      <span>₹5 Cr (Small)</span>
+                      <span>₹25 Cr (Medium)</span>
                       <span>₹100 Cr+ (Mega)</span>
-                      <span>₹500 Cr</span>
                     </div>
                   </div>
 
@@ -543,7 +608,7 @@ export default function KYAWizardPage() {
                       </label>
                       <input
                         type="number"
-                        min={5}
+                        min={1}
                         value={workforceSize}
                         onChange={(e) => setWorkforceSize(Number(e.target.value))}
                         className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
@@ -573,7 +638,7 @@ export default function KYAWizardPage() {
                 <div>
                   <h3 className="text-lg font-bold text-[#16060E]">Step 4: Utility Quotas & Structural Safety</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Determine electricity transformer feeder capacities, water intake quota, and DISH / Fire safety triggers.
+                    Determine electricity load, water demand, and fire safety triggers.
                   </p>
                 </div>
 
@@ -582,17 +647,17 @@ export default function KYAWizardPage() {
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Zap className="w-4 h-4 text-[#FE7251]" />
                       <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
-                        Power Load (kVA / kW)
+                        Power Load (kW)
                       </label>
                     </div>
                     <input
                       type="number"
-                      min={10}
+                      min={5}
                       value={powerLoadKva}
                       onChange={(e) => setPowerLoadKva(Number(e.target.value))}
                       className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">MSEDCL Feasibility trigger</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Commercial / Industrial load</p>
                   </div>
 
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
@@ -609,7 +674,7 @@ export default function KYAWizardPage() {
                       onChange={(e) => setWaterDemandKld(Number(e.target.value))}
                       className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">Kilo Liters Per Day (MIDC)</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Kilo Liters Per Day</p>
                   </div>
 
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
@@ -621,12 +686,12 @@ export default function KYAWizardPage() {
                     </div>
                     <input
                       type="number"
-                      min={5}
+                      min={3}
                       value={buildingHeightMeters}
                       onChange={(e) => setBuildingHeightMeters(Number(e.target.value))}
                       className="block w-full px-3 py-2 bg-white border border-[#F0E5E0] rounded-lg text-base font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">MahaFire Safety NOC (&gt;9m)</p>
+                    <p className="text-[10px] text-slate-500 mt-1">MahaFire Safety NOC</p>
                   </div>
                 </div>
 
@@ -639,7 +704,7 @@ export default function KYAWizardPage() {
                     className="w-4 h-4 text-[#FE7251] rounded-sm focus:ring-[#FE7251]"
                   />
                   <label htmlFor="boilerCheck" className="text-xs font-bold text-[#16060E] cursor-pointer">
-                    Steam Boiler / Thermal Pressure Vessel Installed (Triggers Directorate of Steam Boilers Registration)
+                    Commercial Steam Boiler / High Pressure Vessel Installed (Triggers Directorate of Steam Boilers)
                   </label>
                 </div>
               </div>
@@ -674,7 +739,7 @@ export default function KYAWizardPage() {
                 className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Evaluate & Generate Policy Incentives</span>
+                <span>Evaluate & Generate Clearances</span>
               </button>
             )}
           </div>
@@ -695,7 +760,7 @@ export default function KYAWizardPage() {
                     Eligible for Category '{calculatedIncentives.category}' Package ({calculatedIncentives.scale})
                   </h2>
                   <p className="text-xs text-slate-600 mt-1">
-                    Location: {storedLocation || locationZone} • Fixed Capital Investment: ₹{capexCr} Crores
+                    Sector: {storedSector || selectedSectorKey} • Location: {storedLocation || locationZone} • Fixed Capital Investment: ₹{capexCr} Crores
                   </p>
                 </div>
 
@@ -775,7 +840,7 @@ export default function KYAWizardPage() {
                   Mandatory Statutory Clearances Checklist ({storedClearances.length} Approvals)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Generated dynamically under Maharashtra Right to Public Services Act (RTS Act)
+                  Generated dynamically under Maharashtra Right to Public Services Act (RTS Act) for {storedSector || selectedSectorKey}
                 </p>
               </div>
 
@@ -839,7 +904,7 @@ export default function KYAWizardPage() {
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <Link
-                          href={`/apply/${c.id}`}
+                          href={`/apply/${c.approvalSlug || c.id}`}
                           className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#9B2A48] hover:bg-[#7D1E36] text-white font-bold text-[11px] transition-colors"
                         >
                           <span>Apply</span>
