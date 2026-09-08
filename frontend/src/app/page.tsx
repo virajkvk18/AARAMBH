@@ -194,14 +194,14 @@ export default function HomePage() {
       {/* 1. HERO SECTION (SINGLE CENTERED COMPOSITION WITH NEW INDUSTRIAL BACKDROP)*/}
       {/* ========================================================================= */}
       <section className="relative text-white overflow-hidden min-h-[78vh] lg:min-h-[85vh] flex items-center justify-center pt-16 sm:pt-20 lg:pt-24 pb-20 sm:pb-24 lg:pb-28 border-b border-slate-800/40">
-        {/* New Provided Industrial Image Backdrop */}
+        {/* New Attached Sunset Skyline Image Backdrop */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center sm:bg-[60%_center] lg:bg-center pointer-events-none transition-all duration-700"
-          style={{ backgroundImage: "url('/images/aarambh-industrial-hero.jpg')" }}
+          className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center sm:bg-[center_35%] lg:bg-center pointer-events-none transition-all duration-700"
+          style={{ backgroundImage: "url('/images/aarambh-hero-bg.jpg')" }}
         />
 
-        {/* Subtle Transparent Dark Gradient to enhance text legibility while keeping blue sky, mountains, Maharashtra outline & factory crystal clear */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0A1628]/50 via-[#0A1628]/25 to-[#0A1628]/60 pointer-events-none" />
+        {/* Subtle Transparent Dark Gradient to guarantee crisp text legibility over the golden sunset while keeping the skyline, sunburst & water reflections clearly visible */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/45 via-black/25 to-black/55 pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
