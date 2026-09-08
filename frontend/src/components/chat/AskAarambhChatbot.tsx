@@ -27,25 +27,28 @@ interface Message {
 
 const SUGGESTIONS_MAP: Record<string, string[]> = {
   en: [
-    "I'm 19 years old, can I start a business?",
-    "How do I apply for MIDC Land in Pune?",
-    "What is the statutory SLA for MPCB Consent?",
-    "How does Deemed Approval work under the RTS Act?",
-    "What subsidies are offered in PSI 2019 scheme?",
+    "What approvals do I need for my industry?",
+    "What documents do I need before applying?",
+    "Am I eligible for PSI 2019 incentives?",
+    "How can I track my application status?",
+    "Explain MPCB CTE vs CTO requirements",
+    "Why is my application pending at scrutiny desk?",
   ],
   mr: [
-    "माझे वय १९ वर्षे आहे, मी उद्योग सुरू करू शकतो का?",
-    "पुणे चाकण MIDC मध्ये जमीन कशी मिळवावी?",
+    "माझ्या उद्योगासाठी कोणते परवाने आवश्यक आहेत?",
+    "अर्ज करण्यापूर्वी कोणती कागदपत्रे लागतील?",
+    "मी PSI २०१९ अनुदानासाठी पात्र आहे का?",
+    "माझ्या अर्जाची स्थिती कशी तपासावी?",
     "MPCB संमतीसाठी वैधानिक SLA दिवस किती आहेत?",
-    "लोकसेवा हक्क कायद्यांतर्गत मानिव मंजुरी कशी मिळते?",
-    "PSI २०१९ योजनेअंतर्गत कोणते अनुदान मिळते?",
+    "माझा अर्ज पडताळणी कक्षात का प्रलंबित आहे?",
   ],
   hi: [
-    "मेरी आयु 19 वर्ष है, क्या मैं उद्योग शुरू कर सकता हूँ?",
-    "पुणे चाकण MIDC में भूमि आवंटन के लिए कैसे आवेदन करें?",
+    "मेरे उद्योग के लिए कौन से अनुमोदन आवश्यक हैं?",
+    "आवेदन से पहले कौन से दस्तावेज़ आवश्यक हैं?",
+    "क्या मैं PSI 2019 सब्सिडी के लिए पात्र हूँ?",
+    "मैं अपने आवेदन की स्थिति कैसे ट्रैक करूँ?",
     "MPCB प्रदूषण सहमति का वैधानिक SLA क्या है?",
-    "RTS कानून के तहत डीम्ड अप्रूवल कैसे काम करता है?",
-    "PSI 2019 योजना में कौन सी सब्सिडी उपलब्ध हैं?",
+    "मेरा आवेदन संवीक्षा पटल पर क्यों लंबित है?",
   ],
 };
 

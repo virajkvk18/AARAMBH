@@ -2,869 +2,1293 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
-  Compass,
-  Search,
-  ArrowRight,
-  Layers,
-  Clock,
-  ShieldCheck,
-  RefreshCw,
-  MessageSquareCheck,
-  Sparkles,
   Building2,
   Factory,
   Flame,
-  Droplets,
+  ShieldCheck,
   Zap,
   CheckCircle2,
-  ChevronRight,
-  Landmark,
-  BadgeCheck,
-  Play,
-  PhoneCall,
-  HelpCircle,
-  MessageCircle,
-  Cpu,
-  Car,
-  Pill,
-  Shirt,
-  Wheat,
-  Sun,
-  FlaskConical,
-  Truck,
-  Dna,
-  Hotel,
-  X,
+  ArrowRight,
+  Clock,
+  Coins,
+  FileCheck2,
+  FileText,
+  Search,
   ExternalLink,
-  FileCheck,
-  ChevronDown,
+  ChevronRight,
+  X,
+  AlertCircle,
+  Sparkles,
+  User,
+  Briefcase,
+  Layers,
+  Check,
+  HelpCircle,
+  Award,
+  Droplets,
+  Calendar,
+  AlertTriangle,
+  FolderLock,
+  Compass,
+  ArrowUpRight,
+  ShieldAlert,
+  FileSpreadsheet,
 } from "lucide-react";
+import { allApprovalsList, ApprovalConfig } from "@/data/approvalsRegistry";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
 
-// --- Sector Data (12 Sectors from Image 5) ---
-interface SectorItem {
-  id: string;
-  name: string;
-  approvalsCount: number;
-  icon: React.ComponentType<{ className?: string }>;
-  tag: string;
-  categoryKey: string;
-}
-
-const sectorsData: SectorItem[] = [
-  {
-    id: "manufacturing",
-    name: "Manufacturing & Heavy Engineering",
-    approvalsCount: 14,
-    icon: Factory,
-    tag: "MIDC / MPCB / DISH",
-    categoryKey: "manufacturing",
-  },
-  {
-    id: "automobile",
-    name: "Automobile & Auto Components",
-    approvalsCount: 12,
-    icon: Car,
-    tag: "Pune / Chakan / Aurangabad",
-    categoryKey: "automotive",
-  },
-  {
-    id: "pharma",
-    name: "Pharmaceuticals & Healthcare",
-    approvalsCount: 16,
-    icon: Pill,
-    tag: "FDA / MPCB / Toxic Clearance",
-    categoryKey: "pharma",
-  },
-  {
-    id: "food-agro",
-    name: "Food Processing & Agro Industries",
-    approvalsCount: 11,
-    icon: Wheat,
-    tag: "FSSAI / Pollution / Water",
-    categoryKey: "food",
-  },
-  {
-    id: "textile",
-    name: "Textile, Apparel & Technical Garments",
-    approvalsCount: 10,
-    icon: Shirt,
-    tag: "Solapur / Ichalkaranji / MIDC",
-    categoryKey: "textile",
-  },
-  {
-    id: "chemical",
-    name: "Chemicals & Petrochemicals",
-    approvalsCount: 18,
-    icon: FlaskConical,
-    tag: "Taloja / Roha / Hazardous",
-    categoryKey: "chemical",
-  },
-  {
-    id: "renewable-ev",
-    name: "Renewable Energy & EV Ecosystem",
-    approvalsCount: 9,
-    icon: Sun,
-    tag: "MEDA / MSEDCL / Battery",
-    categoryKey: "energy",
-  },
-  {
-    id: "it-ites",
-    name: "IT, ITES & Data Centers",
-    approvalsCount: 8,
-    icon: Cpu,
-    tag: "Navi Mumbai / Hinjewadi",
-    categoryKey: "it",
-  },
-  {
-    id: "logistics",
-    name: "Logistics, Warehousing & Cold Chain",
-    approvalsCount: 11,
-    icon: Truck,
-    tag: "JNPT / Bhiwandi / MIHAN",
-    categoryKey: "logistics",
-  },
-  {
-    id: "biotech",
-    name: "Biotechnology & Life Sciences",
-    approvalsCount: 15,
-    icon: Dna,
-    tag: "Bio-Safety / Environmental",
-    categoryKey: "biotech",
-  },
-  {
-    id: "electronics",
-    name: "Electronics System Design (ESDM)",
-    approvalsCount: 10,
-    icon: Zap,
-    tag: "EMC / Semiconductor Hub",
-    categoryKey: "electronics",
-  },
-  {
-    id: "tourism",
-    name: "Tourism, Hospitality & Eco-Resorts",
-    approvalsCount: 12,
-    icon: Hotel,
-    tag: "MTDC / CRZ / Local Body",
-    categoryKey: "hospitality",
-  },
-];
-
-// --- Benefits Data (6 items matching Image 2) ---
-interface BenefitItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  tag: string;
-  href: string;
-}
-
-const benefitsData: BenefitItem[] = [
-  {
-    id: "all-in-one",
-    title: "All Approvals in One Place",
-    description:
-      "A single integrated Common Application Form (CAF) replacing dozens of disparate departmental portals across Maharashtra.",
-    icon: Layers,
-    tag: "Unified Single Window",
-    href: "/apply",
-  },
-  {
-    id: "status-tracking",
-    title: "Real-Time Status Tracking",
-    description:
-      "Stage-by-stage transparent milestone tracking with statutory SLA countdown timers and automated SMS/Email notifications.",
-    icon: Clock,
-    tag: "100% Transparent",
-    href: "/dashboard/dag",
-  },
-  {
-    id: "secure-vault",
-    title: "Secure Document Repository",
-    description:
-      "DigiLocker-integrated digital locker with automated extraction and pre-validation, eliminating duplicate uploads.",
-    icon: ShieldCheck,
-    tag: "DigiLocker & Smart OCR",
-    href: "/dashboard/vault",
-  },
-  {
-    id: "easy-renewals",
-    title: "Easy Renewals & SLA Enforcement",
-    description:
-      "Automated advance alerts 90 days prior to license expiry with one-click pre-populated renewal submissions.",
-    icon: RefreshCw,
-    tag: "Zero Downtime",
-    href: "/dashboard/sla",
-  },
-  {
-    id: "fast-resolution",
-    title: "Fast Query & Grievance Resolution",
-    description:
-      "Direct interactive query desk with time-bound statutory redressal under the Maharashtra Right to Public Services Act.",
-    icon: MessageSquareCheck,
-    tag: "Time-Bound SLA",
-    href: "/dashboard/grievances",
-  },
-  {
-    id: "ai-kya",
-    title: "Dynamic Know Your Approvals",
-    description:
-      "Intelligent rule engine dynamically determines the exact pre-establishment, operational clearances and incentives.",
-    icon: Sparkles,
-    tag: "Clearance Wizard",
-    href: "/dashboard/kya",
-  },
-];
-
-// --- Key Approvals Data (Matching Image 3) ---
-interface KeyApproval {
+// Extended statutory clearances data with additional operational clearances
+interface ApprovalCardData {
   id: string;
   name: string;
   department: string;
-  icon: React.ComponentType<{ className?: string }>;
+  departmentCode: string;
+  category: "Pre-Establishment" | "Pre-Operation" | "Operations" | "Renewals";
   slaDays: number;
-  category: "Pre-Establishment" | "Pre-Operation" | "Utility";
+  act: string;
   description: string;
-  href: string;
+  mandatoryDocsCount: number;
+  applyHref: string;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
-const keyApprovalsData: KeyApproval[] = [
+const keyApprovalsList: ApprovalCardData[] = [
   {
-    id: "midc-land",
+    id: "midc-land-allotment",
     name: "MIDC Land Allotment & Building Plan Approval",
     department: "Maharashtra Industrial Development Corporation (MIDC)",
-    icon: Building2,
-    slaDays: 15,
+    departmentCode: "MIDC",
     category: "Pre-Establishment",
-    description:
-      "Direct plot allotment, building blueprint approval, and provisional possession across Maharashtra industrial estates.",
-    href: "/apply/midc-land-allotment",
+    slaDays: 15,
+    act: "MID Act 1961 & RTS Act 2015",
+    description: "Industrial plot allotment, provisional possession letter issuance, and architectural building blueprint sanction across MIDC industrial estates.",
+    mandatoryDocsCount: 5,
+    applyHref: "/apply/midc-land-allotment",
+    icon: Building2,
   },
   {
-    id: "mpcb-cte",
+    id: "mpcb-consent",
     name: "MPCB Consent to Establish (CTE) & Operate (CTO)",
     department: "Maharashtra Pollution Control Board (MPCB)",
-    icon: Factory,
-    slaDays: 21,
+    departmentCode: "MPCB",
     category: "Pre-Establishment",
-    description:
-      "Statutory environmental consent categorization (Red/Orange/Green/White) before commencement of industrial construction.",
-    href: "/apply/mpcb-consent",
+    slaDays: 21,
+    act: "Water Act 1974 & Air Act 1981",
+    description: "Statutory environmental consent categorization (Red/Orange/Green/White) and clearance for industrial air emissions, effluent discharge, and hazardous waste storage.",
+    mandatoryDocsCount: 5,
+    applyHref: "/apply/mpcb-consent",
+    icon: Factory,
   },
   {
-    id: "fire-noc",
+    id: "fire-safety-noc",
     name: "Provisional Fire Safety & Prevention NOC",
     department: "Directorate of Maharashtra Fire Services",
-    icon: Flame,
-    slaDays: 14,
+    departmentCode: "MFIS",
     category: "Pre-Establishment",
-    description:
-      "Fire safety system compliance inspection, high-hazard factory clearance, and provisional firefighting certificate.",
-    href: "/apply/fire-safety-noc",
+    slaDays: 14,
+    act: "Maharashtra Fire Prevention Act 2006",
+    description: "Statutory life safety audit, egress analysis, fire hydrant/sprinkler plan approval, and provisional construction clearance for industrial and commercial premises.",
+    mandatoryDocsCount: 4,
+    applyHref: "/apply/fire-safety-noc",
+    icon: Flame,
   },
   {
-    id: "dish-license",
+    id: "dish-factory-license",
     name: "Factory Registration & Safety License (DISH)",
     department: "Directorate of Industrial Safety & Health (DISH)",
-    icon: ShieldCheck,
-    slaDays: 10,
+    departmentCode: "DISH",
     category: "Pre-Operation",
-    description:
-      "Industrial factory license approval, boiler registration, and occupational worker safety compliance sign-off.",
-    href: "/apply/dish-factory-license",
-  },
-];
-
-// --- Industrial Zones Data (Matching Image 4) ---
-const industrialZones = [
-  {
-    id: "pune",
-    name: "Pune Industrial Belt",
-    hubs: "Chakan, Ranjangaon, Talegaon, Hinjewadi",
-    focus: "Auto, EV, Engineering & IT Hub",
-    plotsAvailable: "1,240+ Acres",
+    slaDays: 10,
+    act: "The Factories Act 1948 & State Rules",
+    description: "Statutory industrial factory registration, occupier responsibility registration, machinery safety compliance inspection, and worker welfare verification.",
+    mandatoryDocsCount: 4,
+    applyHref: "/apply/dish-factory-license",
+    icon: ShieldCheck,
   },
   {
-    id: "mmr",
-    name: "Mumbai Metropolitan Region",
-    hubs: "TTC, Taloja, Thane-Belapur, JNPT SEZ",
-    focus: "Chemicals, Pharma, Data Centers & Logistics",
-    plotsAvailable: "850+ Acres",
+    id: "msedcl-power-sanction",
+    name: "High Tension (HT) Industrial Power Sanction & Grid Tie",
+    department: "Maharashtra State Electricity Distribution Co. Ltd.",
+    departmentCode: "MSEDCL",
+    category: "Pre-Operation",
+    slaDays: 15,
+    act: "Electricity Act 2003 & MERC Regulations",
+    description: "HT industrial load sanction (11kV / 22kV / 33kV), sub-station feeder allocation, transformer testing, and commissioning clearance.",
+    mandatoryDocsCount: 4,
+    applyHref: "/dashboard/caf",
+    icon: Zap,
   },
   {
-    id: "aurangabad",
-    name: "AURIC Smart City (Chh. Sambhajinagar)",
-    hubs: "Shendra & Bidkin DMIC Nodes",
-    focus: "Smart Manufacturing, Electronics & Defense",
-    plotsAvailable: "2,100+ Acres",
-  },
-  {
-    id: "nagpur",
-    name: "Nagpur & Vidarbha Zone",
-    hubs: "MIHAN SEZ, Butibori Industrial Area",
-    focus: "Aviation, Defense, Logistics & Textiles",
-    plotsAvailable: "1,600+ Acres",
+    id: "boiler-registration",
+    name: "Boiler Registration, Inspection & Certificate of Use",
+    department: "Directorate of Steam Boilers, Maharashtra",
+    departmentCode: "DSB",
+    category: "Operations",
+    slaDays: 12,
+    act: "Indian Boilers Act 1923",
+    description: "Hydraulic pressure testing, steam pipeline drawing clearance, and statutory certificate of fitness under Form V/VI.",
+    mandatoryDocsCount: 3,
+    applyHref: "/dashboard/caf",
+    icon: Droplets,
   },
 ];
 
 export default function HomePage() {
-  const router = useRouter();
   const { t, language } = useLanguage();
+  const { user } = useAuth();
+  const enterprise = useEnterpriseStore();
 
-  // State for search filter dropdown
-  const [searchCategory, setSearchCategory] = useState("All Approvals");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSector, setSelectedSector] = useState<SectorItem | null>(null);
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [helpDrawerOpen, setHelpDrawerOpen] = useState(false);
+  // Approvals Search and Filter State
+  const [approvalSearch, setApprovalSearch] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("All");
+  const [activeModalApproval, setActiveModalApproval] = useState<ApprovalCardData | null>(null);
+
+  // Business Discovery Quick-Selector State
+  const [discoverySector, setDiscoverySector] = useState("Automotive & Engineering");
+  const [discoveryInvestment, setDiscoveryInvestment] = useState("₹10 Cr - ₹50 Cr");
+  const [discoveryZone, setDiscoveryZone] = useState("MIDC Industrial Estate");
+
+  // Filtered approvals
+  const filteredApprovals = keyApprovalsList.filter((app) => {
+    const matchesQuery =
+      app.name.toLowerCase().includes(approvalSearch.toLowerCase()) ||
+      app.department.toLowerCase().includes(approvalSearch.toLowerCase()) ||
+      app.departmentCode.toLowerCase().includes(approvalSearch.toLowerCase()) ||
+      app.act.toLowerCase().includes(approvalSearch.toLowerCase()) ||
+      app.description.toLowerCase().includes(approvalSearch.toLowerCase());
+
+    const matchesFilter =
+      selectedFilter === "All" || app.category === selectedFilter;
+
+    return matchesQuery && matchesFilter;
+  });
 
   return (
-    <div className="w-full bg-[#FCFAF8] min-h-screen">
-      {/* 1. HERO SECTION (High-Contrast Burgundy, Sunset Coral & Luminous Sand Gold) */}
-      <section className="relative bg-gradient-to-b from-[#13040A] via-[#1C0710] to-[#13040A] bg-topo-pattern text-white pt-16 pb-24 overflow-hidden border-b border-[#3D1121]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Maharashtra Gov Single Window Badge */}
-            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#250C19] border border-[#FE7251]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-sm shadow-[#FE7251]"></span>
-              <span>AARAMBH • {t("topbar.gov_statement", "Government of Maharashtra")}</span>
-            </div>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-[#9B2A48] selection:text-white">
+      {/* ========================================================================= */}
+      {/* 1. HERO SECTION WITH NIGHT INDUSTRIAL BACKDROP & BUSINESS CONTROL PANEL   */}
+      {/* ========================================================================= */}
+      <section className="relative bg-[#14050B] text-white border-b border-[#2D0D19] overflow-hidden">
+        {/* Night Industrial Image Backdrop - positioned right/bottom */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-right-bottom opacity-25 mix-blend-luminosity pointer-events-none transition-opacity duration-700"
+          style={{ backgroundImage: "url('/images/aarambh-industrial-night.png')" }}
+        />
 
-            {/* Main Hero Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-sm">
-              {t("hero.headline_start", "Accelerating Industrial")}{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251] font-black drop-shadow-md">
-                {t("hero.headline_highlight", "Enterprise Growth")}
-              </span>{" "}
-              {t("hero.headline_end", "in Maharashtra")}
-            </h1>
+        {/* Subtle Dark Gradient Overlay for Readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#14050B] via-[#16060E]/95 to-[#14050B]/70 pointer-events-none" />
 
-            {/* Sub-headline */}
-            <p className="mt-5 text-base sm:text-lg text-[#F5EBE6] leading-relaxed max-w-3xl mx-auto font-normal drop-shadow-xs">
-              {t("hero.subheadline", "Unified digital gateway orchestrating statutory clearances across MIDC, MPCB, DISH, Fire Services, and MSEDCL with guaranteed SLA-backed deemed approvals.")}
-            </p>
+        {/* Subtle Vector Geo-Outline of Maharashtra in background */}
+        <div
+          className="absolute right-6 top-1/2 -translate-y-1/2 w-[700px] h-[550px] z-0 opacity-15 pointer-events-none hidden xl:block bg-no-repeat bg-contain"
+          style={{ backgroundImage: "url('/images/maharashtra-outline.svg')" }}
+        />
 
-            {/* Unified Search Bar */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                router.push(`/dashboard/kya?search=${encodeURIComponent(searchQuery)}&cat=${encodeURIComponent(searchCategory)}`);
-              }}
-              className="mt-9 max-w-3xl mx-auto bg-white rounded-2xl p-2.5 sm:p-3 shadow-2xl shadow-black/40 border-2 border-[#FE7251]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 text-slate-800"
-            >
-              {/* Category Dropdown */}
-              <div className="relative shrink-0 sm:border-r sm:border-slate-200 sm:pr-3">
-                <select
-                  value={searchCategory}
-                  onChange={(e) => setSearchCategory(e.target.value)}
-                  className="w-full sm:w-auto bg-[#FFF5ED] hover:bg-[#FFEBE0] text-xs font-bold text-slate-900 px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8 transition-colors"
-                >
-                  <option value="All Approvals">{t("hero.all_approvals", "All Approvals")}</option>
-                  <option value="State Approvals">{t("hero.state_approvals", "State Approvals (MH)")}</option>
-                  <option value="Central Approvals">{t("hero.central_approvals", "Central Approvals")}</option>
-                  <option value="Government Schemes">{t("hero.govt_schemes", "Govt. Schemes & Subsidies")}</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left Column: Product Entry & Primary Positioning (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Government Badging */}
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#250C19] border border-[#FED17A]/40 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-[#FE7251] animate-pulse" />
+                <span>Single Window Industrial Facilitation • Govt. of Maharashtra</span>
               </div>
 
-              {/* Search Text Input */}
-              <div className="flex-1 flex items-center px-3">
-                <Search className="w-4 h-4 text-slate-500 mr-2.5 shrink-0" />
-                <input
-                  type="text"
-                  placeholder={t("hero.search_placeholder", "Search for approvals, licences, registrations, services e.g. MIDC, MPCB CTE...")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 bg-transparent border-0 focus:outline-none focus:ring-0"
-                />
-              </div>
+              {/* Primary Heading */}
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-white leading-[1.15]">
+                Everything your business needs to{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FED17A] via-[#FE7251] to-[#FED17A]">
+                  start, operate & grow
+                </span>{" "}
+                in Maharashtra.
+              </h1>
 
-              {/* Coral / Burgundy Explore All Button */}
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02] cursor-pointer"
-              >
-                <span>{t("hero.explore_all", "EXPLORE ALL")}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
+              {/* Supporting Text */}
+              <p className="text-base sm:text-lg text-[#E0C7BC] max-w-2xl leading-relaxed font-normal">
+                Discover approvals, apply online, manage documents, track applications, stay compliant and access government support — all from one place.
+              </p>
 
-            {/* Secondary Callout Bar ("Click Here & Know Your Approvals") */}
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <Link
-                href="/dashboard/kya"
-                className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-black text-xs sm:text-sm tracking-wider uppercase shadow-xl shadow-[#9B2A48]/50 border border-[#FFCA7C]/50 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
-              >
-                <Compass className="w-4 h-4 text-white" />
-                <span>{t("hero.click_kya", "Click Here & Know Your Approvals")}</span>
-                <Sparkles className="w-4 h-4 text-[#FFCA7C]" />
-              </Link>
-              <span className="text-xs text-[#F5EBE6] font-semibold">
-                {t("hero.kya_tagline", "Get a customized list of clearances in under 3 minutes")}
-              </span>
-            </div>
-
-            {/* Popular Search Chips */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
-              <span className="text-[#FFCA7C] font-bold">{t("hero.popular_clearances", "Popular Clearances:")}</span>
-              {[
-                { name: language === "mr" ? "MIDC जमीन वाटप" : language === "hi" ? "MIDC भूमि आवंटन" : "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
-                { name: language === "mr" ? "MPCB प्रदूषण संमती" : language === "hi" ? "MPCB प्रदूषण सहमति" : "MPCB CTE", href: "/apply/mpcb-consent" },
-                { name: language === "mr" ? "अग्निशमन NOC" : language === "hi" ? "फायर NOC" : "Fire NOC", href: "/apply/fire-safety-noc" },
-                { name: language === "mr" ? "DISH फॅक्टरी परवाना" : language === "hi" ? "DISH कारखाना लाइसेंस" : "DISH Factory License", href: "/apply/dish-factory-license" },
-                { name: language === "mr" ? "HT वीज मंजुरी" : language === "hi" ? "HT विद्युत स्वीकृति" : "HT Power Sanction", href: "/dashboard/dag" },
-              ].map((chip) => (
+              {/* Primary & Secondary CTAs */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <Link
-                  key={chip.name}
-                  href={chip.href}
-                  className="px-3 py-1.5 rounded-lg bg-[#2D0E1D] hover:bg-[#3D1427] text-white font-medium border border-[#FE7251]/40 hover:border-[#FFCA7C] hover:text-[#FFCA7C] shadow-xs transition-colors"
+                  href="/dashboard/kya"
+                  className="inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
                 >
-                  {chip.name}
+                  <span>Find My Requirements</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
+
+                <a
+                  href="#approvals"
+                  className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl bg-[#250C19] hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-sm transition-all duration-150 cursor-pointer"
+                >
+                  <span>Explore Approvals</span>
+                  <ChevronRight className="w-4 h-4 text-[#FFCA7C]" />
+                </a>
+              </div>
+
+              {/* Functional "What are you looking to do?" Action Options */}
+              <div className="pt-6 border-t border-[#36101E]/80">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#FFCA7C] block mb-3">
+                  What are you looking to do?
+                </span>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <Link
+                    href="/dashboard/kya"
+                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
+                  >
+                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
+                      Start New Business
+                    </span>
+                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                      KYA Roadmap →
+                    </span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/caf"
+                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
+                  >
+                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
+                      Expand Business
+                    </span>
+                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                      Unified CAF →
+                    </span>
+                  </Link>
+
+                  <a
+                    href="#approvals"
+                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
+                  >
+                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
+                      Get Approvals
+                    </span>
+                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                      Direct Forms →
+                    </span>
+                  </a>
+
+                  <a
+                    href="#incentives"
+                    className="p-3 rounded-xl bg-[#250C19]/80 hover:bg-[#381326] border border-[#521C35] text-left transition-all group cursor-pointer hover:border-[#FE7251]/60"
+                  >
+                    <span className="text-xs font-bold text-white group-hover:text-[#FFCA7C] block truncate">
+                      Access Incentives
+                    </span>
+                    <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                      PSI 2019 Guide →
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Real-Time Business Control Panel Preview (5 cols) */}
+            <div className="lg:col-span-5">
+              <div className="bg-[#190710]/90 backdrop-blur-md rounded-3xl border border-[#521C35] p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+                {/* Header Strip with User Status */}
+                <div className="flex items-center justify-between pb-4 border-b border-[#36101E] mb-5">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-[#250C19] border border-[#FE7251]/40 flex items-center justify-center text-[#FFCA7C]">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-white block uppercase tracking-wide">
+                        {user ? "Your Business Cockpit" : "Your Business Journey"}
+                      </span>
+                      <span className="text-[10px] text-[#C4A89C] block">
+                        {user ? `${user.name} • Active Session` : "Manufacturing Unit • Pune, Maharashtra"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!user && (
+                    <span className="px-2.5 py-1 rounded-md bg-[#250C19] border border-[#521C35] text-[10px] font-bold text-[#FFCA7C] uppercase tracking-wider">
+                      Platform Preview
+                    </span>
+                  )}
+                </div>
+
+                {/* Metrics Breakdown Strip */}
+                <div className="mb-5">
+                  <span className="text-[10px] uppercase font-bold text-[#C4A89C] tracking-wider block mb-2">
+                    Applications Status
+                  </span>
+                  <div className="grid grid-cols-3 gap-2.5 text-center">
+                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
+                      <span className="text-lg font-black text-white block font-mono">
+                        {user && enterprise.clearances?.length ? enterprise.clearances.length : "18"}
+                      </span>
+                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                        Required
+                      </span>
+                    </div>
+
+                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
+                      <span className="text-lg font-black text-[#FFCA7C] block font-mono">
+                        {user && enterprise.applicationStatus === "submitted" ? "1" : "6"}
+                      </span>
+                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                        In Progress
+                      </span>
+                    </div>
+
+                    <div className="bg-[#250C19] p-3 rounded-xl border border-[#36101E]">
+                      <span className="text-lg font-black text-[#FE7251] block font-mono">
+                        2
+                      </span>
+                      <span className="text-[10px] text-[#C4A89C] block mt-0.5">
+                        Actions Needed
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Next Action Box */}
+                <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-3 mb-5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-[#FFCA7C] tracking-wider flex items-center gap-1.5">
+                      <Clock className="w-3 h-3 text-[#FE7251]" /> Next Required Action
+                    </span>
+                    <span className="text-[10px] font-bold text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded border border-rose-800">
+                      SLA: 13 Days Left
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-white">
+                      MPCB Consent to Establish (CTE)
+                    </h4>
+                    <p className="text-xs text-[#C4A89C] mt-0.5">
+                      Dossier Scrutiny: CA Gross Fixed Assets Certificate required by Desk Officer.
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/apply/mpcb-consent"
+                    className="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95 transition-opacity"
+                  >
+                    <span>Continue Application</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                {/* Footnote on real vs preview */}
+                <div className="pt-3 border-t border-[#36101E] flex items-center justify-between text-[11px] text-[#C4A89C]">
+                  <span>
+                    {user ? "Live state synchronized with MPCB & MIDC" : "Sign in to connect your live enterprise profile"}
+                  </span>
+                  <Link
+                    href={user ? "/dashboard" : "/login"}
+                    className="text-[#FFCA7C] font-bold hover:underline"
+                  >
+                    {user ? "Open Dashboard →" : "Sign In →"}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. PRIMARY BUSINESS DISCOVERY FLOW ("Tell us about your business")        */}
+      {/* ========================================================================= */}
+      <section className="bg-white border-b border-[#F0E5E0] py-14 sm:py-16">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-[#FFF9F6] border border-[#FED17A]/40 rounded-3xl p-6 sm:p-10 shadow-xs">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left explanation (5 cols) */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Know Your Approvals (KYA Engine)</span>
+                </div>
+
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                  Tell us about your business.
+                </h2>
+
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Answer a few basic parameters and AARAMBH will generate a comprehensive, personalized statutory roadmap of required approvals, environmental classifications, document checklists, and eligible government financial incentives.
+                </p>
+
+                <div className="pt-2">
+                  <Link
+                    href="/dashboard/kya"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#9B2A48] hover:bg-[#82213B] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
+                  >
+                    <span>Build My Personalized Roadmap</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right interactive quick-selector preview (7 cols) */}
+              <div className="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-[#F0E5E0] shadow-xs space-y-5">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+                  Quick Requirement Estimator
+                </span>
+
+                {/* 1. Sector selector */}
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-2">
+                    Select Your Industry Activity:
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "Automotive & Engineering",
+                      "Chemicals & Solvents",
+                      "Food Processing & Agro",
+                      "Textiles & Garments",
+                      "Electronics & IT Parks",
+                      "Pharma & Active Ingredients",
+                    ].map((sec) => (
+                      <button
+                        key={sec}
+                        type="button"
+                        onClick={() => setDiscoverySector(sec)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          discoverySector === sec
+                            ? "bg-[#9B2A48] text-white shadow-xs"
+                            : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        {sec}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Capital Investment */}
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-2">
+                    Planned Fixed Capital Investment:
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {["Below ₹10 Cr (MSME)", "₹10 Cr - ₹50 Cr", "Above ₹50 Cr (Large / Mega)"].map((tier) => (
+                      <button
+                        key={tier}
+                        type="button"
+                        onClick={() => setDiscoveryInvestment(tier)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          discoveryInvestment === tier
+                            ? "bg-[#FE7251] text-white shadow-xs"
+                            : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        {tier}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Live estimated requirements output */}
+                <div className="p-4 rounded-xl bg-[#FFF9F6] border border-[#FED17A]/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="font-bold text-slate-900 block">
+                      Estimated Profile for {discoverySector}:
+                    </span>
+                    <span className="text-slate-600 text-[11px] block mt-0.5">
+                      ~14 Statutory Clearances • 21-Day Statutory Max SLA • Eligible for PSI 2019 Incentives
+                    </span>
+                  </div>
+
+                  <Link
+                    href="/dashboard/kya"
+                    className="inline-flex items-center gap-1 font-bold text-[#9B2A48] hover:underline"
+                  >
+                    <span>View Full Breakdown</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3. WHAT AARAMBH DOES ("One platform for your entire industrial journey")   */}
+      {/* ========================================================================= */}
+      <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
+            <Layers className="w-3.5 h-3.5" />
+            <span>Single-Window Core Architecture</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
+            One platform for your entire industrial journey.
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+            Integrated statutory workflows designed to eliminate bureaucratic silos and accelerate industrial commissioning across Maharashtra.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* 1. Approvals & Clearances */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              1. Approvals & Clearances
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Find every approval your project requires across MIDC, MPCB, Fire Services, DISH, and state utility providers in one consolidated inventory.
+            </p>
+            <a href="#approvals" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>Browse Catalog</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* 2. Guided Applications */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <FileSpreadsheet className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              2. Guided Applications
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Know exactly what to fill, upload, and submit. The integrated Common Application Form (CAF) maps once across multiple departmental portals.
+            </p>
+            <Link href="/dashboard/caf" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>Open Common Form</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 3. Document Management */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <FolderLock className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              3. Document Management
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Upload once, digitally verify with OCR, and securely reuse documents across all clearance requests without repeated manual submissions.
+            </p>
+            <Link href="/dashboard/vault" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>Document Vault</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 4. Application Tracking */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <Clock className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              4. Application Tracking
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Track status, statutory SLA countdowns, and desk reviews with statutory deemed approval enforcement under the Maharashtra Right to Services Act.
+            </p>
+            <Link href="/dashboard/sla" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>SLA Tracker</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* 5. Incentives & Schemes */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <Coins className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              5. Incentives & Schemes
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Discover eligible financial incentives, electricity duty waivers, stamp duty exemptions, and capital subsidies under Maharashtra Industrial Policy.
+            </p>
+            <a href="#incentives" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>View Schemes</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* 6. Compliance */}
+          <div className="bg-white p-7 rounded-3xl border border-[#F0E5E0] hover:border-[#9B2A48]/30 hover:shadow-lg transition-all duration-200 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48]">
+              <FileCheck2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              6. Compliance
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Stay ahead of mandatory renewals, annual environmental returns, joint site inspections, and statutory factory audits without regulatory surprises.
+            </p>
+            <a href="#compliance" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
+              <span>Readiness Check</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 4. BUSINESS JOURNEY SECTION ("From idea to expansion")                    */}
+      {/* ========================================================================= */}
+      <section className="bg-[#14050B] text-white py-16 sm:py-20 border-y border-[#2D0D19]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#250C19] text-[#FFCA7C] border border-[#521C35] text-xs font-bold uppercase tracking-wider mb-3">
+              <span>Regulatory Lifecycle</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+              From idea to expansion — AARAMBH stays with you.
+            </h2>
+            <p className="text-sm sm:text-base text-[#C4A89C] mt-3">
+              A continuous regulatory companion guiding your enterprise through every milestone of establishment and operation.
+            </p>
+          </div>
+
+          {/* 6 Sequential Stages Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+            {[
+              {
+                step: "01",
+                title: "PLAN",
+                desc: "Understand project requirements & KYA assessment",
+                href: "/dashboard/kya",
+              },
+              {
+                step: "02",
+                title: "LAND & ESTABLISH",
+                desc: "Identify MIDC plots & zone building bylaws",
+                href: "/apply/midc-land-allotment",
+              },
+              {
+                step: "03",
+                title: "APPROVALS",
+                desc: "Apply for statutory CTE, Fire NOC & licences",
+                href: "/apply",
+              },
+              {
+                step: "04",
+                title: "OPERATE",
+                desc: "Manage DISH safety licences & factory compliance",
+                href: "/apply/dish-factory-license",
+              },
+              {
+                step: "05",
+                title: "INCENTIVES",
+                desc: "Discover & claim eligible PSI 2019 financial support",
+                href: "#incentives",
+              },
+              {
+                step: "06",
+                title: "EXPAND",
+                desc: "Scale capacity & file amendment applications",
+                href: "/dashboard/caf",
+              },
+            ].map((stage, idx) => (
+              <Link
+                key={stage.step}
+                href={stage.href}
+                className="p-5 rounded-2xl bg-[#250C19]/80 border border-[#521C35] hover:border-[#FE7251] hover:bg-[#361026] transition-all group flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-2xl font-black text-[#FE7251] block font-mono">
+                    {stage.step}
+                  </span>
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider mt-2 group-hover:text-[#FFCA7C]">
+                    {stage.title}
+                  </h3>
+                  <p className="text-[11px] text-[#C4A89C] mt-1.5 leading-relaxed">
+                    {stage.desc}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#36101E] flex items-center justify-between text-[10px] text-[#FFCA7C] font-semibold">
+                  <span>Explore</span>
+                  <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. APPROVALS SECTION ("Find the approvals your project needs")            */}
+      {/* ========================================================================= */}
+      <section id="approvals" className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Statutory Directory</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+              Find the approvals your project needs.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
+              Search Maharashtra's industrial approvals, licences and statutory clearances from one place.
+            </p>
+          </div>
+
+          <Link
+            href="/apply"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9B2A48] hover:underline shrink-0"
+          >
+            <span>View All Approvals Directory</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Search Bar & Category Filter Bar */}
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#F0E5E0] shadow-xs mb-8 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="md:col-span-8 relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={approvalSearch}
+                onChange={(e) => setApprovalSearch(e.target.value)}
+                placeholder="Search approval, licence or department name..."
+                className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-[#9B2A48]/20 focus:border-[#9B2A48]"
+              />
+            </div>
+
+            <div className="md:col-span-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              {["All", "Pre-Establishment", "Pre-Operation", "Operations"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedFilter(cat)}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    selectedFilter === cat
+                      ? "bg-[#9B2A48] text-white shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Clearances Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredApprovals.map((app) => {
+            const IconComp = app.icon;
+            return (
+              <div
+                key={app.id}
+                className="bg-white rounded-3xl border border-[#F0E5E0] p-6 hover:shadow-xl hover:border-[#9B2A48]/40 transition-all duration-200 flex flex-col justify-between group"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#9B2A48] shrink-0">
+                      <IconComp className="w-5 h-5" />
+                    </div>
+
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-wider shrink-0">
+                      {app.category}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#9B2A48] transition-colors leading-snug">
+                      {app.name}
+                    </h3>
+                    <span className="text-[11px] text-slate-500 font-medium block mt-0.5">
+                      {app.department}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                    {app.description}
+                  </p>
+
+                  <div className="p-2.5 rounded-xl bg-[#F8FAFC] border border-slate-100 flex items-center justify-between text-xs font-semibold">
+                    <span className="text-slate-500 flex items-center gap-1 text-[11px]">
+                      <Clock className="w-3.5 h-3.5 text-[#FE7251]" /> {app.slaDays} Working Days
+                    </span>
+                    <span className="text-slate-500 flex items-center gap-1 text-[11px]">
+                      <FileText className="w-3.5 h-3.5 text-slate-400" /> {app.mandatoryDocsCount} Mandatory Docs
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Actions: View Requirements + Apply Online */}
+                <div className="mt-6 pt-4 border-t border-[#F0E5E0] flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveModalApproval(app)}
+                    className="text-xs font-bold text-slate-600 hover:text-slate-900 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    View Requirements
+                  </button>
+
+                  <Link
+                    href={app.applyHref}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider shadow-xs hover:shadow-md transition-all group-hover:scale-[1.02]"
+                  >
+                    <span>Apply Online</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 6. APPLICATION READINESS SECTION ("Before you apply")                     */}
+      {/* ========================================================================= */}
+      <section id="compliance" className="bg-[#FFF9F6] border-y border-[#FED17A]/40 py-16 sm:py-20">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
+                <FileCheck2 className="w-3.5 h-3.5" />
+                <span>Pre-Submission Scrutiny</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                Before you apply.
+              </h2>
+
+              <p className="text-sm text-slate-600 leading-relaxed">
+                AARAMBH pre-checks your dossier completeness before statutory submission, ensuring zero delays or rejections due to missing paperwork or mismatching parameters.
+              </p>
+
+              <div className="pt-2">
+                <Link
+                  href="/dashboard/vault"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
+                >
+                  <span>Complete Requirements</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Interactive Readiness Meter Card (7 cols) */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#F0E5E0] shadow-sm space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+                    Composite Readiness Score
+                  </span>
+                  <span className="text-2xl font-black text-slate-900 font-mono">
+                    Application Readiness: 67%
+                  </span>
+                </div>
+
+                <span className="px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+                  2 Items Pending
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-emerald-500 h-3 rounded-full w-[67%]" />
+              </div>
+
+              {/* Checklist items */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-semibold">Business Details Verified</span>
+                </div>
+
+                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-semibold">Applicant Identity Endorsed</span>
+                </div>
+
+                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-semibold">Income Tax PAN Verified</span>
+                </div>
+
+                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-900">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span className="font-semibold">Project Feasibility Report Pending</span>
+                </div>
+
+                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-900 sm:col-span-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span className="font-semibold">Required Land Ownership / Allotment Deed Missing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 7. INCENTIVES SECTION ("Don't leave government support on the table")     */}
+      {/* ========================================================================= */}
+      <section id="incentives" className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#14050B] rounded-3xl p-8 sm:p-12 text-white border border-[#36101E] relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            <div className="lg:col-span-6 space-y-4">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#250C19] text-[#FFCA7C] border border-[#521C35] text-xs font-bold uppercase tracking-wider">
+                <Coins className="w-3.5 h-3.5" />
+                <span>Package Scheme of Incentives (PSI 2019)</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+                Don't leave government support on the table.
+              </h2>
+
+              <p className="text-sm text-[#C4A89C] leading-relaxed">
+                Discover subsidies, fiscal benefits, and infrastructure exemptions based on your industry activity, taluka category, and fixed capital investment under the Maharashtra Industrial Policy.
+              </p>
+
+              <div className="pt-2">
+                <Link
+                  href="/dashboard/kya"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
+                >
+                  <span>Check My Eligibility</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Verified Policy Pillars Grid (6 cols) */}
+            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
+                <span className="text-lg font-black text-[#FE7251] block font-mono">100%</span>
+                <h4 className="font-bold text-white">Stamp Duty Exemption</h4>
+                <p className="text-[11px] text-[#C4A89C]">
+                  Full waiver on land acquisition and industrial lease deeds in C, D, D+ talukas.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
+                <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 10 Yrs</span>
+                <h4 className="font-bold text-white">Electricity Duty Waiver</h4>
+                <p className="text-[11px] text-[#C4A89C]">
+                  Exemption from statutory electricity duties for eligible industrial units.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
+                <span className="text-lg font-black text-[#FE7251] block font-mono">₹1.00 - ₹2.00</span>
+                <h4 className="font-bold text-white">Power Tariff Subsidy</h4>
+                <p className="text-[11px] text-[#C4A89C]">
+                  Direct per-unit electricity subsidy for MSMEs in Vidarbha and Marathwada.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
+                <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 5%</span>
+                <h4 className="font-bold text-white">Interest Subvention</h4>
+                <p className="text-[11px] text-[#C4A89C]">
+                  Interest subsidy on term loans for plant, machinery, and clean technology.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 8. DOCUMENT INTELLIGENCE SECTION ("Your documents. One secure place.")    */}
+      {/* ========================================================================= */}
+      <section className="bg-white border-b border-[#F0E5E0] py-16 sm:py-20">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
+                <FolderLock className="w-3.5 h-3.5" />
+                <span>Single Digital Dossier</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                Your documents. One secure place.
+              </h2>
+
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Upload once. Validate before submission. Reuse across all statutory departments. Always know what document is expired, verified, or missing.
+              </p>
+
+              <div className="pt-2">
+                <Link
+                  href="/dashboard/vault"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
+                >
+                  <span>Open Document Vault</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Document Management UI Mockup with Real UI components */}
+            <div className="lg:col-span-7 bg-[#F8FAFC] p-6 sm:p-7 rounded-3xl border border-[#F0E5E0] shadow-sm space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 text-xs">
+                <span className="font-bold text-slate-500 uppercase tracking-wider">
+                  Enterprise Document Repository
+                </span>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  OCR Engine Active
+                </span>
+              </div>
+
+              {[
+                { name: "Entity PAN Card", sub: "Permanent Account Number", status: "Verified", type: "success" },
+                { name: "GSTIN Certificate", sub: "Form GST REG-06", status: "Verified", type: "success" },
+                { name: "Certificate of Incorporation", sub: "MCA Registrar of Companies", status: "Verified", type: "success" },
+                { name: "MIDC Land Allotment Deed", sub: "Dimension check mismatch with DPR", status: "Action Required", type: "warning" },
+                { name: "Detailed Project Report (DPR)", sub: "Awaiting CA Certified Balance Sheet", status: "Pending", type: "pending" },
+              ].map((doc) => (
+                <div
+                  key={doc.name}
+                  className="bg-white p-3.5 rounded-xl border border-slate-200 flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-3 overflow-hidden">
+                    <FileText className="w-4 h-4 text-[#9B2A48] shrink-0" />
+                    <div className="truncate">
+                      <span className="text-xs font-bold text-slate-800 block truncate">
+                        {doc.name}
+                      </span>
+                      <span className="text-[11px] text-slate-400 block truncate">
+                        {doc.sub}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider shrink-0 ${
+                      doc.type === "success"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : doc.type === "warning"
+                        ? "bg-amber-50 text-amber-800 border border-amber-200"
+                        : "bg-slate-100 text-slate-500 border border-slate-200"
+                    }`}
+                  >
+                    {doc.status}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. BENEFITS SECTION */}
+      {/* ========================================================================= */}
+      {/* 9. APPLICATION TRACKING SECTION ("Know exactly where every app stands")   */}
+      {/* ========================================================================= */}
       <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-black uppercase tracking-widest mb-3">
-              <BadgeCheck className="w-3.5 h-3.5 text-[#FE7251]" />
-              <span>{t("benefits.badge", "BENEFITS")}</span>
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-[#18080E] tracking-tight">
-              {t("benefits.how_help", "How does AARAMBH help you?")}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
-              {t("benefits.how_help_sub", "Eliminating procedural hurdles with an intelligent digital infrastructure engineered specifically for Maharashtra's industrial ecosystem.")}
-            </p>
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Right to Services (RTS) Transparency</span>
           </div>
-
-          {/* Video CTA Button */}
-          <button
-            onClick={() => setVideoModalOpen(true)}
-            className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-[#250C19] hover:bg-[#381326] text-white border border-[#521C35] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-150 self-start md:self-auto cursor-pointer"
-          >
-            <Play className="w-4 h-4 fill-[#FE7251] text-[#FE7251]" />
-            <span>{t("benefits.play_video", "PLAY VIDEO TO KNOW MORE")}</span>
-          </button>
-        </div>
-
-        {/* 6 Feature Cards with Warm Burgundy / Coral Icons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {benefitsData.map((benefit) => {
-            const IconComp = benefit.icon;
-            return (
-              <Link
-                key={benefit.id}
-                href={benefit.href}
-                className="bg-white rounded-2xl p-7 border border-[#F0E5E0] shadow-xs hover:shadow-xl hover:border-[#FE7251]/60 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    {/* Icon Circle */}
-                    <div className="w-13 h-13 rounded-2xl bg-[#FFF2DF] border border-[#FED17A]/60 text-[#9B2A48] group-hover:bg-[#9B2A48] group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-xs">
-                      <IconComp className="w-6 h-6" />
-                    </div>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#FAF2EE] text-[#9B2A48] group-hover:bg-[#FFF2DF] transition-colors">
-                      {benefit.tag}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-[#18080E] group-hover:text-[#9B2A48] transition-colors">
-                    {benefit.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-[#F0E5E0] flex items-center text-xs font-bold text-[#9B2A48] group-hover:text-[#FE7251]">
-                  <span>{t("benefits.explore_feature", "Explore Feature")}</span>
-                  <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Bottom Assistance Banner */}
-        <div className="mt-10 bg-[#190710] rounded-2xl p-6 sm:p-8 text-white border border-[#36101E] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#FE7251]/15 border border-[#FE7251]/30 text-[#FE7251] flex items-center justify-center shrink-0">
-              <PhoneCall className="w-7 h-7" />
-            </div>
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-white">
-                {t("benefits.helpline_title", "Need Dedicated Single-Window Assistance?")}
-              </h3>
-              <p className="text-xs sm:text-sm text-[#E0C7BC] mt-1">
-                {t("benefits.helpline_desc", "Call Toll-Free Investor Helpline 1800-120-8040 (9:00 AM to 6:00 PM, Mon-Sat) or connect with a District Industry Facilitator.")}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3 shrink-0">
-            <Link
-              href="/dashboard/grievances"
-              className="px-5 py-2.5 rounded-xl bg-[#250C19] hover:bg-[#381326] text-[#FFE8DE] font-bold text-xs border border-[#521C35] transition-colors"
-            >
-              {t("benefits.raise_query", "Raise a Query")}
-            </Link>
-            <Link
-              href="/dashboard/kya"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs shadow-md transition-colors"
-            >
-              {t("dash.kya", "KYA Wizard")} →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. KEY APPROVALS SECTION */}
-      <section className="bg-white border-y border-[#F0E5E0] py-16 sm:py-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Left Container */}
-            <div className="lg:col-span-4 bg-[#190710] bg-topo-pattern text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xl border border-[#36101E] relative overflow-hidden">
-              <div className="relative z-10">
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FE7251]/15 border border-[#FE7251]/30 text-[#FFCA7C] text-[11px] font-bold uppercase tracking-wider mb-4">
-                  <Landmark className="w-3.5 h-3.5" />
-                  <span>{t("clearances.statutory_tag", "Statutory Clearances")}</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
-                  {t("nav.approvals", "Key Approvals")}
-                </h2>
-                <p className="text-xs sm:text-sm text-[#E0C7BC] mt-3 leading-relaxed">
-                  {t("clearances.sub", "Fast-track your statutory compliance lifecycle across Maharashtra regulatory departments with standardized single-window processing.")}
-                </p>
-              </div>
-
-              {/* View All Approvals CTA */}
-              <div className="mt-8 relative z-10">
-                <Link
-                  href="/dashboard/kya"
-                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/50 transition-transform hover:-translate-y-0.5 cursor-pointer"
-                >
-                  <span>{t("clearances.view_all", "VIEW ALL APPROVALS")}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Side: 4 Elevated White Approval Cards */}
-            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {keyApprovalsData.map((approval) => {
-                const IconComp = approval.icon;
-                return (
-                  <div
-                    key={approval.id}
-                    className="bg-white bg-cross-pattern rounded-2xl p-6 border border-[#F0E5E0] shadow-xs hover:shadow-lg hover:border-[#FE7251]/50 transition-all duration-200 flex flex-col justify-between group"
-                  >
-                    <div>
-                      {/* Header: Icon + Category + SLA */}
-                      <div className="flex items-start justify-between gap-3 mb-4">
-                        <div className="w-11 h-11 rounded-xl bg-[#FFF2DF] border border-[#FED17A]/60 text-[#9B2A48] group-hover:bg-[#9B2A48] group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-xs">
-                          <IconComp className="w-5 h-5" />
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FAF2EE] text-[#9B2A48] border border-[#F0E5E0]">
-                            {approval.category}
-                          </span>
-                          <span className="text-[11px] font-bold text-[#FE7251]">
-                            SLA: {approval.slaDays} {t("clearances.working_days", "Working Days")}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Title & Department */}
-                      <h3 className="text-sm sm:text-base font-bold text-[#18080E] leading-snug group-hover:text-[#9B2A48] transition-colors">
-                        {approval.name}
-                      </h3>
-                      <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                        {approval.department}
-                      </p>
-
-                      {/* Description */}
-                      <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">
-                        {approval.description}
-                      </p>
-                    </div>
-
-                    {/* Footer Action */}
-                    <div className="mt-6 pt-4 border-t border-[#F0E5E0] flex items-center justify-between">
-                      <span className="text-[11px] font-medium text-slate-400">
-                        {t("clearances.online_app", "Online Application")}
-                      </span>
-                      <Link
-                        href={approval.href}
-                        className="inline-flex items-center text-xs font-bold text-[#9B2A48] group-hover:text-[#FE7251]"
-                      >
-                        <span>{t("clearances.apply_online", "Apply Online")}</span>
-                        <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. 12-SECTOR APPROVAL EXPLORER */}
-      <section className="py-16 sm:py-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>{t("sectors.directory_tag", "SECTOR SPECIFIC DIRECTORY")}</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#18080E] tracking-tight">
-            {t("sectors.which_approvals", "Which approvals are required to start my business in")}{" "}
-            <span className="text-[#FE7251]">Maharashtra</span>?
+          <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
+            Know exactly where every application stands.
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 mt-2">
-            {t("sectors.select_industry", "Select your industry sector below to discover the exact statutory clearances, licenses, and applicable state incentives under Package Scheme of Incentives (PSI 2019).")}
+          <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+            Transparent desk-by-desk status monitoring with statutory time-limits guaranteed under the Maharashtra Right to Services Act, 2015.
           </p>
         </div>
 
-        {/* 12 Sector Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {sectorsData.map((sector) => {
-            const IconComp = sector.icon;
-            const isSelected = selectedSector?.id === sector.id;
-            return (
-              <button
-                key={sector.id}
-                onClick={() => setSelectedSector(sector)}
-                className={`p-4 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
-                  isSelected
-                    ? "bg-[#190710] text-white border-[#FE7251] shadow-lg scale-[1.02]"
-                    : "bg-white text-slate-800 border-[#F0E5E0] hover:border-[#FE7251]/60 hover:shadow-md"
-                }`}
-              >
-                <div>
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
-                      isSelected
-                        ? "bg-[#FE7251] text-white"
-                        : "bg-[#FFF2DF] text-[#9B2A48]"
-                    }`}
-                  >
-                    <IconComp className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-xs font-bold leading-tight">
-                    {sector.name}
-                  </h3>
+        {/* Realistic Stage Timeline */}
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#F0E5E0] shadow-xs mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
+            {[
+              { num: "1", title: "Application Submitted", sub: "E-Challan Transmitted", state: "done" },
+              { num: "2", title: "Documents Verified", sub: "Desk 1 Clearance", state: "done" },
+              { num: "3", title: "Department Review", sub: "Scrutiny Officer Reviewing", state: "active" },
+              { num: "4", title: "Joint Site Inspection", sub: "Single-window Field Visit", state: "pending" },
+              { num: "5", title: "Statutory Decision", sub: "NOC Issuance / Deemed", state: "pending" },
+            ].map((step, idx) => (
+              <div key={step.num} className="flex flex-col items-center text-center p-3">
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs mb-3 ${
+                    step.state === "done"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : step.state === "active"
+                      ? "bg-[#9B2A48] text-white ring-4 ring-[#9B2A48]/20 animate-pulse"
+                      : "bg-slate-100 text-slate-400 border border-slate-200"
+                  }`}
+                >
+                  {step.state === "done" ? <Check className="w-4 h-4" /> : step.num}
                 </div>
-
-                <div className="mt-4 pt-2 border-t border-[#F0E5E0]/40 flex items-center justify-between text-[11px]">
-                  <span className={isSelected ? "text-[#FFCA7C] font-bold" : "text-[#9B2A48] font-bold"}>
-                    {sector.approvalsCount} {t("sectors.approvals_suffix", "Approvals")}
-                  </span>
-                  <ChevronRight className={`w-3.5 h-3.5 ${isSelected ? "text-[#FFCA7C]" : "text-slate-400"}`} />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Sector Details Modal / Drawer when a sector is selected */}
-        {selectedSector && (
-          <div className="mt-8 bg-white rounded-2xl p-6 sm:p-8 border border-[#FED17A] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] flex items-center justify-center shrink-0">
-                <selectedSector.icon className="w-7 h-7" />
+                <span className="text-xs font-bold text-slate-900">{step.title}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5">{step.sub}</span>
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-black text-[#18080E]">
-                    {selectedSector.name}
-                  </h3>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48]">
-                    {selectedSector.approvalsCount} {t("sectors.clearances_required", "Clearances Required")}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-600 mt-1">
-                  Key regulatory nodes: <strong className="text-slate-800">{selectedSector.tag}</strong>. Includes environmental categorization, factory safety, building approval, and utility connections.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 shrink-0">
-              <button
-                onClick={() => setSelectedSector(null)}
-                className="px-4 py-2 rounded-xl bg-[#FAF2EE] hover:bg-[#F0E5E0] text-slate-700 font-bold text-xs cursor-pointer"
-              >
-                {language === "mr" ? "बंद करा" : language === "hi" ? "बंद करें" : "Close"}
-              </button>
-              <Link
-                href="/dashboard/kya"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs shadow-md"
-              >
-                {t("sectors.launch_kya_prefix", "Launch KYA for")} {selectedSector.name.split(" ")[0]} →
-              </Link>
-            </div>
+            ))}
           </div>
-        )}
-      </section>
 
-      {/* 5. MAHARASHTRA INDUSTRIAL ZONES & DISTRICTS */}
-      <section className="bg-[#FAF7F5] border-t border-[#F0E5E0] py-16 sm:py-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] text-xs font-bold uppercase tracking-wider mb-2">
-                <Building2 className="w-3.5 h-3.5 text-[#FE7251]" />
-                <span>{t("zones.clusters_tag", "STATE CLUSTERS")}</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#18080E] tracking-tight">
-                {t("zones.explore_title", "Explore Maharashtra Industrial Zones")}
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                {t("zones.explore_sub", "Plug-and-play industrial infrastructure across prime MIDC estates and DMIC corridors.")}
-              </p>
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div className="flex items-center space-x-2 text-slate-600">
+              <span className="font-bold text-slate-900">Live Case Tracking:</span>
+              <span className="font-mono text-[#9B2A48] font-bold">MH-SWS-2026-MPCB-449120</span>
+              <span className="text-slate-400">• SLA: 21 Working Days (Day 8 of 21)</span>
             </div>
+
             <Link
-              href="/dashboard/kya"
-              className="inline-flex items-center space-x-2 text-xs font-bold text-[#9B2A48] hover:text-[#FE7251]"
+              href="/dashboard/sla"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
             >
-              <span>{t("zones.view_all_districts", "View All 36 Districts")}</span>
-              <ChevronRight className="w-4 h-4" />
+              <span>View Full SLA Audit</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {industrialZones.map((zone) => (
+      {/* ========================================================================= */}
+      {/* 10. MY BUSINESS SECTION ("Your business, managed from one place.")        */}
+      {/* ========================================================================= */}
+      <section className="bg-gradient-to-r from-[#16060E] via-[#2A0B1A] to-[#16060E] text-white py-16 sm:py-20 border-t border-[#36101E]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl space-y-6">
+          <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-[#250C19] border border-[#521C35] text-[#FFCA7C] text-xs font-bold uppercase tracking-wider">
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>Industrialist Cockpit</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+            Your business, managed from one place.
+          </h2>
+
+          <p className="text-sm sm:text-base text-[#E0C7BC] leading-relaxed">
+            After signing in, access your active applications, verified document vault, statutory compliance schedule, incentive disbursements, and official department correspondence.
+          </p>
+
+          <div className="pt-4 flex items-center justify-center gap-4">
+            <Link
+              href={user ? "/dashboard" : "/login"}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
+            >
+              <span>Open My Business</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 11. TRUST SECTION ("Built for Maharashtra's industrial ecosystem")         */}
+      {/* ========================================================================= */}
+      <section className="py-14 sm:py-16 bg-[#F8FAFC] border-t border-[#F0E5E0]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-6">
+            Institutional Clearance Authorities & Statutory Departments
+          </span>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              { code: "MIDC", name: "Maharashtra Industrial Development Corp." },
+              { code: "MPCB", name: "Maharashtra Pollution Control Board" },
+              { code: "MFIS", name: "Directorate of Maharashtra Fire Services" },
+              { code: "DISH", name: "Directorate of Industrial Safety & Health" },
+              { code: "MSEDCL", name: "State Electricity Distribution Co." },
+              { code: "DIR-IND", name: "Directorate of Industries, Maharashtra" },
+            ].map((auth) => (
               <div
-                key={zone.id}
-                className="bg-white rounded-2xl p-6 border border-[#F0E5E0] shadow-xs hover:shadow-md hover:border-[#FE7251]/60 transition-all duration-200 flex flex-col justify-between"
+                key={auth.code}
+                className="bg-white p-4 rounded-2xl border border-slate-200 text-center shadow-2xs"
               >
-                <div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] uppercase">
-                    MIDC Zone
-                  </span>
-                  <h3 className="text-base font-bold text-[#18080E] mt-3">
-                    {zone.name}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {zone.hubs}
-                  </p>
-
-                  <div className="mt-4 pt-3 border-t border-[#F0E5E0] text-xs space-y-1.5">
-                    <div className="flex items-center justify-between text-slate-600">
-                      <span>{t("zones.primary_sectors", "Primary Sectors:")}</span>
-                      <strong className="text-slate-800 text-right">{zone.focus}</strong>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-600">
-                      <span>{t("zones.available_land", "Available Land:")}</span>
-                      <strong className="text-[#FE7251]">{zone.plotsAvailable}</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-[#F0E5E0]">
-                  <Link
-                    href="/dashboard/kya"
-                    className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] flex items-center justify-between"
-                  >
-                    <span>{t("zones.check_approvals", "Check Approvals for this Zone")}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                <span className="text-base font-black text-[#9B2A48] block font-mono">
+                  {auth.code}
+                </span>
+                <span className="text-[11px] text-slate-500 font-medium block mt-1 line-clamp-2">
+                  {auth.name}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Video Modal */}
-      {videoModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-[#F0E5E0] relative animate-in fade-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setVideoModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-[#FAF2EE] hover:bg-[#F0E5E0] text-slate-600 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="flex items-center space-x-2 text-xs font-bold text-[#9B2A48] uppercase tracking-wider mb-2">
-              <Play className="w-4 h-4 fill-[#FE7251] text-[#FE7251]" />
-              <span>AARAMBH Walkthrough Video</span>
-            </div>
-            <h3 className="text-lg font-black text-[#18080E]">
-              How Maharashtra Single Window Portal Works
-            </h3>
-            <p className="text-xs text-slate-600 mt-1 mb-4">
-              Watch how end-to-end statutory clearances across MIDC, MPCB, DISH, and Fire Services are parallelized and guaranteed with statutory deemed approvals.
-            </p>
-
-            <div className="aspect-video bg-[#16060E] rounded-2xl flex flex-col items-center justify-center text-center p-6 text-white border border-[#36101E]">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] flex items-center justify-center text-white mb-3 shadow-lg shadow-[#9B2A48]/50">
-                <Play className="w-8 h-8 fill-white ml-1" />
+      {/* ========================================================================= */}
+      {/* 12. REQUIREMENTS MODAL DIALOG (View Requirements)                         */}
+      {/* ========================================================================= */}
+      {activeModalApproval && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase tracking-wider">
+                  {activeModalApproval.category} • {activeModalApproval.departmentCode}
+                </span>
+                <h3 className="text-lg font-bold text-slate-900 mt-1">
+                  {activeModalApproval.name}
+                </h3>
+                <span className="text-xs text-slate-500">{activeModalApproval.department}</span>
               </div>
-              <p className="text-sm font-bold">AARAMBH Clearance Lifecycle Overview</p>
-              <p className="text-xs text-[#E0C7BC] mt-1 max-w-sm">
-                Single Application • Zero Duplicate Uploads • Real-time SLA Countdown • 100% Deemed Approvals
-              </p>
-            </div>
 
-            <div className="mt-4 flex justify-end">
               <button
-                onClick={() => setVideoModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-[#250C19] hover:bg-[#381326] text-white text-xs font-bold cursor-pointer"
+                type="button"
+                onClick={() => setActiveModalApproval(null)}
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
               >
-                Close Video
+                <X className="w-5 h-5" />
               </button>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Help / FAQ Modal */}
-      {helpDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#F0E5E0] relative animate-in fade-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setHelpDrawerOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-[#FAF2EE] hover:bg-[#F0E5E0] text-slate-600 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="flex items-center space-x-2 text-xs font-bold text-[#FE7251] uppercase tracking-wider mb-2">
-              <HelpCircle className="w-4 h-4" />
-              <span>Helpdesk & FAQs</span>
+            <div className="space-y-4 text-xs">
+              <div>
+                <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
+                  Statutory Governing Act
+                </span>
+                <p className="text-slate-800 font-medium mt-0.5">{activeModalApproval.act}</p>
+              </div>
+
+              <div>
+                <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
+                  Statutory SLA Guarantee
+                </span>
+                <p className="text-slate-800 font-semibold mt-0.5">
+                  {activeModalApproval.slaDays} Working Days under Maharashtra Right to Services Act, 2015
+                </p>
+              </div>
+
+              <div>
+                <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
+                  Purpose & Scope
+                </span>
+                <p className="text-slate-600 leading-relaxed mt-0.5">{activeModalApproval.description}</p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="font-bold text-slate-800 block mb-2">
+                  Checklist of Mandatory Dossier Attachments ({activeModalApproval.mandatoryDocsCount} Files)
+                </span>
+                <ul className="space-y-1.5 text-slate-600 text-[11px] list-disc list-inside">
+                  <li>Detailed Project Report (DPR) / Machinery Layout Plan</li>
+                  <li>Proof of Legal Land Ownership / Registered Lease Deed</li>
+                  <li>Entity Constitutional Documents (Certificate of Incorporation / Partnership Deed)</li>
+                  <li>CA Certified Fixed Capital Investment & Net Worth Certificate</li>
+                  <li>Board Resolution appointing Authorized Signatory</li>
+                </ul>
+              </div>
             </div>
-            <h3 className="text-lg font-black text-[#18080E]">
-              Single Window Investor Assistance
-            </h3>
-            <div className="mt-4 space-y-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-[#FCFAF8] border border-[#F0E5E0]">
-                <p className="font-bold text-slate-900">What is Deemed Approval?</p>
-                <p className="text-slate-600 mt-1">Under the Maharashtra Right to Public Services Act, if a department fails to grant or query a clearance within statutory SLA days, approval is automatically deemed granted.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-[#FCFAF8] border border-[#F0E5E0]">
-                <p className="font-bold text-slate-900">How do I verify documents with Document Vault?</p>
-                <p className="text-slate-600 mt-1">Upload your Land Registry, PAN, or Blueprint to Document Vault. Our OCR automatically extracts plot dimensions, electricity loads, and auto-fills all departmental applications.</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-[#FCFAF8] border border-[#F0E5E0]">
-                <p className="font-bold text-slate-900">Helpline Numbers</p>
-                <p className="text-slate-600 mt-1">Toll-Free: <strong>1800-120-8040</strong> • Email: <strong>support.aarambh@maharashtra.gov.in</strong></p>
-              </div>
-            </div>
-            <div className="mt-5 flex justify-end">
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
               <button
-                onClick={() => setHelpDrawerOpen(false)}
-                className="px-5 py-2 rounded-xl bg-[#250C19] hover:bg-[#381326] text-white text-xs font-bold cursor-pointer"
+                type="button"
+                onClick={() => setActiveModalApproval(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50"
               >
                 Close
               </button>
+
+              <Link
+                href={activeModalApproval.applyHref}
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95"
+              >
+                <span>Apply for this Clearance</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
         </div>

@@ -2,7 +2,20 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { LogIn, UserPlus, Menu, X, LayoutDashboard, ShieldCheck, User } from "lucide-react";
+import {
+  LogIn,
+  UserPlus,
+  Menu,
+  X,
+  Briefcase,
+  ChevronRight,
+  ShieldCheck,
+  Compass,
+  FileCheck2,
+  Clock,
+  Coins,
+  FileSpreadsheet,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -21,78 +34,102 @@ export default function Header() {
             <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-11 h-11 object-contain" />
 
             <div className="flex flex-col">
-              <div className="flex items-center space-x-1.5">
+              <div className="flex items-center space-x-2">
                 <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
                   AARAMBH
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FE7251]/15 text-[#FFCA7C] border border-[#FE7251]/30 uppercase tracking-wider">
-                  {t("nav.portal_badge")}
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30 uppercase tracking-wider">
+                  Single Window
                 </span>
               </div>
               <span className="text-[11px] font-medium text-[#E0C7BC] tracking-wide">
-                {t("nav.single_window")} • Govt. of Maharashtra
+                Industrial Facilitation • Govt. of Maharashtra
               </span>
             </div>
           </Link>
 
+          {/* Center Navigation Links (Desktop) */}
+          <nav className="hidden lg:flex items-center space-x-6 text-xs font-bold text-[#E0C7BC]">
+            <Link
+              href="/dashboard/kya"
+              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
+            >
+              <span>Plan Your Project</span>
+            </Link>
+            <Link
+              href="/#approvals"
+              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
+            >
+              <span>Approvals</span>
+            </Link>
+            <Link
+              href="/#incentives"
+              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
+            >
+              <span>Incentives</span>
+            </Link>
+            <Link
+              href="/#compliance"
+              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
+            >
+              <span>Compliance</span>
+            </Link>
+            <Link
+              href="/dashboard/sla"
+              className="hover:text-[#FFCA7C] transition-colors py-1 flex items-center gap-1"
+            >
+              <span>Track Applications</span>
+            </Link>
+          </nav>
 
-
-          {/* Desktop Right: Login & Signup OR Dashboard Link */}
+          {/* Desktop Right: MY BUSINESS Personal Control Center */}
           <div className="hidden sm:flex items-center space-x-3">
             {user ? (
-              <div className="flex items-center space-x-3">
-                <Link
-                  href={user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard"}
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
-                >
-                  <LayoutDashboard className="w-4 h-4 text-white" />
-                  <span>
-                    {user.role === "officer" ? "Officer Console" : t("nav.dashboard", "Control Center")}
-                  </span>
-                </Link>
-              </div>
+              <Link
+                href={user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard"}
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
+                title="Go to your business control center"
+              >
+                <Briefcase className="w-4 h-4 text-white" />
+                <span>MY BUSINESS</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-1" />
+              </Link>
             ) : (
-              <>
+              <div className="flex items-center space-x-2">
                 <Link
                   href="/login"
-                  className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-[#250C19]/90 hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-150 cursor-pointer"
+                  className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-[#250C19]/90 hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-all duration-150 cursor-pointer"
+                  title="Sign In to your business control center"
                 >
-                  <LogIn className="w-4 h-4 text-[#FE7251]" />
-                  <span>{t("nav.investor_login")}</span>
+                  <Briefcase className="w-4 h-4 text-[#FE7251]" />
+                  <span>MY BUSINESS</span>
                 </Link>
 
                 <Link
                   href="/signup"
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all duration-150 cursor-pointer hover:scale-[1.02]"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-[#9B2A48]/20 transition-all cursor-pointer hover:scale-[1.02]"
                 >
-                  <UserPlus className="w-4 h-4 text-white" />
-                  <span>{t("nav.get_started")}</span>
+                  <UserPlus className="w-3.5 h-3.5 text-white" />
+                  <span>Register</span>
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
           {/* Mobile Menu Hamburger */}
-          <div className="flex md:hidden items-center space-x-2">
-            {user ? (
-              <Link
-                href="/dashboard"
-                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold"
-              >
-                Dashboard
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="px-3 py-1.5 rounded-lg bg-[#250C19] border border-[#521C35] text-[#FFE8DE] text-xs font-bold"
-              >
-                Login
-              </Link>
-            )}
+          <div className="flex lg:hidden items-center space-x-2">
+            <Link
+              href={user ? "/dashboard" : "/login"}
+              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold flex items-center gap-1.5"
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>MY BUSINESS</span>
+            </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-[#FFCA7C]" />}
             </button>
@@ -102,45 +139,53 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
+        <div className="lg:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
           <Link
             href="/dashboard/kya"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            {t("dash.kya", "Know Your Approvals (KYA)")}
+            Plan Your Project (KYA Roadmap)
           </Link>
           <Link
-            href="/dashboard/vault"
+            href="/#approvals"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            {t("dash.vault", "Document Vault & OCR")}
+            Approvals & Licences
           </Link>
           <Link
-            href="/dashboard/dag"
+            href="/#incentives"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            {t("dash.dag", "Parallel Clearance DAG")}
+            Incentives & Schemes (PSI 2019)
+          </Link>
+          <Link
+            href="/#compliance"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
+          >
+            Compliance & Document Readiness
           </Link>
           <Link
             href="/dashboard/sla"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
           >
-            {t("dash.sla", "SLA Tracker & Deemed Approvals")}
+            Track Applications (RTS SLA)
           </Link>
-          <Link
-            href="/dashboard/grievances"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
-          >
-            {t("grievances.title", "Grievance Desk")}
-          </Link>
+          <div className="pt-3 border-t border-[#36101E] flex items-center gap-2">
+            <Link
+              href="/dashboard/caf"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center py-2 rounded-xl bg-[#250C19] border border-[#521C35] text-[#FFCA7C] text-xs font-bold"
+            >
+              Common Application Form (CAF)
+            </Link>
+          </div>
         </div>
       )}
     </header>
   );
 }
-
