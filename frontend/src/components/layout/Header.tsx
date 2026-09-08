@@ -14,7 +14,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full bg-[#16060E] text-white border-b border-[#36101E] shadow-md shadow-black/20">
       {/* Main Navigation Bar */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Left Brand Identity: Logo + AARAMBH + Single Window System */}
           <Link href="/" className="flex items-center space-x-3.5 group focus:outline-hidden">

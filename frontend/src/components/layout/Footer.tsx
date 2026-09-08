@@ -21,7 +21,7 @@ export default function Footer() {
     <footer className="bg-[#14050B] text-[#E0C7BC] border-t border-[#36101E] text-sm">
       {/* Top Banner: Quick Single-Window Assurance */}
       <div className="bg-[#0D0307] border-b border-[#2D0D19]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-3.5">
           <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center space-x-2 text-[#EFE4DC]">
               <CheckCircle2 className="w-4 h-4 text-[#FE7251] shrink-0" />
@@ -40,7 +40,7 @@ export default function Footer() {
       </div>
 
       {/* Main 3-Column Footer Grid */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Column 1: AARAMBH Single Window Portal Identity */}
           <div className="space-y-4">
@@ -181,7 +181,7 @@ export default function Footer() {
 
       {/* Bottom Copyright and Legal Bar */}
       <div className="bg-[#0D0307] border-t border-[#2D0D19] py-4">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#C4A89C]">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#C4A89C]">
           <p>
             © 2026 AARAMBH Single Window Portal. Government of Maharashtra. All Rights Reserved.
           </p>
