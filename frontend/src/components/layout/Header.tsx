@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import NotificationBell from "./NotificationBell";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,8 +44,9 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Right: MY BUSINESS Personal Control Center */}
+
           <div className="hidden sm:flex items-center space-x-3">
+          <NotificationBell />
             {user ? (
               <Link
                 href={user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard"}

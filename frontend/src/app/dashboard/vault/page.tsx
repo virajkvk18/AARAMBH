@@ -59,7 +59,7 @@ const mockDigiLockerPushedDocs: DigiLockerDocItem[] = [
   },
 ];
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+
 
 // Prototype data for documentation requirements per clearance type
 const clearanceRequirements = [
@@ -149,6 +149,7 @@ const clearanceRequirements = [
     ],
   },
 ];
+const fieldMetadata = {
 
   entity_name: {
     label: "Enterprise Legal Name",
