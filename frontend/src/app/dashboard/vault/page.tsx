@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Download,
 } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import {
   useEnterpriseStore,
   ExtractedFieldItem,
@@ -58,7 +59,97 @@ const mockDigiLockerPushedDocs: DigiLockerDocItem[] = [
   },
 ];
 
-const fieldDisplayMeta: Record<string, { label: string; description: string }> = {
+import { ChevronDown, ChevronUp } from "lucide-react";
+
+// Prototype data for documentation requirements per clearance type
+const clearanceRequirements = [
+  {
+    id: "mpcb_cte",
+    name: "MPCB Consent to Establish (CTE)",
+    authority: "Maharashtra Pollution Control Board (MPCB)",
+    documents: [
+      {
+        id: "land_ownership",
+        name: "Land ownership / possession document",
+        issuingAuthority: "MPCB",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+      {
+        id: "project_report",
+        name: "Project report",
+        issuingAuthority: "MPCB",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+      {
+        id: "site_layout",
+        name: "Site/layout plan",
+        issuingAuthority: "MPCB",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+      {
+        id: "consent_application",
+        name: "Applicable consent application documents",
+        issuingAuthority: "MPCB",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+    ],
+  },
+  {
+    id: "fire_noc",
+    name: "Fire NOC",
+    authority: "Maharashtra Fire Department",
+    documents: [
+      {
+        id: "fire_building_plan",
+        name: "Building fire safety plan",
+        issuingAuthority: "Fire Dept",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+      {
+        id: "fire_safety_certificate",
+        name: "Fire safety compliance certificate",
+        issuingAuthority: "Fire Dept",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+    ],
+  },
+  {
+    id: "midc_allotment",
+    name: "MIDC Land Allotment",
+    authority: "Maharashtra Industrial Development Corporation (MIDC)",
+    documents: [
+      {
+        id: "midc_allotment_letter",
+        name: "Land allotment letter",
+        issuingAuthority: "MIDC",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+      {
+        id: "midc_site_plan",
+        name: "Site layout plan",
+        issuingAuthority: "MIDC",
+        format: "PDF • Max 30 MB • Digitally signed",
+        required: true,
+        sample: "Sample template — for demonstration only.",
+      },
+    ],
+  },
+];
+
   entity_name: {
     label: "Enterprise Legal Name",
     description: "Registered business entity name",
@@ -422,8 +513,68 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
         </Link>
       </div>
 
-      {/* SECTION 1: DIGILOCKER STATUTORY CERTIFICATES (SIH Demo Workflow) */}
-      <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
+{/* SECTION 1: DIGILOCKER STATUTORY CERTIFICATES (SIH Demo Workflow) */}
+<div className="mb-6 p-4 bg-[#FFF7F0] border border-[#FED17A] rounded-xl">
+  <h3 className="text-lg font-bold mb-2">Statutory Documentation Guidelines & Checklist</h3>
+  <p className="text-sm text-gray-700 mb-4">Review the required documents before uploading. Requirements vary by clearance type.</p>
+  {clearanceRequirements.map((group) => {
+    const isOpen = openGroupId === group.id;
+    const requiredCount = group.documents.length;
+    const uploadedCount = group.documents.filter((doc) => uploadedDocuments.some((u) => u.name === doc.name)).length;
+    return (
+      <div key={group.id} className="border-b border-[#FED17A] pb-3 mb-3 last:border-0 last:pb-0 last:mb-0">
+        <button
+          type="button"
+          className="flex items-center justify-between w-full text-left"
+          onClick={() => setOpenGroupId(isOpen ? "" : group.id)}
+        >
+          <span className="font-semibold">{group.name}</span>
+          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        </button>
+        {isOpen && (
+          <div className="mt-2 pl-4">
+            <p className="text-sm text-gray-600 mb-2">Issuing Authority: {group.authority}</p>
+            <ul className="list-disc pl-5 space-y-1">
+              {group.documents.map((doc) => {
+                const uploaded = uploadedDocuments.some((u) => u.name === doc.name);
+                return (
+                  <li key={doc.id} className="flex items-center justify-between">
+                    <span>{doc.name} ({doc.format})</span>
+                    <div className="flex items-center space-x-2 text-sm">
+                      {uploaded ? (
+                        <span className="flex items-center text-green-600"><CheckCircle2 className="w-4 h-4 mr-1" />Uploaded</span>
+                      ) : (
+                        <span className="flex items-center text-rose-600"><FileCheck2 className="w-4 h-4 mr-1" />Missing</span>
+                      )}
+                      <button
+                        type="button"
+                        className="underline text-blue-600"
+                        onClick={() => setActiveSample({ title: doc.name, content: doc.sample })}
+                      >
+                        View Sample
+                      </button>
+                      {!uploaded && (
+                        <button
+                          type="button"
+                          className="underline text-indigo-600"
+                          onClick={scrollToUpload}
+                        >
+                          Upload Document
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-2 text-sm font-medium">Progress: {uploadedCount} of {requiredCount} uploaded</p>
+          </div>
+        )}
+      </div>
+    );
+  })}
+</div>
+      <div ref={uploadRef} className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
         <div className="p-6 border-b border-[#F0E5E0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-[#9B2A48] text-[#FFCA7C] flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
