@@ -213,16 +213,16 @@ export default function HomePage() {
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-md">
-              Everything your business needs to{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
-                start, operate & grow
-              </span>{" "}
-              in Maharashtra.
-            </h1>
+              {t('hero.headline_start')} 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
+                  {t('hero.headline_highlight')}
+                </span>{" "}
+                {t('hero.headline_end')}
+              </h1>
 
             {/* Supporting Content */}
             <p className="mt-5 text-base sm:text-lg text-slate-100 leading-relaxed max-w-3xl mx-auto font-medium drop-shadow-sm">
-              Discover approvals, apply online, manage documents, track applications, stay compliant and access government support — all from one place.
+                {t('hero.subheadline')}
             </p>
 
             {/* Prominent Central Search / Discovery Bar */}
@@ -263,7 +263,7 @@ export default function HomePage() {
                 type="submit"
                 className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02] cursor-pointer"
               >
-                <span>EXPLORE ALL</span>
+                <span>{t('hero.explore_all')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
@@ -275,7 +275,7 @@ export default function HomePage() {
                 className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-black/40 border border-[#FED17A]/50 transition-all duration-150 hover:scale-[1.02] cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
-                <span>FIND MY REQUIREMENTS</span>
+                <span>{t('hero.cta_find_requirements')}</span>
                 <ArrowRight className="w-4 h-4 text-[#FED17A]" />
               </Link>
               <span className="text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
@@ -285,7 +285,7 @@ export default function HomePage() {
 
             {/* Popular Clearance Chips */}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
-              <span className="text-[#FED17A] font-bold tracking-wide drop-shadow-xs">Popular Clearances:</span>
+              <span className="text-[#FED17A] font-bold tracking-wide drop-shadow-xs">{t('hero.popular_clearances')}</span>
               {[
                 { name: "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
                 { name: "MPCB CTE", href: "/apply/mpcb-consent" },
@@ -453,7 +453,7 @@ export default function HomePage() {
               Find every approval your project requires across MIDC, MPCB, Fire Services, DISH, and state utility providers in one consolidated inventory.
             </p>
             <a href="#approvals" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>Browse Catalog</span>
+              <span>{t('common.browse_catalog')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>

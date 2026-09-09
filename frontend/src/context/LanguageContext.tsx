@@ -39,6 +39,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "hero.subheadline": "Unified single-window portal enabling real-time statutory clearances, automated document pre-validation, smart DAG routing, and time-bound deemed approvals under Maharashtra Right to Public Services Act.",
     "hero.cta_primary": "Launch Single Window Application",
     "hero.cta_secondary": "Know Your Approvals (KYA)",
+    "hero.cta_find_requirements": "FIND MY REQUIREMENTS",
     "hero.stat1_val": "70+",
     "hero.stat1_label": "Integrated Clearances",
     "hero.stat2_val": "15-30",
