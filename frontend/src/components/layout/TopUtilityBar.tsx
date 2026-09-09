@@ -49,6 +49,7 @@ export default function TopUtilityBar() {
             onClick={toggleFontSize}
             className="flex items-center space-x-0.5 px-2 py-0.5 rounded bg-[#250C19] hover:bg-[#3D1420] text-[#FFCA7C] border border-[#FED17A]/30 transition-colors cursor-pointer font-bold text-[10px]"
             title={t("topbar.text_size")}
+            suppressHydrationWarning
           >
             <span>{fontSizeLevel === "base" ? "A+" : fontSizeLevel === "lg" ? "A-" : "A"}</span>
           </button>
