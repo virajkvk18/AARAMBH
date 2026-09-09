@@ -22,6 +22,27 @@ import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
 
+// Risk configuration for badges and actions
+const riskConfig = {
+  RED: {
+    label: "High Risk",
+    description: "Physical Site Inspection & Multi‑Officer Board Review Required",
+    badgeClass: "bg-red-600 text-white",
+    actionLabel: "Assign Joint Inspection",
+    actionLink: "/dashboard/inspections",
+  },
+  ORANGE: {
+    label: "Moderate Risk",
+    description: "Desk Audit & Document Scrutiny",
+    badgeClass: "bg-orange-500 text-white",
+  },
+  GREEN: {
+    label: "Low Risk / Self‑Certified",
+    description: "Self‑Certification / Instant Deemed Grant",
+    badgeClass: "bg-green-600 text-white",
+  },
+} as const;
+
 export default function OfficerWorkspacePage() {
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -41,6 +62,7 @@ export default function OfficerWorkspacePage() {
   const [queryDescription, setQueryDescription] = useState("");
   const [querySuccessNotice, setQuerySuccessNotice] = useState<string | null>(null);
   const [approvedRefs, setApprovedRefs] = useState<string[]>([]);
+  const [selectedRisk, setSelectedRisk] = useState<'ALL' | 'RED' | 'ORANGE' | 'GREEN'>('ALL');
 
   if (user?.role !== "officer") {
     return (
@@ -64,6 +86,7 @@ export default function OfficerWorkspacePage() {
       slaDaysLeft: "4 Working Days",
       nodeId: "node-root",
       status: dagNodeStatuses["node-root"] === "approved" || approvedRefs.includes(applicationRef || "MH-CAF-2026-00412") ? "approved" : "pending",
+      riskTrack: "RED",
     },
     {
       ref: "MH-CAF-2026-00398",
@@ -73,6 +96,16 @@ export default function OfficerWorkspacePage() {
       slaDaysLeft: "6 Working Days",
       nodeId: "node-mpcb",
       status: approvedRefs.includes("MH-CAF-2026-00398") ? "approved" : "pending",
+      riskTrack: "ORANGE",
+    },    {
+      ref: "MH-CAF-2026-00385",
+      enterpriseName: "Western Mega Logistics Park LLP",
+      clearanceName: "Provisional Fire Safety NOC",
+      dept: "Directorate of Fire Services",
+      slaDaysLeft: "2 Working Days",
+      nodeId: "node-fire",
+      status: approvedRefs.includes("MH-CAF-2026-00385") ? "approved" : "pending",
+      riskTrack: "GREEN",
     },
     {
       ref: "MH-CAF-2026-00385",
@@ -149,6 +182,28 @@ export default function OfficerWorkspacePage() {
             </div>
           </div>
         )}
+
+        {/* Risk Filter Selector */}
+        <div className="flex items-center space-x-2 mb-4">
+          <label htmlFor="riskSelect" className="text-sm font-medium text-[#16060E]">Risk Track:</label>
+          <select
+            id="riskSelect"
+            value={selectedRisk}
+            onChange={(e) => setSelectedRisk(e.target.value as 'ALL' | 'RED' | 'ORANGE' | 'GREEN')}
+            className="px-2 py-1 border rounded"
+          >
+            <option value="ALL">All</option>
+            <option value="RED">Red – High Risk</option>
+            <option value="ORANGE">Orange – Moderate Risk</option>
+            <option value="GREEN">Green – Low Risk</option>
+          </select>
+        </div>
+        {/* Filter Summary */}
+        <p className="text-sm text-slate-500 mb-2">
+          {selectedRisk === 'ALL'
+            ? `Showing ${reviewQueue.length} applications`
+            : `Showing ${reviewQueue.filter((i) => i.riskTrack === selectedRisk).length} ${selectedRisk} risk applications`}
+        </p>
 
         {/* Scrutiny Table */}
         <div className="mt-6 overflow-x-auto rounded-xl border border-[#F0E5E0]">
