@@ -149,8 +149,8 @@ const clearanceRequirements = [
     ],
   },
 ];
-const fieldMetadata = {
-
+type FieldMeta = { label: string; description: string };
+const fieldMetadata: Record<string, FieldMeta> = {
   entity_name: {
     label: "Enterprise Legal Name",
     description: "Registered business entity name",
@@ -180,6 +180,7 @@ const fieldMetadata = {
     description: "Total plant, civil, and machinery investment",
   },
 };
+const fieldDisplayMeta = fieldMetadata;
 
 const formatFileSize = (bytes: number): string => {
   if (!bytes || bytes === 0) return "0 B";
@@ -210,6 +211,13 @@ export default function DocumentVaultPage() {
   const [digiLockerNotice, setDigiLockerNotice] = useState<string | null>(null);
   const [rawTextSnippet, setRawTextSnippet] = useState<string | null>(null);
   const [extractionMethod, setExtractionMethod] = useState<string | null>(null);
+
+  const [openGroupId, setOpenGroupId] = useState<string>("");
+  const [activeSample, setActiveSample] = useState<{ title: string; content: string } | null>(null);
+  const uploadRef = useRef<HTMLDivElement>(null);
+  const scrollToUpload = () => {
+    uploadRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Ephemeral in-memory file objects for the active browser session (no large base64 in persistent state)
@@ -1190,6 +1198,40 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Statutory Sample Document Modal */}
+      {activeSample && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#FED17A] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center space-x-2">
+                <FileCheck2 className="w-5 h-5 text-[#9B2A48]" />
+                <h3 className="font-bold text-base text-[#16060E]">{activeSample.title}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSample(null)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 rounded-xl bg-[#FFF7F0] border border-[#FED17A]/60 text-sm text-gray-700 space-y-2">
+              <p className="font-semibold text-[#9B2A48]">Sample Guidelines & Template:</p>
+              <p className="text-xs text-gray-600 leading-relaxed">{activeSample.content}</p>
+            </div>
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setActiveSample(null)}
+                className="px-4 py-2 rounded-xl bg-[#9B2A48] text-white text-xs font-bold hover:bg-[#7D1E36] transition-colors cursor-pointer"
+              >
+                Close Sample
+              </button>
             </div>
           </div>
         </div>
