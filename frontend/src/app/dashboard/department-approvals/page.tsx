@@ -12,10 +12,10 @@ export default function DepartmentApprovalsPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-16">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-black text-[#16060E]">
+            <h1 className="text-2xl font-black text-slate-900">
               {t("department_approvals_title") || "Department Clearances & Approvals"}
             </h1>
             <p className="text-xs text-slate-600 mt-1">
@@ -26,7 +26,7 @@ export default function DepartmentApprovalsPage() {
           </div>
           <Link
             href="/dashboard/kya"
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] text-xs font-bold hover:bg-[#FFE6C4] transition-all"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
           >
             <span>Re-evaluate KYA Rules</span>
           </Link>
@@ -36,20 +36,20 @@ export default function DepartmentApprovalsPage() {
           {clearances.map((c) => (
             <div
               key={c.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-[#F0E5E0] bg-[#FFF9F5] hover:bg-white transition-all gap-3"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors gap-3 shadow-2xs"
             >
               <div className="flex items-start space-x-3.5">
-                <div className="w-9 h-9 rounded-lg bg-white border border-[#FED17A] flex items-center justify-center text-[#9B2A48] shrink-0 mt-0.5">
+                <div className="w-9 h-9 rounded-lg bg-[#FFF2DF] border border-[#FED17A] flex items-center justify-center text-[#FE7251] shrink-0 mt-0.5">
                   <Clock className="w-4 h-4 text-[#FE7251]" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-[#16060E]">{c.name}</h4>
+                  <h4 className="text-sm font-bold text-slate-900">{c.name}</h4>
                   <p className="text-xs text-slate-500 mt-0.5">{c.department}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3 shrink-0 self-end sm:self-auto">
-                <span className="px-2.5 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] font-bold text-xs border border-[#FED17A]">
+                <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200">
                   {c.slaDays} Days SLA
                 </span>
                 <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200">
@@ -58,7 +58,7 @@ export default function DepartmentApprovalsPage() {
                 </span>
                 <Link
                   href={`/apply/${c.approvalSlug || c.id}`}
-                  className="inline-flex items-center space-x-1 px-3.5 py-1.5 rounded-lg bg-[#9B2A48] hover:bg-[#7D1E36] text-white font-bold text-xs transition-colors"
+                  className="inline-flex items-center space-x-1 px-3.5 py-1.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs transition-colors shadow-xs"
                 >
                   <span>Apply</span>
                   <ChevronRight className="w-3.5 h-3.5" />

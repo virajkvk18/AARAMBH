@@ -544,7 +544,7 @@ export default function ApplyApprovalPage({
           {/* Printable Header Container */}
           <div className="bg-white rounded-3xl border border-[#F0E5E0] shadow-xl overflow-hidden print:border-none print:shadow-none">
             {/* Success Banner */}
-            <div className="bg-gradient-to-r from-[#9B2A48] via-[#82213B] to-[#6B1D31] text-white p-8 sm:p-10 relative overflow-hidden">
+            <div className="bg-slate-900 text-white p-8 sm:p-10 relative overflow-hidden">
               <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
               <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
@@ -558,7 +558,7 @@ export default function ApplyApprovalPage({
                     <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                       Application Successfully Submitted!
                     </h1>
-                    <p className="text-sm text-[#E0C7BC] mt-1">
+                    <p className="text-sm text-slate-300 mt-1">
                       {config.meta.title} • {config.meta.department}
                     </p>
                   </div>
@@ -568,7 +568,7 @@ export default function ApplyApprovalPage({
                   <span className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold block">
                     Statutory SLA Guarantee
                   </span>
-                  <span className="text-2xl font-black text-[#FED17A]">
+                  <span className="text-2xl font-black text-[#FE7251]">
                     {config.meta.slaDays} Working Days
                   </span>
                   <span className="text-xs text-slate-300 block mt-0.5">
@@ -712,13 +712,13 @@ export default function ApplyApprovalPage({
               <div className="flex items-center gap-3">
                 <Link
                   href="/dashboard/dag"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:opacity-95 transition-opacity"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
                 >
                   Track in Parallel DAG <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/apply"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#9B2A48] text-[#9B2A48] font-bold text-xs hover:bg-[#9B2A48]/5 transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors"
                 >
                   Apply Another Clearance
                 </Link>
@@ -737,14 +737,14 @@ export default function ApplyApprovalPage({
     <div className="min-h-screen bg-[#F8FAFC] pb-24">
       {/* Toast Notification */}
       {draftSavedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#16060E] text-white px-5 py-3 rounded-2xl shadow-2xl border border-[#FE7251]/40 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-800 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           <span className="text-xs font-semibold">{draftSavedToast}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#16060E] via-[#2A0B1A] to-[#16060E] text-white border-b border-[#36101E] relative overflow-hidden">
+      <div className="bg-slate-900 text-white border-b border-slate-800 relative overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Breadcrumbs */}
           <div className="flex items-center space-x-2 text-xs text-[#E0C7BC] mb-4">
@@ -1601,7 +1601,7 @@ export default function ApplyApprovalPage({
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
                     >
                       <span>Save & Continue</span>
                       <ArrowRight className="w-4 h-4" />
@@ -1609,7 +1609,7 @@ export default function ApplyApprovalPage({
                   ) : (
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-extrabold uppercase tracking-wider shadow-xl hover:shadow-2xl transition-all cursor-pointer hover:scale-[1.01]"
+                      className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-extrabold uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
                     >
                       <CheckCircle2 className="w-4 h-4 text-white" />
                       <span>Transmit Application to {config.meta.departmentCode}</span>

@@ -165,11 +165,11 @@ Timestamp: ${new Date().toISOString()}
       return {
         label: "Deemed Approval Triggered ⚡",
         description: "Statutory SLA elapsed. Certificate automatically granted by law.",
-        colorClass: "bg-[#9B2A48] text-[#FFCA7C]",
-        barColor: "bg-gradient-to-r from-[#9B2A48] to-[#FE7251]",
-        lightBg: "bg-[#FFF2DF] border-[#FED17A] text-[#9B2A48]",
-        textColor: "text-[#9B2A48]",
-        badgeBorder: "border-[#FED17A]",
+        colorClass: "bg-emerald-600 text-white",
+        barColor: "bg-emerald-600",
+        lightBg: "bg-emerald-50 border-emerald-200 text-emerald-950",
+        textColor: "text-emerald-600",
+        badgeBorder: "border-emerald-300",
         isDeemed: true,
       };
     }
@@ -200,11 +200,11 @@ Timestamp: ${new Date().toISOString()}
     return {
       label: "On Schedule (0-74%)",
       description: "Normal departmental scrutiny progressing within statutory timeline.",
-      colorClass: "bg-[#9B2A48] text-white",
-      barColor: "bg-[#9B2A48]",
-      lightBg: "bg-[#FFF9F5] border-[#F0E5E0] text-[#16060E]",
-      textColor: "text-[#9B2A48]",
-      badgeBorder: "border-[#FED17A]",
+      colorClass: "bg-slate-700 text-white",
+      barColor: "bg-[#FE7251]",
+      lightBg: "bg-slate-50 border-slate-200 text-slate-900",
+      textColor: "text-slate-800",
+      badgeBorder: "border-slate-300",
       isDeemed: false,
     };
   };
@@ -214,13 +214,13 @@ Timestamp: ${new Date().toISOString()}
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
       {/* 1. Top Header */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <Clock className="w-3.5 h-3.5 text-[#FE7251]" />
             <span>Statutory Timeline Enforcement</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             SLA Tracker & Deemed Approval Simulator
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
@@ -231,7 +231,7 @@ Timestamp: ${new Date().toISOString()}
         <div className="flex items-center gap-3 shrink-0">
           <Link
             href="/dashboard/dag"
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all"
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
           >
             <span>Back to DAG Workflow</span>
             <ArrowRight className="w-4 h-4" />
@@ -240,17 +240,17 @@ Timestamp: ${new Date().toISOString()}
       </div>
 
       {/* 2. ACCELERATION SIMULATOR SLIDER CARD */}
-      <div className="bg-gradient-to-br from-[#16060E] via-[#250C19] to-[#14050B] rounded-3xl p-6 sm:p-8 text-white border border-[#FED17A]/30 shadow-xl relative overflow-hidden">
+      <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white border border-slate-800 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
-            <div className="flex items-center space-x-2 text-[#FFCA7C] text-xs font-bold uppercase tracking-wider">
-              <Zap className="w-4 h-4 text-[#FE7251]" />
+            <div className="flex items-center space-x-2 text-[#FE7251] text-xs font-bold uppercase tracking-wider">
+              <Zap className="w-4 h-4" />
               <span>Interactive Time-Lapse Simulator</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
               Acceleration Simulator: {sliderValue}% Elapsed
             </h2>
-            <p className="text-xs text-[#C4A89C] mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Drag the slider to test live color thresholds and deemed approval triggers across all active departments.
             </p>
           </div>
@@ -260,7 +260,7 @@ Timestamp: ${new Date().toISOString()}
             <button
               type="button"
               onClick={() => setIsPlaying(!isPlaying)}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
               <span>{isPlaying ? "Pause Simulation" : "Auto-Simulate Timeline"}</span>
@@ -302,9 +302,9 @@ Timestamp: ${new Date().toISOString()}
             <div className="flex flex-wrap gap-2">
               {[
                 { val: 25, label: "25% (Normal Scrutiny)", color: "bg-[#2D1222] text-[#FFCA7C] border-[#FED17A]/40" },
-                { val: 80, label: "80% (Warning Threshold)", color: "bg-[#2D1222] text-[#FE7251] border-[#FE7251]/40" },
-                { val: 95, label: "95% (Critical Escalation)", color: "bg-[#3D1420] text-rose-300 border-rose-600/40" },
-                { val: 100, label: "100% (Deemed Approval)", color: "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-[#FED17A]" },
+                { val: 80, label: "80% (Warning Threshold)", color: "bg-slate-800 text-[#FE7251] border-[#FE7251]/40" },
+                { val: 95, label: "95% (Critical Escalation)", color: "bg-rose-950 text-rose-300 border-rose-600/40" },
+                { val: 100, label: "100% (Deemed Approval)", color: "bg-emerald-600 text-white border-emerald-500" },
               ].map((preset) => (
                 <button
                   key={preset.val}
@@ -337,7 +337,7 @@ Timestamp: ${new Date().toISOString()}
           </div>
 
           {sliderValue >= 100 && (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white animate-bounce shadow-md">
+            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-600 text-white shadow-xs">
               ⚡ Deemed Clearance Granted
             </span>
           )}

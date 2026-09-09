@@ -473,7 +473,7 @@ export default function KYAWizardPage() {
                         onClick={() => handleSelectSector(opt.value)}
                         className={`p-4 rounded-xl border transition-all cursor-pointer text-left flex flex-col justify-between ${
                           isSelected
-                            ? "bg-gradient-to-br from-[#FFF7F0] to-[#FFF0E6] border-[#FE7251] shadow-md ring-2 ring-[#FE7251]/20"
+                            ? "bg-[#FFF7F0] border-[#FE7251] shadow-xs ring-1 ring-[#FE7251]"
                             : "bg-white border-[#F0E5E0] hover:border-[#FED17A] hover:bg-[#FFFDFC]"
                         }`}
                       >
@@ -727,7 +727,7 @@ export default function KYAWizardPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -736,7 +736,7 @@ export default function KYAWizardPage() {
               <button
                 type="button"
                 onClick={handleRunAssessment}
-                className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all cursor-pointer"
+                className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Evaluate & Generate Clearances</span>
@@ -749,7 +749,7 @@ export default function KYAWizardPage() {
         <div className="space-y-8">
           {/* 1. TOP POLICY & INCENTIVE SUMMARY BANNER */}
           {calculatedIncentives && (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#FED17A] shadow-md bg-gradient-to-br from-white via-[#FFF9F5] to-[#FFF2DF]/40 space-y-6">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#FED17A]/60 pb-6">
                 <div>
                   <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider mb-2">
@@ -863,7 +863,7 @@ export default function KYAWizardPage() {
 
                 <Link
                   href="/dashboard/caf"
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
                 >
                   <FileText className="w-4 h-4" />
                   <span>Fill Unified CAF (One-Form)</span>

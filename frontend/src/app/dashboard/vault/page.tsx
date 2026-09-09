@@ -515,7 +515,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
 
         <Link
           href="/dashboard/dag"
-          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 transition-all shrink-0"
+          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors shrink-0"
         >
           <span>Proceed to DAG Workflow</span>
           <ArrowRight className="w-4 h-4" />
@@ -607,7 +607,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
           <button
             type="button"
             onClick={handleConnectDigiLocker}
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer shrink-0"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Connect DigiLocker</span>

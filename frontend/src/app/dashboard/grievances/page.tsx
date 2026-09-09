@@ -64,7 +64,7 @@ export default function GrievancesPage() {
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 cursor-pointer shrink-0 transition-all"
+            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs cursor-pointer shrink-0 transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
             <span>{t("raise_grievance") || "Raise New Ticket"}</span>
@@ -217,7 +217,7 @@ export default function GrievancesPage() {
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 cursor-pointer"
+                    className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs cursor-pointer transition-colors"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Submit Grievance</span>

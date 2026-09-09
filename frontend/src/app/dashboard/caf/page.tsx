@@ -298,10 +298,10 @@ export default function UnifiedCAFPage() {
               onClick={() => setActiveStep(step.id as CAFStep)}
               className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                 isActive
-                  ? "bg-[#9B2A48] text-white border-[#9B2A48] shadow-md shadow-[#9B2A48]/20"
+                  ? "bg-[#FE7251] text-white border-[#FE7251] shadow-xs"
                   : isDone
-                  ? "bg-[#FFF7F0] text-[#9B2A48] border-[#FED17A]"
-                  : "bg-white text-slate-600 border-[#F0E5E0] hover:border-[#FED17A]"
+                  ? "bg-[#FFF7F0] text-slate-900 border-slate-200"
+                  : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
@@ -571,11 +571,11 @@ export default function UnifiedCAFPage() {
             </div>
 
             {/* Navigation to Step 2 */}
-            <div className="flex justify-end pt-4 border-t border-[#F0E5E0]">
+            <div className="flex justify-end pt-4 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setActiveStep("deltas")}
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold shadow-md shadow-[#9B2A48]/30 cursor-pointer"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors cursor-pointer"
               >
                 <span>Proceed to Department Delta Forms (Step 2)</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1007,7 +1007,7 @@ export default function UnifiedCAFPage() {
               <button
                 type="button"
                 onClick={() => setActiveStep("master")}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-white border border-[#FED17A] text-[#9B2A48] text-xs font-bold hover:bg-[#FFF2DF] transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Master CAF</span>
@@ -1016,7 +1016,7 @@ export default function UnifiedCAFPage() {
               <button
                 type="button"
                 onClick={() => setActiveStep("vault_attach")}
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold shadow-md shadow-[#9B2A48]/30 cursor-pointer"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors cursor-pointer"
               >
                 <span>Verify Central Vault Attachments (Step 3)</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1030,14 +1030,14 @@ export default function UnifiedCAFPage() {
       {/* STEP 3: CENTRAL DOCUMENT REPOSITORY AUTO-ATTACH */}
       {/* ========================================================================= */}
       {activeStep === "vault_attach" && (
-        <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden space-y-6">
-          <div className="p-6 border-b border-[#F0E5E0] bg-[#FFF9F5] flex items-center justify-between">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden space-y-6">
+          <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center justify-center font-bold shrink-0">
-                <FileCheck2 className="w-5 h-5 text-[#FE7251]" />
+              <div className="w-9 h-9 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold shrink-0">
+                <FileCheck2 className="w-4 h-4 text-[#FE7251]" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#16060E]">
+                <h2 className="text-base font-semibold text-slate-900">
                   Central Document Vault Auto-Attachment
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -1048,7 +1048,7 @@ export default function UnifiedCAFPage() {
 
             <Link
               href="/dashboard/vault"
-              className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] underline"
+              className="text-xs font-medium text-[#FE7251] hover:underline"
             >
               Open Document Vault
             </Link>
@@ -1078,27 +1078,27 @@ export default function UnifiedCAFPage() {
               ].map((doc, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-[#FFF7F0] border border-[#FED17A] flex flex-col justify-between"
+                  className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
                         DigiLocker Verified
                       </span>
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     </div>
-                    <h4 className="text-xs font-bold text-[#16060E]">{doc.title}</h4>
-                    <p className="text-[11px] text-slate-600 mt-1">{doc.issuer}</p>
+                    <h4 className="text-xs font-semibold text-slate-900">{doc.title}</h4>
+                    <p className="text-[11px] text-slate-500 mt-1">{doc.issuer}</p>
 
-                    <div className="mt-3 pt-2 border-t border-[#FED17A]/60">
-                      <span className="text-[10px] font-bold text-[#886A75] block mb-1">
+                    <div className="mt-3 pt-2 border-t border-slate-200">
+                      <span className="text-[10px] font-medium text-slate-500 block mb-1">
                         Auto-Attached To Payloads:
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {doc.attachedTo.map((dep, dIdx) => (
                           <span
                             key={dIdx}
-                            className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white text-[#9B2A48] border border-[#FED17A]"
+                            className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-white text-slate-700 border border-slate-200"
                           >
                             {dep}
                           </span>
@@ -1111,11 +1111,11 @@ export default function UnifiedCAFPage() {
             </div>
 
             {/* Stepper Controls */}
-            <div className="flex items-center justify-between pt-6 border-t border-[#F0E5E0]">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setActiveStep("deltas")}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-white border border-[#FED17A] text-[#9B2A48] text-xs font-bold hover:bg-[#FFF2DF] transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Delta Forms</span>
@@ -1125,7 +1125,7 @@ export default function UnifiedCAFPage() {
                 type="button"
                 onClick={handleSubmitAllApplications}
                 disabled={isSubmitting}
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-black shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02] disabled:opacity-50"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -1148,17 +1148,17 @@ export default function UnifiedCAFPage() {
       {/* STEP 4: INTEGRATION GATEWAY DISPATCH & CONSOLIDATED RECEIPT */}
       {/* ========================================================================= */}
       {activeStep === "gateway_dispatch" && (
-        <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden space-y-6 animate-in fade-in">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden space-y-6 animate-in fade-in">
           {/* Dispatch Banner */}
-          <div className="p-6 sm:p-8 bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-6 sm:p-8 bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-[#FFF2DF] border border-white/30 uppercase">
+              <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 uppercase">
                 Parallel API Gateway Execution Successful
               </span>
-              <h2 className="text-xl sm:text-2xl font-black text-white">
+              <h2 className="text-xl font-bold text-white">
                 All Department Applications Dispatched & Tracked
               </h2>
-              <p className="text-xs text-[#FFE8DE]">
+              <p className="text-xs text-slate-300">
                 Master Reference: <strong>{cafSubmissionReceipt?.masterApplicationRef || "MH-CAF-2026-00412"}</strong> • {cafSubmissionReceipt?.departments.length || 4} State & Central Endpoints Synchronized
               </p>
             </div>
@@ -1168,7 +1168,7 @@ export default function UnifiedCAFPage() {
                 href={`${BACKEND_API_URL}/caf/receipt/${cafSubmissionReceipt?.masterApplicationRef || "MH-CAF-2026-00412"}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-white text-[#9B2A48] hover:bg-[#FFF2DF] text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-white text-slate-900 hover:bg-slate-100 text-xs font-medium transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4 text-[#FE7251]" />
                 <span>Download Official Receipt</span>
@@ -1179,35 +1179,35 @@ export default function UnifiedCAFPage() {
           <div className="p-6 sm:p-8 space-y-6">
             {/* Ministry Dispatch Matrix Table */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold text-[#16060E] uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Consolidated Ministry Tracking Matrix
               </h3>
 
-              <div className="overflow-x-auto rounded-xl border border-[#F0E5E0]">
-                <table className="min-w-full divide-y divide-[#F0E5E0] text-xs">
-                  <thead className="bg-[#FFF9F5] text-[#9B2A48] font-bold uppercase tracking-wider text-[10px]">
+              <div className="overflow-x-auto rounded-lg border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-xs">
+                  <thead className="bg-slate-50 text-slate-700 font-semibold text-left">
                     <tr>
-                      <th className="px-5 py-3 text-left">Department / Authority</th>
-                      <th className="px-5 py-3 text-left">Statutory Clearance</th>
-                      <th className="px-5 py-3 text-left">Integration Gateway Mode</th>
-                      <th className="px-5 py-3 text-left">Tracking ID</th>
+                      <th className="px-5 py-3">Department / Authority</th>
+                      <th className="px-5 py-3">Statutory Clearance</th>
+                      <th className="px-5 py-3">Integration Mode</th>
+                      <th className="px-5 py-3">Tracking ID</th>
                       <th className="px-5 py-3 text-center">SLA Countdown</th>
                       <th className="px-5 py-3 text-center">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F0E5E0] font-medium text-slate-800">
+                  <tbody className="divide-y divide-slate-100 text-slate-800">
                     {(cafSubmissionReceipt?.departments || []).map((dept) => (
-                      <tr key={dept.departmentId} className="hover:bg-[#FFF7F0]/40 transition-colors">
+                      <tr key={dept.departmentId} className="hover:bg-slate-50/60 transition-colors">
                         <td className="px-5 py-3.5">
-                          <p className="font-bold text-[#16060E]">{dept.departmentName}</p>
-                          <p className="text-[10px] font-mono text-[#886A75]">{dept.portalEndpoint}</p>
+                          <p className="font-medium text-slate-900">{dept.departmentName}</p>
+                          <p className="text-[10px] font-mono text-slate-500">{dept.portalEndpoint}</p>
                         </td>
-                        <td className="px-5 py-3.5 font-bold text-[#16060E]">
+                        <td className="px-5 py-3.5 font-medium text-slate-900">
                           {dept.clearanceName}
                         </td>
                         <td className="px-5 py-3.5">
                           <span
-                            className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                            className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded border ${
                               dept.integrationMode === "REST_API"
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : dept.integrationMode === "WEBHOOK_EVENT"
@@ -1218,17 +1218,17 @@ export default function UnifiedCAFPage() {
                             {dept.integrationMode}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 font-mono font-bold text-[#9B2A48]">
+                        <td className="px-5 py-3.5 font-mono font-semibold text-[#FE7251]">
                           {dept.trackingId}
                         </td>
                         <td className="px-5 py-3.5 text-center">
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] font-bold text-[10px] border border-[#FED17A]">
+                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium text-[10px] border border-slate-200">
                             <Clock className="w-3 h-3 text-[#FE7251]" />
                             <span>{dept.slaDays} Days (Due {dept.statutoryDueDate})</span>
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-center">
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-medium text-[10px] border border-emerald-200">
                             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                             <span>Acknowledged</span>
                           </span>
@@ -1241,24 +1241,24 @@ export default function UnifiedCAFPage() {
             </div>
 
             {/* Deemed Approval Statutory Guarantee Strip */}
-            <div className="p-4 rounded-xl bg-[#FFF9F5] border border-[#FED17A] flex items-start space-x-3 text-xs text-[#16060E]">
+            <div className="p-4 rounded-lg bg-orange-50/50 border border-orange-200 flex items-start space-x-3 text-xs text-slate-800">
               <ShieldCheck className="w-5 h-5 text-[#FE7251] shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-[#9B2A48]">
+                <p className="font-semibold text-slate-900">
                   Statutory Deemed Approval Clause (Maharashtra RTS Act 2015)
                 </p>
-                <p className="text-[#886A75] mt-0.5 leading-relaxed">
-                  Under Maharashtra Right to Public Services Act, each department above has a legally binding deadline to review your Common Application Form. If any department does not raise a formal query within the statutory SLA days, the clearance certificate is <strong>automatically deemed granted by operation of law</strong>.
+                <p className="text-slate-600 mt-0.5 leading-relaxed">
+                  Under the Maharashtra Right to Public Services Act, each department above has a legally binding deadline to review your Common Application Form. If any department does not raise a formal query within the statutory SLA days, the clearance certificate is <strong>automatically deemed granted by operation of law</strong>.
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#F0E5E0]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setActiveStep("master")}
-                className="text-xs font-bold text-[#9B2A48] hover:text-[#FE7251] underline cursor-pointer"
+                className="text-xs font-medium text-[#FE7251] hover:underline cursor-pointer"
               >
                 Modify CAF Information
               </button>
@@ -1266,7 +1266,7 @@ export default function UnifiedCAFPage() {
               <div className="flex items-center space-x-3">
                 <Link
                   href="/dashboard/dag"
-                  className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold shadow-md shadow-[#9B2A48]/30 transition-all"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors"
                 >
                   <span>Track in Live Parallel DAG Pipeline</span>
                   <ArrowRight className="w-4 h-4" />

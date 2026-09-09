@@ -171,7 +171,7 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
           <button
             type="button"
             onClick={() => setShowScheduleModal(true)}
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 cursor-pointer transition-all hover:scale-[1.02]"
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs cursor-pointer transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Schedule Joint Inspection</span>
@@ -302,7 +302,7 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
                           "All 3 department inspectors verified civil, fire safety, and pollution mitigation parameters with zero major non-conformances."
                         )
                       }
-                      className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white font-bold text-xs shadow-xs hover:opacity-95 cursor-pointer"
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Simulate Completion</span>
@@ -521,7 +521,7 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95 cursor-pointer"
+                  className="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs cursor-pointer transition-colors"
                 >
                   <CalendarCheck className="w-4 h-4" />
                   <span>Confirm Joint Inspection Booking</span>

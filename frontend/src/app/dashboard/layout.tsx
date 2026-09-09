@@ -18,10 +18,6 @@ import {
   ChevronRight,
   Menu,
   X,
-  Bell,
-  Building2,
-  ShieldCheck,
-  Sparkles,
   CalendarCheck,
   FileSpreadsheet,
 } from "lucide-react";
@@ -39,8 +35,16 @@ export default function DashboardLayout({
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  useEffect(() => { if (!isLoading && !user) router.replace(`/signin?redirect=${encodeURIComponent(pathname || "/dashboard")}`); }, [isLoading, pathname, router, user]);
-  if (isLoading || !user) return <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC]" aria-busy="true" />;
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace(`/signin?redirect=${encodeURIComponent(pathname || "/dashboard")}`);
+    }
+  }, [isLoading, pathname, router, user]);
+
+  if (isLoading || !user) {
+    return <div className="min-h-[calc(100vh-140px)] bg-slate-50" aria-busy="true" />;
+  }
 
   const isOfficer = user?.role === "officer";
 
@@ -49,7 +53,6 @@ export default function DashboardLayout({
     href: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: string;
-    highlight?: boolean;
     aliases?: string[];
     id?: string;
   }
@@ -59,56 +62,55 @@ export default function DashboardLayout({
     items: NavItem[];
   }
 
-  // Role‑based navigation configuration with investor‑friendly labels and grouped sections
+  // Role-based navigation configuration
   const businessSections: NavSection[] = [
     {
-      heading: "MAIN",
+      heading: "Overview",
       items: [{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard }],
     },
     {
-      heading: "APPLICATION",
+      heading: "Application",
       items: [
         { label: "Know Your Approvals", href: "/dashboard/kya", icon: Compass },
-        { label: "Unified CAF (One-Form)", href: "/dashboard/caf", icon: FileSpreadsheet, badge: "New" },
+        { label: "Unified CAF", href: "/dashboard/caf", icon: FileSpreadsheet },
       ],
     },
     {
-      heading: "DOCUMENTS",
-      items: [{ label: "My Documents", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] }],
+      heading: "Documents",
+      items: [{ label: "Document Vault", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] }],
     },
     {
-      heading: "TRACK",
+      heading: "Tracking",
       items: [
-        { label: "Application Check", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+        { label: "Pre-Validation", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
         { label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
         { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
         { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
     {
-      heading: "SUPPORT",
-      items: [{ label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning }],
-    },
-    {
-      heading: "BUSINESS",
-      items: [{ label: "Business Profile", href: "/dashboard/profile", icon: User }],
+      heading: "Support & Account",
+      items: [
+        { label: "Grievance Desk", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { label: "Enterprise Profile", href: "/dashboard/profile", icon: User },
+      ],
     },
   ];
 
   const ministrySections: NavSection[] = [
     {
-      heading: "WORK QUEUE",
-      items: [{ label: "Pending Reviews", href: "/dashboard/officer-workspace", icon: ShieldAlert, badge: "Officer", highlight: true }],
+      heading: "Work Queue",
+      items: [{ label: "Pending Reviews", href: "/dashboard/officer-workspace", icon: ShieldAlert }],
     },
     {
-      heading: "APPLICATIONS",
+      heading: "Applications",
       items: [
         { label: "All Applications", href: "/dashboard", icon: LayoutDashboard },
-        { label: "Master CAF Dossiers", href: "/dashboard/caf", icon: FileSpreadsheet, badge: "Gateway" },
+        { label: "Master CAF Dossiers", href: "/dashboard/caf", icon: FileSpreadsheet },
       ],
     },
     {
-      heading: "VERIFICATION",
+      heading: "Verification",
       items: [
         { label: "Document Verification", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
         { label: "Application Review", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
@@ -116,33 +118,27 @@ export default function DashboardLayout({
       ],
     },
     {
-      heading: "APPROVALS",
+      heading: "Approvals",
       items: [
         { id: "track-approvals", label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
       ],
     },
     {
-      heading: "MONITORING",
+      heading: "Monitoring",
       items: [{ label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] }],
     },
     {
-      heading: "SUPPORT",
+      heading: "Support",
       items: [
-
         { id: "grievances", label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { label: "Department Profile", href: "/dashboard/profile", icon: User },
       ],
-    },
-    {
-      heading: "DEPARTMENT",
-      items: [{ label: "Department Profile", href: "/dashboard/profile", icon: User }],
     },
   ];
 
   const sections = isOfficer ? ministrySections : businessSections;
 
-  // Helper to determine active state
   const isItemActive = (item: NavItem) => {
-    // Exact match for the route or its alias ensures only one sidebar item is active at a time
     if (item.href === "/dashboard") {
       return pathname === "/dashboard";
     }
@@ -152,37 +148,41 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#F8FAFC] flex">
+    <div className="min-h-[calc(100vh-140px)] bg-slate-50 flex">
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden backdrop-blur-2xs"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* LEFT PERSISTENT SIDEBAR */}
       <aside
-        className={`fixed lg:sticky top-20 z-40 h-[calc(100vh-80px)] bg-[#16060E] text-[#E0C7BC] border-r border-[#36101E] transition-all duration-200 flex flex-col justify-between ${
+        className={`fixed lg:sticky top-16 sm:top-18 z-40 h-[calc(100vh-64px)] sm:h-[calc(100vh-72px)] bg-white text-slate-700 border-r border-slate-200 transition-all duration-200 flex flex-col justify-between ${
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
-        } ${collapsed ? "lg:w-20" : "lg:w-64"}`}
+        } ${collapsed ? "lg:w-18" : "lg:w-64"}`}
       >
         {/* Top Header in Sidebar */}
-        <div>
-          <div className="p-4 border-b border-[#36101E] flex items-center justify-between">
+        <div className="flex flex-col min-h-0 flex-1">
+          <div className="p-3.5 border-b border-slate-100 flex items-center justify-between">
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : "block"}`}>
-                <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-12 h-12 object-contain" />
+              <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
+                {isOfficer ? "GOV" : "ENT"}
+              </div>
               <div className="truncate">
-                <p className="text-xs font-bold text-white tracking-wide truncate">
-                  {user?.role === "officer" ? "OFFICER CONSOLE" : "INVESTOR PORTAL"}
+                <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
+                  {user?.role === "officer" ? "Officer Console" : "Investor Workspace"}
                 </p>
-                <p className="text-[10px] text-[#FFCA7C] truncate">Maharashtra Single Window</p>
+                <p className="text-[10px] text-slate-500 truncate">Maharashtra Single Window</p>
               </div>
             </div>
 
             {collapsed && (
-              <div className="hidden lg:flex items-center justify-center">
-                <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-8 h-8 object-contain" />
+              <div className="hidden lg:flex items-center justify-center mx-auto">
+                <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs">
+                  {isOfficer ? "GOV" : "ENT"}
+                </div>
               </div>
             )}
 
@@ -190,7 +190,7 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19] transition-colors"
+              className="hidden lg:flex p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -200,91 +200,77 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-[#C4A89C] hover:text-white hover:bg-[#250C19]"
+              className="lg:hidden p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation Links with grouped sections */}
-          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-220px)]">
+          <nav className="p-2.5 space-y-3 overflow-y-auto flex-1">
             {sections.map((section, idx) => (
-              <div key={idx} className="mb-2">
-                <p className="text-xs font-medium text-[#FFCA7C] mt-2 mb-1 px-2">
-                  {section.heading}
-                </p>
-                {section.items.map((item) => {
-                  const IconComp = item.icon;
-                  const isActive = isItemActive(item);
-                  return (
-                    <Link
-                      key={item.id ?? item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      title={collapsed ? item.label : undefined}
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white shadow-md shadow-[#9B2A48]/30"
-                          : item.highlight
-                          ? "text-[#FFCA7C] hover:bg-[#250C19] border border-[#521C35]"
-                          : "text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3 overflow-hidden">
-                        <IconComp
-                          className={`w-4 h-4 shrink-0 ${
-                            isActive ? "text-white" : item.highlight ? "text-[#FE7251]" : "text-[#C4A89C] group-hover:text-[#FE7251]"
-                          }`}
-                        />
-                        <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
-                      {item.badge && !collapsed && (
-                        <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
-                            isActive
-                              ? "bg-[#16060E] text-[#FFCA7C]"
-                              : item.badge === "Officer"
-                              ? "bg-[#250C19] text-[#FFCA7C] border border-[#521C35]"
-                              : "bg-[#250C19] text-[#FE7251] border border-[#521C35]"
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
+              <div key={idx}>
+                {!collapsed && (
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-2.5 mb-1">
+                    {section.heading}
+                  </p>
+                )}
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const IconComp = item.icon;
+                    const isActive = isItemActive(item);
+                    return (
+                      <Link
+                        key={item.id ?? item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        title={collapsed ? item.label : undefined}
+                        className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          isActive
+                            ? "bg-[#FE7251] text-white"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2.5 overflow-hidden">
+                          <IconComp
+                            className={`w-4 h-4 shrink-0 ${
+                              isActive ? "text-white" : "text-slate-500"
+                            }`}
+                          />
+                          <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}>
+                            {item.label}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </nav>
         </div>
 
         {/* User Card at bottom of Sidebar */}
-        <div className="p-3 border-t border-[#36101E] bg-[#0D0307]">
+        <div className="p-3 border-t border-slate-200 bg-slate-50/80">
           <div className={`flex items-center justify-between ${collapsed ? "lg:flex-col lg:gap-2" : ""}`}>
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : ""}`}>
-              <div className="w-8 h-8 rounded-full bg-[#250C19] border border-[#521C35] flex items-center justify-center font-bold text-xs text-[#FFCA7C] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
                 {user?.name ? user.name[0].toUpperCase() : "U"}
               </div>
               <div className="truncate">
-                <p className="text-xs font-bold text-white truncate">{user?.name || "Guest User"}</p>
-                <p className="text-[10px] text-[#C4A89C] truncate capitalize">{user?.role || "Applicant"}</p>
+                <p className="text-xs font-medium text-slate-900 truncate">{user?.name || "User"}</p>
+                <p className="text-[10px] text-slate-500 truncate capitalize">{user?.role || "Applicant"}</p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-1">
-              <button
-                type="button"
-                onClick={logout}
-                className="p-2 rounded-lg text-[#C4A89C] hover:text-[#FE7251] hover:bg-[#250C19] transition-colors"
-                title="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>
@@ -292,17 +278,17 @@ export default function DashboardLayout({
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Mobile Bar */}
-        <div className="lg:hidden bg-white border-b border-[#F0E5E0] px-4 py-2.5 flex items-center justify-between">
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="p-2 rounded-lg text-[#9B2A48] hover:bg-[#FFF7F0] flex items-center space-x-2"
+            className="p-1.5 rounded-lg text-slate-700 hover:bg-slate-100 flex items-center space-x-2 cursor-pointer"
           >
-            <Menu className="w-5 h-5 text-[#9B2A48]" />
-            <span className="text-xs font-bold text-[#16060E]">Workspace Menu</span>
+            <Menu className="w-5 h-5 text-slate-700" />
+            <span className="text-xs font-semibold text-slate-900">Menu</span>
           </button>
 
-          <span className="text-xs font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2.5 py-1 rounded-full">
+          <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
             {user.role === "officer" ? "Officer View" : "Investor View"}
           </span>
         </div>

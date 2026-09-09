@@ -224,7 +224,7 @@ export default function PreValidationPage() {
             <button
               type="button"
               onClick={() => handleAutoAlign(docAValue)}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity cursor-pointer whitespace-nowrap"
+              className="px-3.5 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer whitespace-nowrap"
             >
               Align to {docAValue} sq.m
             </button>
@@ -282,7 +282,7 @@ export default function PreValidationPage() {
                 setDocAValue("5000");
                 setDocBValue("5000");
               }}
-              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:opacity-95 text-white transition-opacity cursor-pointer"
+              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white transition-colors cursor-pointer"
             >
               Simulate Match (5000 vs 5000)
             </button>
@@ -625,7 +625,7 @@ export default function PreValidationPage() {
               <div className="pt-2 border-t border-[#FED17A]/60 flex flex-wrap gap-3 items-center">
                 <Link
                   href="/dashboard/dag"
-                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity cursor-pointer"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   <span>Track Parallel DAG Workflow</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -651,10 +651,10 @@ export default function PreValidationPage() {
               <button
                 type="submit"
                 disabled={isMismatch}
-                className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-bold text-xs shadow-md transition-all ${
+                className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-bold text-xs shadow-xs transition-all ${
                   isMismatch
                     ? "bg-slate-300 text-slate-500 cursor-not-allowed opacity-75"
-                    : "bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white shadow-[#FE7251]/20 cursor-pointer"
+                    : "bg-[#FE7251] hover:bg-[#E85E3E] text-white cursor-pointer"
                 }`}
               >
                 {isMismatch ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}

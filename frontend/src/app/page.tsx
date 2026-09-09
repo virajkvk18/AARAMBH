@@ -207,7 +207,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto flex flex-col items-center">
             {/* Government Badging */}
             <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse shadow-xs shadow-[#FE7251]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse" />
               <span>AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA</span>
             </div>
 
@@ -258,10 +258,10 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Coral / Burgundy Explore All Button */}
+              {/* Explore All Button */}
               <button
                 type="submit"
-                className="inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#FE7251]/30 transition-all duration-150 shrink-0 hover:scale-[1.02] cursor-pointer"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm transition-colors shrink-0 cursor-pointer"
               >
                 <span>{t('hero.explore_all')}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -272,11 +272,11 @@ export default function HomePage() {
             <div className="mt-8 flex flex-col items-center justify-center gap-2.5">
               <Link
                 href={authHref("/dashboard/kya")}
-                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-black/40 border border-[#FED17A]/50 transition-all duration-150 hover:scale-[1.02] cursor-pointer"
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
                 <span>{t('hero.cta_find_requirements')}</span>
-                <ArrowRight className="w-4 h-4 text-[#FED17A]" />
+                <ArrowRight className="w-4 h-4 text-orange-100" />
               </Link>
               <span className="text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
                 Get a customized list of clearances relevant to your business.
@@ -743,7 +743,7 @@ export default function HomePage() {
 
                   <Link
                     href={authHref(app.applyHref)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider shadow-xs hover:shadow-md transition-all group-hover:scale-[1.02]"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-colors"
                   >
                     <span>Apply Online</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -805,7 +805,7 @@ export default function HomePage() {
 
               {/* Progress bar */}
               <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-emerald-500 h-3 rounded-full w-[67%]" />
+                <div className="bg-[#FE7251] h-3 rounded-full w-[67%]" />
               </div>
 
               {/* Checklist items */}
@@ -863,7 +863,7 @@ export default function HomePage() {
               <div className="pt-2">
                 <Link
                   href={authHref("/dashboard/kya")}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-xs transition-colors"
                 >
                   <span>Check My Eligibility</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1058,9 +1058,9 @@ export default function HomePage() {
       {/* ========================================================================= */}
       {/* 10. MY BUSINESS SECTION ("Your business, managed from one place.")        */}
       {/* ========================================================================= */}
-      <section className="bg-gradient-to-r from-[#16060E] via-[#2A0B1A] to-[#16060E] text-white py-16 sm:py-20 border-t border-[#36101E]">
+      <section className="bg-slate-900 text-white py-16 sm:py-20 border-t border-slate-800">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl space-y-6">
-          <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-[#250C19] border border-[#521C35] text-[#FFCA7C] text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[#FE7251] text-xs font-bold uppercase tracking-wider">
             <Briefcase className="w-3.5 h-3.5" />
             <span>Industrialist Cockpit</span>
           </div>
@@ -1069,14 +1069,14 @@ export default function HomePage() {
             Your business, managed from one place.
           </h2>
 
-          <p className="text-sm sm:text-base text-[#E0C7BC] leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
             After signing in, access your active applications, verified document vault, statutory compliance schedule, incentive disbursements, and official department correspondence.
           </p>
 
           <div className="pt-4 flex items-center justify-center gap-4">
             <Link
               href={authHref("/dashboard")}
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-xs transition-colors"
             >
               <span>Open My Business</span>
               <ArrowRight className="w-4 h-4" />
@@ -1194,7 +1194,7 @@ export default function HomePage() {
 
               <Link
                 href={authHref(activeModalApproval.applyHref)}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold uppercase tracking-wider hover:opacity-95"
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider transition-colors"
               >
                 <span>Apply for this Clearance</span>
                 <ArrowRight className="w-3.5 h-3.5" />

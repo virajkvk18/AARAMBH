@@ -243,7 +243,7 @@ export default function OfficerWorkspacePage() {
                         <button
                           type="button"
                           onClick={() => handleApprove(item)}
-                          className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:from-[#7D1E36] hover:to-[#E55B3B] text-white font-bold text-[11px] shadow-xs cursor-pointer transition-all"
+                          className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs cursor-pointer transition-colors"
                         >
                           Endorse & Approve
                         </button>
@@ -323,7 +323,7 @@ export default function OfficerWorkspacePage() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-xs hover:opacity-95"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Dispatch Query to Investor</span>

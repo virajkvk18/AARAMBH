@@ -21,59 +21,92 @@ export default function Header() {
     user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#16060E] text-white border-b border-[#36101E] shadow-md shadow-black/20">
+    <header className="sticky top-0 z-40 w-full bg-white text-slate-900 border-b border-slate-200 shadow-xs">
       {/* Main Navigation Bar */}
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Left Brand Identity: Logo + AARAMBH + Single Window System */}
-          <Link href="/" className="flex items-center space-x-3.5 group focus:outline-hidden">
-            <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-11 h-11 object-contain" />
+          <Link href="/" className="flex items-center space-x-3 group focus:outline-hidden">
+            <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-10 h-10 object-contain" />
 
             <div className="flex flex-col">
               <div className="flex items-center space-x-2">
-                <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
+                <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
                   AARAMBH
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FE7251]/20 text-[#FFCA7C] border border-[#FE7251]/30 uppercase tracking-wider">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-[#FE7251] border border-orange-200 uppercase tracking-wider">
                   Single Window
                 </span>
               </div>
-              <span className="text-[11px] font-medium text-[#E0C7BC] tracking-wide">
+              <span className="text-[11px] font-medium text-slate-500 tracking-normal">
                 Industrial Facilitation • Govt. of Maharashtra
               </span>
             </div>
           </Link>
 
+          {/* Center Navigation Links (Desktop) */}
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
+            <Link
+              href="/"
+              className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-[#FE7251] rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              {t("nav_home", "Home")}
+            </Link>
+            <Link
+              href="/apply"
+              className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-[#FE7251] rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              {t("nav_approvals", "Approvals Directory")}
+            </Link>
+            <Link
+              href={authHref("/dashboard/kya")}
+              className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-[#FE7251] rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              {t("nav_kya", "Know Your Approvals")}
+            </Link>
+            <Link
+              href={authHref("/dashboard/dag")}
+              className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-[#FE7251] rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              {t("nav_track", "Track Approvals")}
+            </Link>
+            <Link
+              href={authHref("/dashboard/grievances")}
+              className="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-[#FE7251] rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              {t("nav_help", "Help & Support")}
+            </Link>
+          </nav>
 
           <div className="hidden sm:flex items-center space-x-3">
-          <NotificationBell />
+            <NotificationBell />
             {user ? (
               <Link
                 href={user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard"}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#9B2A48]/30 transition-all cursor-pointer hover:scale-[1.02]"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
                 title="Go to your business control center"
               >
                 <Briefcase className="w-4 h-4 text-white" />
-                <span>MY BUSINESS</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-1" />
+                <span>{t("my_business", "MY BUSINESS")}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse ml-1" />
               </Link>
             ) : (
               <div className="flex items-center space-x-2">
                 <Link
                   href="/login"
-                  className="inline-flex items-center space-x-2 px-4.5 py-2.5 rounded-xl bg-[#250C19]/90 hover:bg-[#381326] border border-[#521C35] text-[#FFE8DE] hover:text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-all duration-150 cursor-pointer"
+                  className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   title="Sign In to your business control center"
                 >
                   <Briefcase className="w-4 h-4 text-[#FE7251]" />
-                  <span>MY BUSINESS</span>
+                  <span>{t("sign_in", "Sign In")}</span>
                 </Link>
 
                 <Link
                   href="/signup"
-                  className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-[#9B2A48]/20 transition-all cursor-pointer hover:scale-[1.02]"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5 text-white" />
-                  <span>Register</span>
+                  <span>{t("register", "Register")}</span>
                 </Link>
               </div>
             )}
@@ -83,7 +116,7 @@ export default function Header() {
           <div className="flex sm:hidden items-center space-x-2">
             <Link
               href={authHref("/dashboard")}
-              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5"
             >
               <Briefcase className="w-3.5 h-3.5" />
               <span>MY BUSINESS</span>
@@ -91,10 +124,10 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-[#E0C7BC] hover:text-white hover:bg-[#250C19]"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-[#FFCA7C]" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-slate-700" />}
             </button>
           </div>
         </div>
@@ -102,35 +135,35 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-[#190710] border-t border-[#36101E] px-4 py-4 space-y-3">
+        <div className="sm:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3 shadow-md">
           <Link
             href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/signin?redirect=%2Fdashboard"}
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-white hover:text-[#FFCA7C]"
+            className="block py-2 text-xs font-semibold text-slate-800 hover:text-[#FE7251]"
           >
             My Business Portal
           </Link>
           <Link
             href={authHref("/dashboard/caf")}
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-bold text-[#E0C7BC] hover:text-white"
+            className="block py-2 text-xs font-medium text-slate-600 hover:text-slate-900"
           >
             Unified Common Application (CAF)
           </Link>
-          <div className="pt-3 border-t border-[#36101E] flex items-center gap-2">
+          <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
             {!user ? (
               <>
                 <Link
                   href="/signin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 px-3 rounded-lg bg-[#250C19] border border-[#521C35] text-center text-xs font-bold text-[#FFCA7C]"
+                  className="flex-1 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-center text-xs font-medium text-slate-700"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
+                  className="flex-1 py-2 px-3 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-center text-xs font-semibold text-white"
                 >
                   Register
                 </Link>
@@ -139,7 +172,7 @@ export default function Header() {
               <Link
                 href="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-center text-xs font-bold text-white"
+                className="w-full py-2 px-3 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-center text-xs font-semibold text-white"
               >
                 Go to Dashboard
               </Link>

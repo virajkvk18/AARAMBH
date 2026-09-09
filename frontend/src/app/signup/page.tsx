@@ -15,13 +15,16 @@ import {
   ArrowRight,
   ShieldCheck,
   HelpCircle,
-  Sparkles,
   AlertCircle,
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
@@ -191,11 +194,15 @@ function SignupForm() {
         enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
       }
     );
-    if (registration.error) { setStepError(registration.error); return; }
-    if (registration.needsConfirmation) { setStepError("Please confirm your email address before signing in."); return; }
+    if (registration.error) {
+      setStepError(registration.error);
+      return;
+    }
+    if (registration.needsConfirmation) {
+      setStepError("Please confirm your email address before signing in.");
+      return;
+    }
 
-    // Preserve the existing new-enterprise setup only after Supabase has
-    // authenticated the account.
     reset();
 
     // 3. Sync with Enterprise Store & Master CAF
@@ -248,16 +255,16 @@ function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#16060E] bg-topo-pattern py-8 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center relative overflow-hidden">
-      {/* Top Navbar Brand & Logout / Exit */}
-      <div className="w-full max-w-6xl mb-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-3 group">
-          <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-10 h-10 object-contain" />
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
+      {/* Top Header Brand & Sign In link */}
+      <div className="w-full max-w-5xl mb-6 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-2.5 group">
+          <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-9 h-9 object-contain" />
           <div className="flex flex-col">
-            <span className="text-lg font-black tracking-tight text-white font-sans">
+            <span className="text-lg font-bold tracking-tight text-slate-900 font-sans">
               AARAMBH
             </span>
-            <span className="text-[10px] font-semibold text-[#FFCA7C] uppercase tracking-wider">
+            <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
               Govt. of Maharashtra Single Window
             </span>
           </div>
@@ -265,21 +272,21 @@ function SignupForm() {
 
         <Link
           href="/login"
-          className="px-4 py-1.5 rounded-lg border border-[#FE7251]/40 text-[#FFCA7C] hover:bg-[#FE7251]/10 text-xs font-bold transition-all"
+          className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-medium transition-colors"
         >
-          LOGOUT / SIGN IN
+          Sign In Instead
         </Link>
       </div>
 
       {/* Main Multi-Step Onboarding Container */}
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl border border-[#36101E] overflow-hidden">
+      <Card className="w-full max-w-5xl shadow-md border-slate-200 overflow-hidden">
         {/* Step Indicator Header */}
-        <div className="bg-[#FFF9F5] border-b border-[#F0E5E0] px-6 sm:px-10 py-4 flex items-center justify-between">
+        <div className="bg-slate-50/80 border-b border-slate-200 px-6 sm:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
               {t("auth.signup_title", "Setup your profile")}
             </span>
-            <span className="text-xs font-mono font-bold text-slate-500">
+            <span className="text-xs text-slate-500">
               • {t("auth.step", "Step")} {currentStep} {t("auth.of", "of")} 4
             </span>
           </div>
@@ -289,13 +296,14 @@ function SignupForm() {
             {[1, 2, 3, 4].map((stepNum) => (
               <button
                 key={stepNum}
+                type="button"
                 onClick={() => goToStep(stepNum)}
-                className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer ${
                   currentStep === stepNum
-                    ? "bg-[#FE7251] text-white shadow-sm"
+                    ? "bg-[#FE7251] text-white shadow-xs"
                     : currentStep > stepNum
-                    ? "bg-[#FFF2DF] text-[#9B2A48]"
-                    : "bg-slate-200 text-slate-500 hover:bg-slate-300"
+                    ? "bg-slate-200 text-slate-800"
+                    : "bg-slate-100 text-slate-400 hover:bg-slate-200"
                 }`}
                 title={`Go to Step ${stepNum}`}
               >
@@ -307,168 +315,136 @@ function SignupForm() {
 
         {/* Validation Error Banner */}
         {stepError && (
-          <div className="mx-6 sm:mx-10 mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-between text-rose-900 text-xs">
-            <div className="flex items-center space-x-2.5">
+          <div className="mx-6 sm:mx-8 mt-4 p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-between text-rose-800 text-xs">
+            <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-              <span className="font-semibold">{stepError}</span>
+              <span className="font-medium">{stepError}</span>
             </div>
-            <button onClick={() => setStepError(null)} className="text-rose-500 hover:text-rose-700">
+            <button type="button" onClick={() => setStepError(null)} className="text-rose-500 hover:text-rose-700">
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* ========================================================================= */}
         {/* STEP 1: BASIC CREDENTIALS */}
-        {/* ========================================================================= */}
         {currentStep === 1 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
-            {/* Left Welcome Panel */}
-            <div className="lg:col-span-5 bg-[#FFF9F5] p-8 sm:p-12 border-r border-[#F0E5E0] flex flex-col justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
+            {/* Left Info Panel */}
+            <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider block mb-1">
+                <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
                   Welcome to AARAMBH
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-[#18080E] tracking-tight leading-snug">
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                   Create Investor Account
                 </h2>
                 <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                   Start your single-window journey for statutory industrial clearances, incentives, and utility connections in Maharashtra.
                 </p>
 
-                {/* DigiLocker Button */}
-                <div className="mt-8 p-4 rounded-2xl bg-[#FFF2DF] border border-[#FED17A]">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <ShieldCheck className="w-5 h-5 text-[#FE7251]" />
-                    <h4 className="text-xs font-bold text-[#9B2A48]">
+                <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                  <div className="flex items-center space-x-2 mb-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
+                    <h4 className="text-xs font-semibold text-slate-900">
                       Fast-Track with DigiLocker
                     </h4>
                   </div>
-                  <p className="text-[11px] text-slate-600">
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
                     Instantly pull verified Aadhaar, PAN, and Company CIN without manual document entry.
                   </p>
-                  <button
-                    type="button"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3 w-full"
                     onClick={async () => setStepError(await loginWithDigiLocker())}
-                    className="mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                   >
                     Connect DigiLocker
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <div className="text-[11px] text-slate-400 mt-6">
-                Already registered? <Link href="/login" className="text-[#FE7251] font-bold hover:underline">Sign In</Link>
+              <div className="text-[11px] text-slate-500 mt-6">
+                Already registered? <Link href="/login" className="text-[#FE7251] font-semibold hover:underline">Sign In</Link>
               </div>
             </div>
 
             {/* Right Form Panel */}
-            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+            <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div className="space-y-4 max-w-lg">
-                <h3 className="text-lg font-black text-[#18080E]">
+                <h3 className="text-base font-semibold text-slate-900">
                   Investor Contact Information
                 </h3>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Full Name of Authorized Signatory *
-                  </label>
-                  <input
+                <div className="space-y-1">
+                  <Label>Full Name of Authorized Signatory *</Label>
+                  <Input
                     type="text"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
                     placeholder="e.g. Sanjay Deshmukh"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Email Address *
-                    </label>
-                    <input
+                  <div className="space-y-1">
+                    <Label>Email Address *</Label>
+                    <Input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="sanjay@enterprise.in"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Mobile Number *
-                    </label>
-                    <input
+                  <div className="space-y-1">
+                    <Label>Mobile Number *</Label>
+                    <Input
                       type="tel"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
                       placeholder="9823012345"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Set Portal Password *
-                  </label>
-                  <input
+                <div className="space-y-1">
+                  <Label>Set Portal Password *</Label>
+                  <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="pt-6 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => goToStep(2)}
-                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <span>{t("common.next", "NEXT")}</span>
+              <div className="pt-6 flex justify-end border-t border-slate-100 mt-6">
+                <Button onClick={() => goToStep(2)}>
+                  <span>{t("common.next", "Next")}</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ========================================================================= */}
         {/* STEP 2: SELECT LEGAL ENTITY TYPE */}
-        {/* ========================================================================= */}
         {currentStep === 2 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
             {/* Left Side */}
-            <div className="lg:col-span-5 bg-[#FFF9F5] p-8 sm:p-12 border-r border-[#F0E5E0] flex flex-col justify-between">
+            <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-black text-[#18080E]">
-                  Welcome {applicantName.split(" ")[0]}
+                <h2 className="text-xl font-bold text-slate-900">
+                  Welcome, {applicantName.split(" ")[0]}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  You have been successfully registered on AARAMBH
+                  Select your legal entity structure for single-window compliance.
                 </p>
 
-                {/* Friendly SVG Illustration */}
-                <div className="mt-8 flex justify-center">
-                  <div className="relative w-64 h-56 bg-gradient-to-tr from-[#FFF2DF] to-[#FAF2EE] rounded-3xl p-6 flex flex-col items-center justify-center border border-[#FED17A]/60 shadow-inner">
-                    {/* Character avatar */}
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white flex items-center justify-center shadow-md mb-3">
-                      <User className="w-10 h-10" />
-                    </div>
-                    {/* Laptop frame */}
-                    <div className="w-40 h-16 bg-[#16060E] rounded-lg p-2 flex flex-col justify-between shadow-lg border border-[#36101E]">
-                      <div className="flex items-center justify-between">
-                        <span className="w-2 h-2 rounded-full bg-[#FE7251] animate-pulse"></span>
-                        <span className="text-[8px] font-mono text-[#FFCA7C]">AARAMBH SWS</span>
-                      </div>
-                      <div className="h-2 bg-[#250C19] rounded-sm"></div>
-                    </div>
-                    <div className="w-48 h-2 bg-slate-300 rounded-b-md shadow-xs mt-0.5"></div>
-                  </div>
+                <div className="mt-8 p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 space-y-2 shadow-2xs">
+                  <p className="font-semibold text-slate-900">Why Entity Type Matters:</p>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Different enterprise categories require specific documentation sets (e.g. CIN for Private Ltd vs Shop Act for Proprietorships).
+                  </p>
                 </div>
               </div>
 
@@ -477,256 +453,163 @@ function SignupForm() {
               </div>
             </div>
 
-            {/* Right Side: 4 Legal Entity Cards + Business Name Input */}
-            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+            {/* Right Side: Legal Entity Cards + Business Name Input */}
+            <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider block mb-1">
+                <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
                   Setup your profile
                 </span>
-                <h2 className="text-2xl font-black text-[#18080E] tracking-tight">
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                   Select your legal entity type
                 </h2>
 
-                {/* 4 Cards Grid */}
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* 1. Incorporated Company */}
+                <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setLegalEntity("company")}
-                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                    className={`p-4 rounded-xl border text-center flex flex-col items-center justify-center transition-colors cursor-pointer ${
                       legalEntity === "company"
-                        ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-[#9B2A48] shadow-lg shadow-[#9B2A48]/30"
-                        : "bg-white border-[#F0E5E0] hover:border-[#FE7251]/60 hover:shadow-xs text-slate-800"
+                        ? "bg-[#FE7251] text-white border-[#FE7251]"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-800"
                     }`}
                   >
-                    <Building className={`w-8 h-8 mb-2 ${legalEntity === "company" ? "text-white" : "text-slate-600"}`} />
-                    <span className="text-xs font-black uppercase tracking-wider">
-                      INCORPORATED COMPANY
+                    <Building className="w-6 h-6 mb-1.5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Incorporated Company
                     </span>
-                    <span className={`text-[10px] mt-1 ${legalEntity === "company" ? "text-[#FFF2DF]" : "text-rose-500 font-semibold"}`}>
+                    <span className={`text-[10px] mt-0.5 ${legalEntity === "company" ? "text-orange-100" : "text-slate-500"}`}>
                       Select if you have a CIN
                     </span>
                   </button>
 
-                  {/* 2. Limited Liability Partnership */}
                   <button
                     type="button"
                     onClick={() => setLegalEntity("llp")}
-                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                    className={`p-4 rounded-xl border text-center flex flex-col items-center justify-center transition-colors cursor-pointer ${
                       legalEntity === "llp"
-                        ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-[#9B2A48] shadow-lg shadow-[#9B2A48]/30"
-                        : "bg-white border-[#F0E5E0] hover:border-[#FE7251]/60 hover:shadow-xs text-slate-800"
+                        ? "bg-[#FE7251] text-white border-[#FE7251]"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-800"
                     }`}
                   >
-                    <Handshake className={`w-8 h-8 mb-2 ${legalEntity === "llp" ? "text-white" : "text-slate-600"}`} />
-                    <span className="text-xs font-black uppercase tracking-wider">
-                      LIMITED LIABILITY PARTNERSHIP
+                    <Handshake className="w-6 h-6 mb-1.5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      LLP
                     </span>
-                    <span className={`text-[10px] mt-1 ${legalEntity === "llp" ? "text-[#FFF2DF]" : "text-rose-500 font-semibold"}`}>
+                    <span className={`text-[10px] mt-0.5 ${legalEntity === "llp" ? "text-orange-100" : "text-slate-500"}`}>
                       Select if you have an LLPIN
                     </span>
                   </button>
 
-                  {/* 3. Sole Proprietor */}
                   <button
                     type="button"
                     onClick={() => setLegalEntity("proprietor")}
-                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                    className={`p-4 rounded-xl border text-center flex flex-col items-center justify-center transition-colors cursor-pointer ${
                       legalEntity === "proprietor"
-                        ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-[#9B2A48] shadow-lg shadow-[#9B2A48]/30"
-                        : "bg-white border-[#F0E5E0] hover:border-[#FE7251]/60 hover:shadow-xs text-slate-800"
+                        ? "bg-[#FE7251] text-white border-[#FE7251]"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-800"
                     }`}
                   >
-                    <User className={`w-8 h-8 mb-2 ${legalEntity === "proprietor" ? "text-white" : "text-slate-600"}`} />
-                    <span className="text-xs font-black uppercase tracking-wider">
-                      SOLE PROPRIETOR
+                    <User className="w-6 h-6 mb-1.5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Sole Proprietor
                     </span>
-                    <span className={`text-[10px] mt-1 ${legalEntity === "proprietor" ? "text-[#FFF2DF]" : "text-slate-500"}`}>
+                    <span className={`text-[10px] mt-0.5 ${legalEntity === "proprietor" ? "text-orange-100" : "text-slate-500"}`}>
                       Individual enterprise / MSME
                     </span>
                   </button>
 
-                  {/* 4. Others */}
                   <button
                     type="button"
                     onClick={() => setLegalEntity("others")}
-                    className={`p-5 rounded-2xl border text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                    className={`p-4 rounded-xl border text-center flex flex-col items-center justify-center transition-colors cursor-pointer ${
                       legalEntity === "others"
-                        ? "bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white border-[#9B2A48] shadow-lg shadow-[#9B2A48]/30"
-                        : "bg-white border-[#F0E5E0] hover:border-[#FE7251]/60 hover:shadow-xs text-slate-800"
+                        ? "bg-[#FE7251] text-white border-[#FE7251]"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-800"
                     }`}
                   >
-                    <Users className={`w-8 h-8 mb-2 ${legalEntity === "others" ? "text-white" : "text-slate-600"}`} />
-                    <span className="text-xs font-black uppercase tracking-wider">
-                      OTHERS
+                    <Users className="w-6 h-6 mb-1.5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Others
                     </span>
-                    <span className={`text-[10px] mt-1 ${legalEntity === "others" ? "text-[#FFF2DF]" : "text-slate-500"}`}>
-                      Trust / Society / Cooperative / PSU
+                    <span className={`text-[10px] mt-0.5 ${legalEntity === "others" ? "text-orange-100" : "text-slate-500"}`}>
+                      Trust / Society / Cooperative
                     </span>
                   </button>
                 </div>
 
-                {/* Secondary Option: None of these */}
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setLegalEntity("new")}
-                    className={`w-full py-3 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                      legalEntity === "new"
-                        ? "bg-[#190710] text-white border-[#190710] shadow-md"
-                        : "bg-[#FFF9F5] text-slate-600 border-[#F0E5E0] hover:bg-[#FFF2DF]"
-                    }`}
-                  >
-                    NONE OF THESE, I&apos;M PLANNING TO REGISTER A NEW ENTITY
-                  </button>
-                </div>
+                <div className="mt-5 space-y-3">
+                  <div className="space-y-1">
+                    <Label>Registered Business / Enterprise Name *</Label>
+                    <Input
+                      type="text"
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      placeholder="e.g. Smart Electronics"
+                    />
+                  </div>
 
-                {/* Enter Business Name Input */}
-                <div className="mt-6">
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Enter Your Business Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Smart Electronics / Shri Ganesh Fast Food"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:ring-2 focus:ring-[#FE7251]/20 focus:outline-none transition-all font-semibold"
-                  />
-                </div>
-
-                {/* Primary Business Sector Selection */}
-                <div className="mt-4">
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Primary Industry / Business Category *
-                  </label>
-                  <select
-                    value={primarySector}
-                    onChange={(e) => setPrimarySector(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:ring-2 focus:ring-[#FE7251]/20 focus:outline-none transition-all font-semibold bg-white"
-                  >
-                    {SIGNUP_SECTORS.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    Used to automatically tailor your Know Your Approvals (KYA) statutory roadmap and subsidies.
-                  </p>
+                  <div className="space-y-1">
+                    <Label>Primary Industry / Sector Category *</Label>
+                    <select
+                      value={primarySector}
+                      onChange={(e) => setPrimarySector(e.target.value)}
+                      className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
+                    >
+                      {SIGNUP_SECTORS.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom Nav: Go Back & NEXT */}
-              <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
-                <button
-                  type="button"
-                  onClick={() => goToStep(1)}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
-                >
-                  ◀ {t("auth.back", "GO BACK")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => goToStep(3)}
-                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <span>{t("common.next", "NEXT")}</span>
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <Button variant="ghost" onClick={() => goToStep(1)}>
+                  ◀ {t("auth.back", "Go Back")}
+                </Button>
+                <Button onClick={() => goToStep(3)}>
+                  <span>{t("common.next", "Next")}</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ========================================================================= */}
         {/* STEP 3: VALIDATE PAN */}
-        {/* ========================================================================= */}
         {currentStep === 3 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
             {/* Left Side */}
-            <div className="lg:col-span-5 bg-[#FFF9F5] p-8 sm:p-12 border-r border-[#F0E5E0] flex flex-col justify-between">
+            <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-black text-[#9B2A48]">
+                <h2 className="text-xl font-bold text-slate-900">
                   {businessName || "Smart Electronics"}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  You have been successfully registered on AARAMBH
+                  Tax Identity Verification
                 </p>
 
-                {/* Realistic PAN Card Render */}
-                <div className="mt-8 relative w-full max-w-sm aspect-[1.58/1] rounded-2xl bg-gradient-to-br from-[#FFF2DF] via-rose-50 to-[#FFF9F5] p-4 border border-[#FED17A] shadow-xl overflow-hidden flex flex-col justify-between text-slate-800">
-                  {/* Subtle watermark overlay */}
-                  <div className="absolute right-4 top-4 opacity-15 text-6xl select-none pointer-events-none font-serif">
-                    🏛️
+                <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-900">Income Tax Department</span>
+                    <span className="text-[10px] text-slate-500 font-mono">PAN</span>
                   </div>
-
-                  {/* PAN Header */}
-                  <div className="flex items-center justify-between border-b border-[#FED17A]/60 pb-2">
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-800 tracking-wider uppercase">
-                        आयकर विभाग
-                      </p>
-                      <p className="text-[8px] font-semibold text-slate-600 uppercase">
-                        INCOME TAX DEPARTMENT
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] font-bold text-slate-800 uppercase">
-                        भारत सरकार
-                      </p>
-                      <p className="text-[8px] font-semibold text-slate-600 uppercase">
-                        GOVT. OF INDIA
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Face Silhouette and Masked Name */}
-                  <div className="flex items-center space-x-3 my-1">
-                    <div className="w-12 h-14 rounded-lg bg-slate-300/80 border border-slate-400 flex items-center justify-center text-xs font-bold text-slate-600">
-                      PHOTO
-                    </div>
-                    <div>
-                      <p className="font-mono text-xs font-bold tracking-widest text-slate-800">
-                        {panVerified ? panNumber : "XXXX XXXX"}
-                      </p>
-                      <p className="text-[10px] font-bold text-slate-700 uppercase mt-0.5">
-                        {businessName || "SMART ELECTRONICS"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Bottom: Hologram & Permanent Account Number */}
-                  <div className="flex items-end justify-between border-t border-[#FED17A]/60 pt-2">
-                    <div>
-                      <span className="text-[8px] font-bold text-slate-500 uppercase block">
-                        Permanent Account Number
-                      </span>
-                      <span className="font-mono text-xs font-black tracking-wider text-[#9B2A48]">
-                        {panNumber}
-                      </span>
-                    </div>
-
-                    {/* Gold Hologram Sticker */}
-                    <div className="w-10 h-7 rounded-sm bg-gradient-to-tr from-[#FE7251] via-[#FFCA7C] to-[#FE7251] border border-[#FED17A] flex items-center justify-center shadow-xs">
-                      <span className="text-[7px] font-black text-[#18080E] uppercase">
-                        भारत
-                      </span>
-                    </div>
-                  </div>
+                  <p className="font-mono text-base font-bold text-slate-900 tracking-wider">
+                    {panVerified ? panNumber : "••••••••••"}
+                  </p>
+                  <p className="text-[11px] text-slate-500 uppercase">{businessName}</p>
                 </div>
 
-                {/* "Why is PAN required?" link */}
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setPanModalOpen(true)}
-                    className="text-xs font-semibold text-[#9B2A48] hover:text-[#FE7251] hover:underline flex items-center space-x-1 cursor-pointer"
-                  >
-                    <HelpCircle className="w-3.5 h-3.5 text-[#FE7251]" />
-                    <span>Why is PAN required?</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setPanModalOpen(true)}
+                  className="mt-4 text-xs font-medium text-[#FE7251] hover:underline flex items-center space-x-1 cursor-pointer"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  <span>Why is PAN required?</span>
+                </button>
               </div>
 
               <div className="text-[11px] text-slate-400">
@@ -735,26 +618,23 @@ function SignupForm() {
             </div>
 
             {/* Right Side: Validate PAN Form */}
-            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+            <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider block mb-1">
+                <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
                   Setup your profile
                 </span>
-                <h2 className="text-2xl font-black text-[#18080E] tracking-tight">
-                  Validate your Permanent Account Number (PAN)
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                  Validate Permanent Account Number (PAN)
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
                   We use your PAN to authenticate enterprise credentials across state regulatory databases.
                 </p>
 
-                {/* Outlined Input & Button */}
-                <div className="mt-8 space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Enter Permanent Account Number *
-                    </label>
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                      <input
+                <div className="mt-6 space-y-4">
+                  <div className="space-y-1">
+                    <Label>Permanent Account Number (PAN) *</Label>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <Input
                         type="text"
                         maxLength={10}
                         value={panNumber}
@@ -763,191 +643,137 @@ function SignupForm() {
                           setPanVerified(false);
                         }}
                         placeholder="ABCDE1234F"
-                        className="flex-1 px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm font-mono font-bold tracking-wider text-slate-900 uppercase focus:border-[#FE7251] focus:ring-2 focus:ring-[#FE7251]/20 focus:outline-none"
+                        className="font-mono font-semibold uppercase tracking-wider"
                       />
-                      <button
-                        type="button"
+                      <Button
                         onClick={handleVerifyPan}
                         disabled={panLoading || !panNumber}
-                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap disabled:opacity-50"
+                        className="shrink-0"
                       >
-                        {panLoading ? "VALIDATING..." : "GET DETAILS"}
-                      </button>
+                        {panLoading ? "Validating..." : "Get Details"}
+                      </Button>
                     </div>
                   </div>
 
-                  {/* Verification Status Feedback */}
                   {panVerified && (
-                    <div className="p-4 rounded-xl bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs flex items-center justify-between">
+                    <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <CheckCircle2 className="w-5 h-5 text-[#FE7251] shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <div>
-                          <p className="font-bold">PAN Validated Successfully</p>
-                          <p className="text-[11px] text-[#9B2A48]">Matched with Income Tax Department records • Entity: {businessName}</p>
+                          <p className="font-semibold">PAN Validated Successfully</p>
+                          <p className="text-[11px] text-emerald-700">Matched with Income Tax Department records</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FE7251] text-white">
-                        VERIFIED
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+                        Verified
                       </span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Bottom Nav: Go Back & NEXT */}
-              <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
-                <button
-                  type="button"
-                  onClick={() => goToStep(2)}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
-                >
-                  ◀ {t("auth.back", "GO BACK")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => goToStep(4)}
-                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <span>{t("common.next", "NEXT")}</span>
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <Button variant="ghost" onClick={() => goToStep(2)}>
+                  ◀ {t("auth.back", "Go Back")}
+                </Button>
+                <Button onClick={() => goToStep(4)}>
+                  <span>{t("common.next", "Next")}</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ========================================================================= */}
         {/* STEP 4: ENTER ADDRESS */}
-        {/* ========================================================================= */}
         {currentStep === 4 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
-            {/* Left Side: 3D Map Vector Graphic */}
-            <div className="lg:col-span-5 bg-[#FFF9F5] p-8 sm:p-12 border-r border-[#F0E5E0] flex flex-col justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
+            {/* Left Side */}
+            <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-black text-[#9B2A48]">
+                <h2 className="text-xl font-bold text-slate-900">
                   {businessName || "Smart Electronics"}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  You have been successfully registered on AARAMBH
+                  Location & Industrial District
                 </p>
 
-                {/* 3D Map Vector */}
-                <div className="mt-8 flex justify-center">
-                  <div className="relative w-64 h-56 bg-gradient-to-tr from-[#FFF2DF] to-[#FAF2EE] rounded-3xl p-4 flex items-center justify-center border border-[#FED17A]/60 shadow-inner">
-                    {/* Folded Map Canvas */}
-                    <div className="w-52 h-36 bg-white rounded-xl shadow-lg border border-[#F0E5E0] transform -rotate-3 p-3 flex flex-col justify-between relative overflow-hidden">
-                      <div className="h-full bg-[#FFF9F5] rounded-lg p-2 border border-dashed border-[#FED17A] flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-[#9B2A48] uppercase tracking-widest opacity-60">
-                          MAHARASHTRA INDUSTRIAL MAP
-                        </span>
-                      </div>
-
-                      {/* Main Coral Location Pin */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/4 flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-[#FE7251] border-4 border-white shadow-xl flex items-center justify-center text-white">
-                          <MapPin className="w-5 h-5 fill-white text-[#FE7251]" />
-                        </div>
-                        <div className="w-4 h-1.5 rounded-full bg-slate-400/50 -mt-0.5"></div>
-                      </div>
-
-                      {/* Secondary Warm Gold Pins */}
-                      <div className="absolute top-6 left-6 w-6 h-6 rounded-full bg-[#FFCA7C] border-2 border-white shadow-md flex items-center justify-center text-white">
-                        <MapPin className="w-3 h-3 fill-white text-[#FFCA7C]" />
-                      </div>
-                      <div className="absolute bottom-6 right-6 w-6 h-6 rounded-full bg-[#FFCA7C] border-2 border-white shadow-md flex items-center justify-center text-white">
-                        <MapPin className="w-3 h-3 fill-white text-[#FFCA7C]" />
-                      </div>
-                    </div>
+                <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 shadow-2xs space-y-1.5">
+                  <div className="flex items-center space-x-2 text-slate-900 font-semibold">
+                    <MapPin className="w-4 h-4 text-[#FE7251]" />
+                    <span>District Jurisdiction</span>
                   </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Determines applicable MIDC regional offices, local municipal bodies, and district-level single-window facilitation officers.
+                  </p>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-400">
-                Step 4 of 4: Physical Industrial Location
+                Step 4 of 4: Physical Location
               </div>
             </div>
 
             {/* Right Side: Postal Address Form */}
-            <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+            <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-[#9B2A48] uppercase tracking-wider block mb-1">
+                <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
                   Setup your profile
                 </span>
-                <h2 className="text-2xl font-black text-[#18080E] tracking-tight">
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                   Enter your Address
                 </h2>
 
-                {/* Subheading tab */}
-                <div className="mt-4 pb-2 border-b border-[#F0E5E0]">
-                  <span className="text-xs font-bold text-[#18080E] border-b-2 border-[#FE7251] pb-2.5">
-                    Add Postal Address *
-                  </span>
-                </div>
-
-                {/* Address Form Inputs */}
-                <div className="mt-5 space-y-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Address 1 *
-                    </label>
-                    <input
+                <div className="mt-4 space-y-3">
+                  <div className="space-y-1">
+                    <Label>Address Line 1 *</Label>
+                    <Input
                       type="text"
                       value={addressLine1}
                       onChange={(e) => setAddressLine1(e.target.value)}
-                      placeholder="Address lane 1"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
+                      placeholder="Plot No. / Industrial Estate Lane"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Address 2
-                    </label>
-                    <input
+                  <div className="space-y-1">
+                    <Label>Address Line 2</Label>
+                    <Input
                       type="text"
                       value={addressLine2}
                       onChange={(e) => setAddressLine2(e.target.value)}
-                      placeholder="On Road 3 / Landmark"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
+                      placeholder="MIDC Zone / Landmark"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Country *
-                      </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label>Country *</Label>
                       <select
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#FE7251] focus:outline-none"
+                        className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
                       >
                         <option value="India">India</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        PIN Code *
-                      </label>
-                      <input
+                    <div className="space-y-1">
+                      <Label>PIN Code *</Label>
+                      <Input
                         type="text"
                         value={pinCode}
                         onChange={(e) => setPinCode(e.target.value)}
-                        placeholder="110066 / 410501"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 font-mono focus:border-[#FE7251] focus:outline-none"
+                        placeholder="410501"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        State *
-                      </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label>State *</Label>
                       <select
                         value={stateName}
                         onChange={(e) => setStateName(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#FE7251] focus:outline-none"
+                        className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
                       >
                         <option value="Maharashtra">Maharashtra</option>
                         <option value="Goa">Goa</option>
@@ -955,14 +781,12 @@ function SignupForm() {
                         <option value="Karnataka">Karnataka</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        District *
-                      </label>
+                    <div className="space-y-1">
+                      <Label>District *</Label>
                       <select
                         value={district}
                         onChange={(e) => setDistrict(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 bg-white focus:border-[#FE7251] focus:outline-none"
+                        className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
                       >
                         <option value="Pune">Pune</option>
                         <option value="Thane">Thane</option>
@@ -976,88 +800,44 @@ function SignupForm() {
                       </select>
                     </div>
                   </div>
-
-                  {/* Add Registered Address + Option */}
-                  <div className="pt-2">
-                    {showSecondAddress ? (
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="block text-xs font-bold text-slate-700">
-                            Registered Corporate Office Address
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => setShowSecondAddress(false)}
-                            className="text-[11px] text-rose-600 font-bold hover:underline"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                        <input
-                          type="text"
-                          value={addressLine2}
-                          onChange={(e) => setAddressLine2(e.target.value)}
-                          placeholder="Corporate / Registered Headquarters Address"
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:border-[#FE7251] focus:outline-none"
-                        />
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setShowSecondAddress(true)}
-                        className="text-xs font-bold text-slate-700 hover:text-[#FE7251] flex items-center space-x-1 cursor-pointer"
-                      >
-                        <span>Add Alternate / Registered Address</span>
-                        <span className="text-[#FE7251] font-black text-sm">+</span>
-                      </button>
-                    )}
-                  </div>
                 </div>
               </div>
 
-              {/* Bottom Nav: Go Back & NEXT / FINISH */}
-              <div className="pt-6 flex items-center justify-between border-t border-[#F0E5E0] mt-6">
-                <button
-                  type="button"
-                  onClick={() => goToStep(3)}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wider cursor-pointer"
-                >
-                  ◀ {t("auth.back", "GO BACK")}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCompleteRegistration}
-                  className="inline-flex items-center space-x-2 px-9 py-3.5 rounded-xl bg-gradient-to-r from-[#9B2A48] via-[#FE7251] to-[#FE7251] hover:from-[#82213B] hover:to-[#E85E3E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <span>{t("auth.complete_reg", "COMPLETE REGISTRATION")}</span>
+              <div className="pt-6 flex items-center justify-between border-t border-slate-100 mt-6">
+                <Button variant="ghost" onClick={() => goToStep(3)}>
+                  ◀ {t("auth.back", "Go Back")}
+                </Button>
+                <Button onClick={handleCompleteRegistration} size="lg">
+                  <span>{t("auth.complete_reg", "Complete Registration")}</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
-      {/* "Why is PAN required?" Informational Modal */}
+      {/* "Why is PAN required?" Modal */}
       {panModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#F0E5E0] relative animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 relative animate-in fade-in duration-150 space-y-3">
             <button
+              type="button"
               onClick={() => setPanModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-[#FAF2EE] hover:bg-[#F0E5E0] text-slate-600 cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
-            <div className="flex items-center space-x-2 text-xs font-bold text-[#9B2A48] uppercase tracking-wider mb-2">
-              <CreditCard className="w-4 h-4 text-[#FE7251]" />
+            <div className="flex items-center space-x-2 text-xs font-semibold text-[#FE7251] uppercase tracking-wider">
+              <CreditCard className="w-4 h-4" />
               <span>Statutory Requirement</span>
             </div>
-            <h3 className="text-base font-black text-[#18080E]">
+            <h3 className="text-base font-bold text-slate-900">
               Why is PAN required for AARAMBH?
             </h3>
-            <div className="mt-3 space-y-2 text-xs text-slate-600 leading-relaxed">
+            <div className="space-y-2 text-xs text-slate-600 leading-relaxed">
               <p>
-                1. <strong>Direct Regulatory Synchronization:</strong> Your Permanent Account Number (PAN) is used by MIDC, MPCB, and DISH to verify company registration without requiring redundant paper tax returns.
+                1. <strong>Direct Regulatory Synchronization:</strong> Your PAN is used by MIDC, MPCB, and DISH to verify company registration without requiring redundant paper returns.
               </p>
               <p>
                 2. <strong>Incentive & Subsidy Tracking:</strong> Under the Package Scheme of Incentives (PSI 2019), industrial subsidies and electricity duty exemptions are credited against your PAN-linked corporate entity.
@@ -1066,13 +846,10 @@ function SignupForm() {
                 3. <strong>Anti-Fraud Compliance:</strong> Ensures all single-window applications originate from verified directors and authorized signatories.
               </p>
             </div>
-            <div className="mt-5 flex justify-end">
-              <button
-                onClick={() => setPanModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-[#250C19] hover:bg-[#381326] text-white text-xs font-bold cursor-pointer"
-              >
+            <div className="pt-2 flex justify-end">
+              <Button size="sm" onClick={() => setPanModalOpen(false)}>
                 Got It
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1083,7 +860,7 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#16060E] flex items-center justify-center text-white">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-600">Loading...</div>}>
       <SignupForm />
     </Suspense>
   );

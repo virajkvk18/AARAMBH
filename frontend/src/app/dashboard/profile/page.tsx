@@ -99,7 +99,7 @@ export default function ProfilePage() {
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#F0E5E0] pb-6 mb-6">
           <div className="flex items-center space-x-5">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#9B2A48] to-[#FE7251] text-[#FFCA7C] flex items-center justify-center font-black text-2xl shadow-md shrink-0">
+            <div className="w-16 h-16 rounded-2xl bg-[#FE7251] text-white flex items-center justify-center font-black text-2xl shadow-xs shrink-0">
               {signatoryName ? signatoryName[0].toUpperCase() : "M"}
             </div>
             <div>
@@ -332,7 +332,7 @@ export default function ProfilePage() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#9B2A48] to-[#FE7251] text-white text-xs font-bold shadow-md shadow-[#FE7251]/20 hover:from-[#7D1E36] hover:to-[#E55B3B]"
+                  className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Changes</span>
