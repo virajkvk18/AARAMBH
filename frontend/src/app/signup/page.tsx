@@ -32,7 +32,7 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard/kya";
 
-  const { signUpApplicant, loginWithDigiLocker } = useAuth();
+  const { signUpApplicant, loginWithDigiLocker, loginWithGoogle } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
   const { setFormData, setExtractedFields, updateMasterCAF, reset } = useEnterpriseStore();
@@ -42,14 +42,14 @@ function SignupForm() {
   const [stepError, setStepError] = useState<string | null>(null);
 
   // Form State
-  const [applicantName, setApplicantName] = useState("Sanjay Deshmukh");
-  const [email, setEmail] = useState("sanjay.deshmukh@smartelectronics.in");
-  const [mobile, setMobile] = useState("9823012345");
-  const [password, setPassword] = useState("password123");
+  const [applicantName, setApplicantName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
 
   // Step 2 State
-  const [legalEntity, setLegalEntity] = useState<LegalEntityType>("proprietor");
-  const [businessName, setBusinessName] = useState("Smart Electronics");
+  const [legalEntity, setLegalEntity] = useState<LegalEntityType>("company");
+  const [businessName, setBusinessName] = useState("");
   const [primarySector, setPrimarySector] = useState<string>("agro_food_processing");
 
   const SIGNUP_SECTORS = [
@@ -65,19 +65,39 @@ function SignupForm() {
   ];
 
   // Step 3 State
-  const [panNumber, setPanNumber] = useState("AAECS8891M");
-  const [panVerified, setPanVerified] = useState(true);
+  const [panNumber, setPanNumber] = useState("");
+  const [panVerified, setPanVerified] = useState(false);
   const [panLoading, setPanLoading] = useState(false);
   const [panModalOpen, setPanModalOpen] = useState(false);
 
   // Step 4 State
-  const [addressLine1, setAddressLine1] = useState("Plot No. A-42, Sector 10");
-  const [addressLine2, setAddressLine2] = useState("MIDC Chakan Phase-II");
+  const [addressLine1, setAddressLine1] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
   const [showSecondAddress, setShowSecondAddress] = useState(false);
   const [country, setCountry] = useState("India");
-  const [pinCode, setPinCode] = useState("410501");
+  const [pinCode, setPinCode] = useState("");
   const [stateName, setStateName] = useState("Maharashtra");
   const [district, setDistrict] = useState("Pune");
+
+  const handleDigiLockerFastTrack = async () => {
+    setStepError(null);
+    const err = await loginWithDigiLocker();
+    if (err) {
+      setStepError(err);
+      return;
+    }
+    router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard/kya");
+  };
+
+  const handleGoogleFastTrack = async () => {
+    setStepError(null);
+    const err = await loginWithGoogle();
+    if (err) {
+      setStepError(err);
+      return;
+    }
+    router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard/kya");
+  };
 
   // Validation Helpers
   const validateStep1 = () => {
@@ -342,24 +362,59 @@ function SignupForm() {
                   Start your single-window journey for statutory industrial clearances, incentives, and utility connections in Maharashtra.
                 </p>
 
-                <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                  <div className="flex items-center space-x-2 mb-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
-                    <h4 className="text-xs font-semibold text-slate-900">
-                      Fast-Track with DigiLocker
-                    </h4>
+                <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-3">
+                  <div>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
+                      <h4 className="text-xs font-semibold text-slate-900">
+                        Demo 1-Click Fast-Track
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Instantly populate verified enterprise identity without manual data entry.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Instantly pull verified Aadhaar, PAN, and Company CIN without manual document entry.
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-3 w-full"
-                    onClick={async () => setStepError(await loginWithDigiLocker())}
-                  >
-                    Connect DigiLocker
-                  </Button>
+
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full flex items-center justify-center space-x-2"
+                      onClick={handleDigiLockerFastTrack}
+                    >
+                      <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
+                      <span>Register with DigiLocker (Demo)</span>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full flex items-center justify-center space-x-2"
+                      onClick={handleGoogleFastTrack}
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                        />
+                      </svg>
+                      <span>Register with Google (Demo)</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
 
