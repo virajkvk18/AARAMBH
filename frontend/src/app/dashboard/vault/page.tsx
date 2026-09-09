@@ -149,8 +149,8 @@ const clearanceRequirements = [
     ],
   },
 ];
-const fieldMetadata = {
-
+type FieldMeta = { label: string; description: string };
+const fieldMetadata: Record<string, FieldMeta> = {
   entity_name: {
     label: "Enterprise Legal Name",
     description: "Registered business entity name",
@@ -180,6 +180,7 @@ const fieldMetadata = {
     description: "Total plant, civil, and machinery investment",
   },
 };
+const fieldDisplayMeta = fieldMetadata;
 
 const formatFileSize = (bytes: number): string => {
   if (!bytes || bytes === 0) return "0 B";
@@ -211,6 +212,12 @@ export default function DocumentVaultPage() {
   const [rawTextSnippet, setRawTextSnippet] = useState<string | null>(null);
   const [extractionMethod, setExtractionMethod] = useState<string | null>(null);
 
+    const [openGroupId, setOpenGroupId] = useState<string>('');
+  const [activeSample, setActiveSample] = useState<{ title: string; content: string } | null>(null);
+  const uploadRef = useRef<HTMLDivElement>(null);
+  const scrollToUpload = () => {
+    uploadRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Ephemeral in-memory file objects for the active browser session (no large base64 in persistent state)
   const fileObjectsRef = useRef<Map<string, File>>(new Map());

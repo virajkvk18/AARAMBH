@@ -34,6 +34,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useActiveChatContext } from "@/store/activeChatContext";
 
 interface Message {
   id: string;
@@ -368,6 +369,7 @@ export default function AskAarambhChatbot() {
   const isDashboard = pathname?.startsWith("/dashboard") || pathname?.startsWith("/apply");
 
   const { language, t } = useLanguage();
+  const chatContext = useActiveChatContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
@@ -467,6 +469,7 @@ export default function AskAarambhChatbot() {
           messages: history,
           userApiKey: savedKey || undefined,
           language,
+          context: chatContext,
         }),
       });
 
