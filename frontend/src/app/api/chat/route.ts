@@ -210,7 +210,7 @@ async function getAvailableGroqModels(apiKey: string): Promise<string[]> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { messages, userApiKey, language, context } = body;
+    const { messages, userApiKey, language } = body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(

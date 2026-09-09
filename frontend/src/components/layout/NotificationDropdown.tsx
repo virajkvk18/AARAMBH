@@ -6,7 +6,6 @@ import { useNotificationStore } from '@/store/notificationStore';
 export default function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const notifications = useNotificationStore((state) => state.notifications);
   const markAsRead = useNotificationStore((state) => state.markAsRead);
-  const markAllRead = useNotificationStore((state) => state.markAllRead);
   const router = useRouter();
 
   const handleClick = (n: any) => {
@@ -21,15 +20,7 @@ export default function NotificationDropdown({ onClose }: { onClose: () => void 
     <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
       <div className="p-3 border-b border-gray-100 flex justify-between items-center">
         <h3 className="font-bold text-sm">Notifications</h3>
-        {unreadCount > 0 && (
-          <button
-            type="button"
-            className="text-xs text-blue-600 hover:underline"
-            onClick={markAllRead}
-          >
-            Mark all as read
-          </button>
-        )}
+        {unreadCount > 0 && <span className="text-xs text-gray-600">{unreadCount} unread</span>}
       </div>
       <ul className="divide-y divide-gray-100">
         {notifications.map((n) => (
