@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+export interface EnterpriseState {
+  // Allow any existing state fields
+  [key: string]: any;
+  // Fast‑track renewal action
+  initiateRenewal: (id: string) => void;
+}
+
+
 export type RiskTrack = "green" | "orange" | "red";
 export type SectorType =
   | "Food Processing"
@@ -28,6 +36,15 @@ export interface ClearanceItem {
   feeEstimate: string;
   status?: "pending" | "submitted" | "in_review" | "approved" | "deemed_approved";
   approvalSlug?: string;
+}
+
+export interface RenewalItem {
+  id: string;
+  clearanceTitle: string;
+  issuingAuthority: string;
+  validityPeriod: string; // e.g., "5 Years"
+  daysRemaining: number;
+  status?: "upcoming" | "attention" | "critical"; // optional, derived later
 }
 
 export interface ExtractedFieldItem {
@@ -208,6 +225,8 @@ export interface EnterpriseState {
   powerLoadKva: number;
   waterDemandKld: number;
   workforceSize: number;
+  // Statutory renewals data
+  renewals: RenewalItem[];
   riskTrack: RiskTrack | null;
   clearances: ClearanceItem[];
   applicableIncentives: string[];
@@ -493,6 +512,29 @@ const initialState = {
   workforceSize: 75,
   riskTrack: "orange" as RiskTrack | null,
   clearances: INITIAL_DEFAULT_CLEARANCES,
+  renewals: [
+    {
+      id: "renew-1",
+      clearanceTitle: "MPCB Consent to Operate (CTO) Renewal",
+      issuingAuthority: "Maharashtra Pollution Control Board (MPCB)",
+      validityPeriod: "5 Years",
+      daysRemaining: 90,
+    },
+    {
+      id: "renew-2",
+      clearanceTitle: "Factory License Renewal",
+      issuingAuthority: "Directorate of Industrial Safety and Health (DISH)",
+      validityPeriod: "1 Year",
+      daysRemaining: 45,
+    },
+    {
+      id: "renew-3",
+      clearanceTitle: "Annual Fire Safety Audit & NOC Renewal",
+      issuingAuthority: "Relevant Fire & Emergency Services Authority",
+      validityPeriod: "1 Year",
+      daysRemaining: 30,
+    },
+  ],
   applicableIncentives: [
     "Package Scheme of Incentives (PSI 2019) - 60% Industrial Promotion Subsidy",
     "100% Electricity Duty Exemption for 7 Years",
@@ -794,6 +836,11 @@ export const useEnterpriseStore = create<EnterpriseState>()(
             applicationStatus: allApproved ? "approved" : "under_review",
           };
         }),
+
+      // Fast‑track renewal stub action
+      initiateRenewal: (id: string) => {
+        console.log('Fast‑track renewal initiated for ID:', id);
+      },
 
       setDAGNodeStatuses: (statuses) =>
         set((state) => ({
