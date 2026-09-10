@@ -7,7 +7,6 @@ import axios from "axios";
 import FormData from "form-data";
 
 import {
-  supabase,
   isSupabaseConfigured,
   localDb,
   localFileStore,
@@ -16,7 +15,26 @@ import {
   DbDocument,
   DbExtractedField,
   DbDagNode,
+  DbFiling,
 } from "./supabase";
+
+import {
+  getEnterprise,
+  upsertEnterprise,
+  insertDocument,
+  listDocuments,
+  getDocument,
+  deleteDocument,
+  upsertExtractedFields,
+  listExtractedFields,
+  deleteExtractedFieldsByDocument,
+  listDagNodes,
+  upsertDagNodes,
+  listFilings,
+  upsertFiling,
+  uploadDocumentFile,
+  now,
+} from "./db";
 
 dotenv.config({ path: path.resolve(__dirname, "..", "..", ".env") });
 
@@ -99,36 +117,13 @@ app.post("/api/enterprise", async (req: Request, res: Response): Promise<void> =
       updated_at: new Date().toISOString(),
     };
 
-    // 1. Save to localDb
-    localDb.enterprises.set(id, enterpriseData);
+    // 1. Persist enterprise profile (Supabase when configured, local cache otherwise)
+    await upsertEnterprise(enterpriseData);
 
-    // Initialize DAG nodes if not present
-    const existingNodes = Array.from(localDb.dagNodes.values()).filter(
-      (n) => n.enterprise_id === id
-    );
+    // 2. Initialize DAG nodes if not present (and persist them so they survive restarts)
+    const existingNodes = await listDagNodes(id);
     if (existingNodes.length === 0) {
-      initializeDagNodesForEnterprise(id);
-    }
-
-    // 2. Sync to Supabase if configured
-    if (supabase) {
-      try {
-        await supabase.from("enterprises").upsert({
-          id,
-          name,
-          sector,
-          location_zone,
-          capex_cr,
-          power_load_kva,
-          water_demand_kld,
-          workforce_size,
-          risk_track,
-          is_assessed,
-          updated_at: new Date().toISOString(),
-        });
-      } catch (sbErr) {
-        console.warn("Supabase enterprise sync warning:", sbErr);
-      }
+      await upsertDagNodes(initializeDagNodesForEnterprise(id));
     }
 
     res.json({
@@ -148,31 +143,16 @@ app.get("/api/enterprise/:id", async (req: Request, res: Response): Promise<void
   try {
     const id = String(req.params.id);
 
-    // Check localDb
-    let enterprise = localDb.enterprises.get(id);
-
-    // Try Supabase if available
-    if (supabase && !enterprise) {
-      const { data, error } = await supabase
-        .from("enterprises")
-        .select("*")
-        .eq("id", id)
-        .single();
-      if (!error && data) {
-        enterprise = data as DbEnterprise;
-        localDb.enterprises.set(id, enterprise);
-      }
-    }
+    // Read from Supabase (cache updated too) or local cache
+    let enterprise = await getEnterprise(id);
 
     if (!enterprise) {
-      // Fallback default
-      enterprise = localDb.enterprises.get("ENT-MH-2026-8891");
+      // Fallback default for demo mode
+      enterprise = localDb.enterprises.get("ENT-MH-2026-8891") || null;
     }
 
-    // Get extracted fields for enterprise
-    const fields = Array.from(localDb.extractedFields.values()).filter(
-      (f) => f.enterprise_id === id
-    );
+    // Get extracted fields for enterprise (from vault OCR / prevalidation)
+    const fields = await listExtractedFields(id);
 
     res.json({
       status: "success",
@@ -217,7 +197,8 @@ app.post("/api/documents", async (req: Request, res: Response): Promise<void> =>
       created_at: new Date().toISOString(),
     };
 
-    localDb.documents.set(docId, docRecord);
+    // Persist document metadata (database first, local cache second)
+    await insertDocument(docRecord);
 
     // Save extracted fields
     const savedFields: DbExtractedField[] = [];
@@ -231,38 +212,9 @@ app.post("/api/documents", async (req: Request, res: Response): Promise<void> =>
         confidence_score: typeof item?.confidenceScore === "number" ? item.confidenceScore : 0.9,
         created_at: new Date().toISOString(),
       };
-      localDb.extractedFields.set(`${enterprise_id}:${key}`, fieldRecord);
       savedFields.push(fieldRecord);
     }
-
-    // Sync to Supabase
-    if (supabase) {
-      try {
-        await supabase.from("documents").insert({
-          id: docId,
-          enterprise_id,
-          file_name,
-          file_type,
-          source,
-          verification_status,
-          raw_text_snippet,
-        });
-
-        if (savedFields.length > 0) {
-          await supabase.from("extracted_fields").upsert(
-            savedFields.map((f) => ({
-              enterprise_id: f.enterprise_id,
-              document_id: f.document_id,
-              field_name: f.field_name,
-              field_value: f.field_value,
-              confidence_score: f.confidence_score,
-            }))
-          );
-        }
-      } catch (sbErr) {
-        console.warn("Supabase document sync warning:", sbErr);
-      }
-    }
+    await upsertExtractedFields(savedFields);
 
     res.json({
       status: "success",
@@ -281,9 +233,7 @@ app.post("/api/documents", async (req: Request, res: Response): Promise<void> =>
 app.get("/api/documents", async (req: Request, res: Response): Promise<void> => {
   try {
     const enterpriseId = (req.query.enterprise_id as string) || "ENT-MH-2026-8891";
-    const docs = Array.from(localDb.documents.values()).filter(
-      (d) => d.enterprise_id === enterpriseId
-    );
+    const docs = await listDocuments(enterpriseId);
     res.json({
       status: "success",
       documents: docs,
@@ -297,9 +247,17 @@ app.get("/api/documents", async (req: Request, res: Response): Promise<void> => 
  * GET /api/documents/:id/file
  * Serve actual uploaded document file directly
  */
-app.get("/api/documents/:id/file", (req: Request, res: Response): void => {
+app.get("/api/documents/:id/file", async (req: Request, res: Response): Promise<void> => {
   try {
     const id = String(req.params.id);
+    const doc = await getDocument(id);
+
+    // Files persisted to Supabase Storage are served via their public URL
+    if (doc?.file_url && /^https?:\/\//.test(doc.file_url)) {
+      res.redirect(doc.file_url);
+      return;
+    }
+
     const file = localFileStore.get(id);
 
     if (!file) {
@@ -325,24 +283,11 @@ app.get("/api/documents/:id/file", (req: Request, res: Response): void => {
 app.delete("/api/documents/:id", async (req: Request, res: Response): Promise<void> => {
   try {
     const id = String(req.params.id);
-    const existed = localDb.documents.delete(id);
+    const existed = await deleteDocument(id);
     localFileStore.delete(id);
 
-    // Delete associated extracted fields for this document
-    for (const [key, field] of localDb.extractedFields.entries()) {
-      if (field.document_id === id) {
-        localDb.extractedFields.delete(key);
-      }
-    }
-
-    if (supabase) {
-      try {
-        await supabase.from("documents").delete().eq("id", id);
-        await supabase.from("extracted_fields").delete().eq("document_id", id);
-      } catch (sbErr) {
-        console.warn("Supabase document delete warning:", sbErr);
-      }
-    }
+    // Delete associated extracted fields for this document (DB + cache)
+    await deleteExtractedFieldsByDocument(id);
 
     res.json({
       status: "success",
@@ -367,30 +312,12 @@ app.get("/api/dag/:enterpriseId", async (req: Request, res: Response): Promise<v
   try {
     const enterpriseId = String(req.params.enterpriseId);
 
-    // 1. Fetch from localDb
-    let nodes = Array.from(localDb.dagNodes.values()).filter(
-      (n) => n.enterprise_id === enterpriseId
-    );
-
-    // 2. Fetch from Supabase if configured
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from("dag_nodes")
-          .select("*")
-          .eq("enterprise_id", enterpriseId);
-        if (!error && data && data.length > 0) {
-          nodes = data as DbDagNode[];
-          // Update localDb cache
-          nodes.forEach((n) => localDb.dagNodes.set(`${enterpriseId}:${n.id}`, n));
-        }
-      } catch (sbErr) {
-        console.warn("Supabase DAG fetch warning:", sbErr);
-      }
-    }
+    // Fetch from Supabase first (cache updated), fall back to local cache
+    let nodes = await listDagNodes(enterpriseId);
 
     if (nodes.length === 0) {
       nodes = initializeDagNodesForEnterprise(enterpriseId);
+      await upsertDagNodes(nodes);
     }
 
     res.json({
@@ -413,40 +340,38 @@ app.patch("/api/dag/:nodeId/approve", async (req: Request, res: Response): Promi
     const { enterprise_id = "ENT-MH-2026-8891" } = req.body;
 
     // Ensure enterprise nodes exist
-    let nodes = Array.from(localDb.dagNodes.values()).filter(
-      (n) => n.enterprise_id === enterprise_id
-    );
+    let nodes = await listDagNodes(enterprise_id);
     if (nodes.length === 0) {
       nodes = initializeDagNodesForEnterprise(enterprise_id);
+      await upsertDagNodes(nodes);
     }
 
+    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+
     // 1. Update target node to approved
-    const targetKey = `${enterprise_id}:${nodeId}`;
-    const targetNode = localDb.dagNodes.get(targetKey);
+    const targetNode = nodeMap.get(nodeId);
     if (targetNode) {
       targetNode.status = "approved";
-      targetNode.updated_at = new Date().toISOString();
-      localDb.dagNodes.set(targetKey, targetNode);
+      targetNode.updated_at = now();
     }
 
     // 2. Dependency evaluation
     // If Root is approved -> unlock all 3 parallel children
     if (nodeId === "node-root") {
       ["node-mpcb", "node-fire", "node-water"].forEach((childId) => {
-        const childNode = localDb.dagNodes.get(`${enterprise_id}:${childId}`);
+        const childNode = nodeMap.get(childId);
         if (childNode && childNode.status === "locked") {
           childNode.status = "active";
-          childNode.updated_at = new Date().toISOString();
-          localDb.dagNodes.set(`${enterprise_id}:${childId}`, childNode);
+          childNode.updated_at = now();
         }
       });
     }
 
     // Check if ALL 3 children are approved -> unlock Grandchild (node-dish)
-    const mpcb = localDb.dagNodes.get(`${enterprise_id}:node-mpcb`);
-    const fire = localDb.dagNodes.get(`${enterprise_id}:node-fire`);
-    const water = localDb.dagNodes.get(`${enterprise_id}:node-water`);
-    const dish = localDb.dagNodes.get(`${enterprise_id}:node-dish`);
+    const mpcb = nodeMap.get("node-mpcb");
+    const fire = nodeMap.get("node-fire");
+    const water = nodeMap.get("node-water");
+    const dish = nodeMap.get("node-dish");
 
     if (
       mpcb?.status === "approved" &&
@@ -456,41 +381,79 @@ app.patch("/api/dag/:nodeId/approve", async (req: Request, res: Response): Promi
       dish.status === "locked"
     ) {
       dish.status = "active";
-      dish.updated_at = new Date().toISOString();
-      localDb.dagNodes.set(`${enterprise_id}:node-dish`, dish);
+      dish.updated_at = now();
     }
 
-    // 3. Sync all updated nodes to Supabase Realtime table
-    const allUpdatedNodes = Array.from(localDb.dagNodes.values()).filter(
-      (n) => n.enterprise_id === enterprise_id
-    );
-
-    if (supabase) {
-      try {
-        await supabase.from("dag_nodes").upsert(
-          allUpdatedNodes.map((n) => ({
-            id: n.id,
-            enterprise_id: n.enterprise_id,
-            name: n.name,
-            department: n.department,
-            sla_days: n.sla_days,
-            status: n.status,
-            stage: n.stage,
-            updated_at: n.updated_at,
-          }))
-        );
-      } catch (sbErr) {
-        console.warn("Supabase realtime node sync warning:", sbErr);
-      }
-    }
+    // 3. Persist the whole pipeline (database first, cache second)
+    await upsertDagNodes(nodes);
 
     res.json({
       status: "success",
       message: `Node ${nodeId} approved and dependencies evaluated`,
-      nodes: allUpdatedNodes,
+      nodes,
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to approve DAG node" });
+  }
+});
+
+// ==========================================
+// 5. FILINGS (CROSS-FILING AUTOFILL MEMORY)
+// ==========================================
+
+/**
+ * POST /api/filings
+ * Persist a submitted application form so future filings can auto-fill from it
+ */
+app.post("/api/filings", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      enterprise_id = "ENT-MH-2026-8891",
+      approval_id,
+      form = {},
+      status = "submitted",
+    } = req.body;
+
+    if (!approval_id) {
+      res.status(400).json({ error: "Invalid request: 'approval_id' is required." });
+      return;
+    }
+
+    const filing: DbFiling = {
+      id: `FIL-${Date.now().toString(36).toUpperCase()}`,
+      enterprise_id,
+      approval_id,
+      form,
+      status,
+      created_at: now(),
+    };
+    await upsertFiling(filing);
+
+    res.json({
+      status: "success",
+      filing,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to save filing" });
+  }
+});
+
+/**
+ * GET /api/filings
+ * Fetch previous filings (optionally scoped to one approval)
+ */
+app.get("/api/filings", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const enterprise_id = (req.query.enterprise_id as string) || "ENT-MH-2026-8891";
+    const approval_id = req.query.approval_id as string | undefined;
+    const filings = await listFilings(enterprise_id, approval_id);
+
+    res.json({
+      status: "success",
+      filings,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to fetch filings" });
   }
 });
 
@@ -507,15 +470,31 @@ type AiExtractionResponse = {
   extraction_method: string;
 };
 
-function persistVaultExtraction(
+async function persistVaultExtraction(
   extraction: AiExtractionResponse,
   docId: string,
-  fileUrl: string
-): {
+  fileUrl: string,
+  file?: { buffer: Buffer; mimetype: string; filename: string }
+): Promise<{
   document: DbDocument;
   extracted_fields: DbExtractedField[];
-} {
+}> {
   const enterpriseId = "ENT-MH-2026-8891";
+
+  // Persist the binary to Supabase Storage when available (fallback: local buffer cache)
+  let uploadedUrl: string | null = null;
+  if (file) {
+    uploadedUrl = await uploadDocumentFile(docId, file.buffer, file.mimetype, file.filename);
+    if (!uploadedUrl) {
+      localFileStore.set(docId, {
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        filename: file.filename,
+      });
+    }
+  }
+
+  const resolvedFileUrl = uploadedUrl || fileUrl;
   const document: DbDocument = {
     id: docId,
     enterprise_id: enterpriseId,
@@ -525,9 +504,10 @@ function persistVaultExtraction(
     verification_status: "AI_EXTRACTED",
     raw_text_snippet: extraction.raw_text_snippet || "",
     created_at: new Date().toISOString(),
-    file_url: fileUrl,
+    file_url: resolvedFileUrl,
+    file_path: uploadedUrl || undefined,
   };
-  localDb.documents.set(docId, document);
+  await insertDocument(document);
 
   const extracted_fields = Object.entries(extraction.extracted_fields).map(([field_name, item]) => {
     const confidence = typeof item.confidence_score === "number" ? item.confidence_score : 0;
@@ -540,9 +520,9 @@ function persistVaultExtraction(
       confidence_score: confidence,
       created_at: new Date().toISOString(),
     };
-    localDb.extractedFields.set(`${enterpriseId}:${docId}:${field_name}`, record);
     return record;
   });
+  await upsertExtractedFields(extracted_fields);
 
   return { document, extracted_fields };
 }
@@ -598,7 +578,12 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
         return;
       }
 
-      const persisted = persistVaultExtraction(extraction, docId, fileUrl);
+      const persisted = await persistVaultExtraction(
+        extraction,
+        docId,
+        fileUrl,
+        { buffer, mimetype, filename: originalname }
+      );
       res.status(200).json({ ...extraction, document: persisted.document });
     } catch (aiErr: any) {
       const aiDetail = aiErr.response?.data?.detail || aiErr.response?.data?.error;
@@ -615,7 +600,7 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
         created_at: new Date().toISOString(),
         file_url: fileUrl,
       };
-      localDb.documents.set(docId, fallbackDoc);
+      await insertDocument(fallbackDoc);
 
       res.status(200).json({
         status: "partial_success",
@@ -697,15 +682,13 @@ app.post("/api/caf/submit", async (req: Request, res: Response): Promise<void> =
     );
 
     // Synchronize DAG pipeline nodes with the new CAF submission
-    const existingNodes = Array.from(localDb.dagNodes.values()).filter(
-      (n) => n.enterprise_id === enterprise_id
-    );
+    const existingNodes = await listDagNodes(enterprise_id);
     if (existingNodes.length === 0) {
-      initializeDagNodesForEnterprise(enterprise_id);
+      await upsertDagNodes(initializeDagNodesForEnterprise(enterprise_id));
     }
 
-    // Persist application in localDb
-    localDb.enterprises.set(enterprise_id, {
+    // Persist / refresh enterprise profile from the CAF payload
+    await upsertEnterprise({
       id: enterprise_id,
       name: caf.companyDetails.companyName,
       sector: caf.projectSpecs.sector || "General Manufacturing",

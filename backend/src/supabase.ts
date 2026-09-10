@@ -1,7 +1,10 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import path from "node:path";
 
-dotenv.config({ path: "../../.env" });
+// Resolve relative to this file (works in both src/ and dist/) so the backend
+// always reads the project-root .env regardless of the process CWD.
+dotenv.config({ path: path.resolve(__dirname, "..", "..", ".env") });
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || "";
@@ -37,6 +40,12 @@ export interface DbEnterprise {
   is_assessed: boolean;
   created_at: string;
   updated_at: string;
+  user_id?: string;
+  entity_type?: string;
+  pan?: string;
+  gstin?: string;
+  udyam_reg_no?: string;
+  registered_address?: string;
 }
 
 export interface DbDocument {
@@ -44,11 +53,24 @@ export interface DbDocument {
   enterprise_id: string;
   file_name: string;
   file_type: string;
-  source: "UPLOAD" | "DIGILOCKER";
+  source: "UPLOAD" | "DIGILOCKER" | "VAULT";
   verification_status: string;
   raw_text_snippet: string;
   created_at: string;
   file_url?: string;
+  application_id?: string;
+  document_type?: string;
+  file_path?: string;
+  ocr_extracted_data?: unknown | null;
+}
+
+export interface DbFiling {
+  id: string;
+  enterprise_id: string;
+  approval_id: string;
+  form: Record<string, unknown>;
+  status: string;
+  created_at: string;
 }
 
 export interface StoredFile {
@@ -85,6 +107,7 @@ export const localDb = {
   documents: new Map<string, DbDocument>(),
   extractedFields: new Map<string, DbExtractedField>(),
   dagNodes: new Map<string, DbDagNode>(),
+  filings: new Map<string, DbFiling>(),
 };
 
 // Seed default enterprise and DAG nodes
