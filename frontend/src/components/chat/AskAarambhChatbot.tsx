@@ -101,16 +101,45 @@ function stripActionTags(text: string): string {
   return text.replace(/\[action:[^\]]*\]/g, "").trim();
 }
 
-function pickSpeechVoice(lang: string): SpeechSynthesisVoice | null {
+function pickSpeechVoice(lang: "en" | "mr" | "hi"): SpeechSynthesisVoice | null {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
-  const prefix = lang.split("-")[0].toLowerCase();
   const voices = window.speechSynthesis.getVoices();
-  return (
-    voices.find((v) => v.lang.toLowerCase().startsWith(`${prefix}-`)) ||
-    voices.find((v) => v.lang.toLowerCase().split("-")[0] === prefix) ||
-    voices.find((v) => v.lang.toLowerCase().startsWith(lang.toLowerCase())) ||
-    null
-  );
+
+  const score = (v: SpeechSynthesisVoice): number => {
+    const vlang = v.lang.toLowerCase().replace("_", "-");
+    const name = v.name.toLowerCase();
+    if (lang === "en") {
+      if (vlang.startsWith("en-in") || name.includes("india")) {
+        if (vlang.startsWith("en-in")) return 100;
+        if (name.includes("india") && vlang.startsWith("en-")) return 90;
+        if (name.includes("india")) return 70;
+      }
+      if (vlang.startsWith("en-gb")) return 60;
+      if (vlang.startsWith("en-us")) return 40;
+      if (vlang.startsWith("en")) return 20;
+      return 0;
+    }
+    if (lang === "mr") {
+      if (vlang.startsWith("mr")) return 100;
+      if (name.includes("marathi")) return 95;
+      if (vlang.startsWith("hi")) return 50;
+      return 0;
+    }
+    if (vlang.startsWith("hi")) return 100;
+    if (name.includes("hindi")) return 95;
+    return 0;
+  };
+
+  let best: SpeechSynthesisVoice | null = null;
+  let bestScore = -1;
+  for (const v of voices) {
+    const s = score(v);
+    if (s > bestScore) {
+      bestScore = s;
+      best = v;
+    }
+  }
+  return best;
 }
 
 const TOPIC_SHORTCUTS = [
@@ -533,8 +562,12 @@ export default function AskAarambhChatbot() {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(clean);
     const voice = pickSpeechVoice(lang);
-    if (voice) utterance.voice = voice;
-    utterance.lang = lang === "mr" ? "mr-IN" : lang === "hi" ? "hi-IN" : "en-IN";
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    } else {
+      utterance.lang = lang === "mr" ? "hi-IN" : lang === "hi" ? "hi-IN" : "en-IN";
+    }
     utterance.rate = 1;
     utterance.pitch = 1;
     window.speechSynthesis.speak(utterance);
