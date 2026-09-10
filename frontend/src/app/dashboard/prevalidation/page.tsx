@@ -79,6 +79,7 @@ function compareFieldValues(valA: string, valB: string): {
 export default function PreValidationPage() {
   const {
     extractedFields,
+    uploadedDocuments,
     uploadedDocumentName,
     sector,
     locationZone,
@@ -96,8 +97,8 @@ export default function PreValidationPage() {
   // We set up a simulated cross-document discrepancy for plot_area_sqm:
   // Doc A: MIDC Land Allotment Deed (e.g. 5,000 sq.m)
   // Doc B: Architect Detailed Project Report (e.g. 4,800 sq.m - creating a 4% mismatch > 2% tolerance)
-  const [docAName] = useState("MIDC_Lease_Allotment_Deed.pdf");
-  const [docBName] = useState(uploadedDocumentName || "Architect_Layout_DPR.pdf");
+  const [docAName] = useState(uploadedDocuments[0]?.name || "MIDC_Lease_Allotment_Deed.pdf");
+  const [docBName] = useState(uploadedDocuments[1]?.name || uploadedDocumentName || "Architect_Layout_DPR.pdf");
 
   const [docAValue, setDocAValue] = useState<string>(initialPlotANum.toString());
   const [docBValue, setDocBValue] = useState<string>("4800"); // 4800 creates real mismatch with 5000

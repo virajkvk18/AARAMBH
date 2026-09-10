@@ -12,10 +12,12 @@ import {
   Award,
   FileSpreadsheet,
   CalendarCheck,
+  TrendingDown,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,9 +25,10 @@ import { Button } from "@/components/ui/button";
 export default function DashboardHomePage() {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const { clearances, renewals, applicableIncentives, isAssessed, sector } = useEnterpriseStore();
+  const { clearances, renewals, applicableIncentives, isAssessed, sector, submittedAt } = useEnterpriseStore();
 
   const [activeTab, setActiveTab] = useState<"approvals" | "renewals" | "incentives">("approvals");
+  const [renewalNotice, setRenewalNotice] = useState<string | null>(null);
 
   const getBadgeInfo = (days: number) => {
     if (days <= 30) return { label: `${days} Days – Critical`, variant: "destructive" as const };
@@ -37,18 +40,36 @@ export default function DashboardHomePage() {
   const initiateRenewal = (id: string) => {
     const store = useEnterpriseStore.getState();
     store.initiateRenewal?.(id);
-    alert("Fast-track renewal initiated for ID: " + id);
+    const title = renewals.find((r) => r.id === id)?.clearanceTitle || id;
+    useNotificationStore.getState().addNotification({
+      type: "renewal",
+      title: "Renewal Fast-Tracked",
+      message: `${title} fast-track renewal dispatched to issuing authority for expedited processing.`,
+      severity: "warning",
+      target: "/dashboard",
+    });
+    setRenewalNotice(title);
   };
 
   const userName = user?.name || "Investor";
   const isOfficer = user?.role === "officer";
 
   // Dynamic KPI Calculations
-  const activeClearancesCount = clearances.length > 0 ? clearances.length : 5;
+  const activeClearancesCount = clearances.length;
+  const elapsedSlaDays = submittedAt ? Math.max(0, (new Date().getTime() - new Date(submittedAt).getTime()) / 86400000) : 0;
   const parallelLeadTimeDays = clearances.length > 0
     ? Math.max(...clearances.map((c) => c.slaDays))
     : 21;
   const deemedApprovalsCount = clearances.filter((c) => c.status === "approved" || c.status === "deemed_approved").length;
+  const slaCompliancePct = clearances.length > 0
+    ? Math.round(
+        (clearances.filter((c) => {
+          if (c.status === "approved" || c.status === "deemed_approved") return true;
+          if (c.status === "pending") return true;
+          return (c.status === "in_review" || c.status === "submitted") && elapsedSlaDays < (c.slaDays || 14);
+        }).length / clearances.length) * 100
+      )
+    : 100;
 
   const kpiData = [
     {
@@ -67,15 +88,15 @@ export default function DashboardHomePage() {
     },
     {
       title: t("dash.kpi_sla", "SLA Compliance"),
-      value: "100%",
+      value: `${slaCompliancePct}%`,
       suffix: "",
       change: t("dash.kpi_sla_sub", "Under Maharashtra RTS Act"),
       icon: Clock,
     },
     {
       title: t("dash.kpi_deemed", "Deemed Approvals"),
-      value: String(deemedApprovalsCount > 0 ? deemedApprovalsCount : "Guaranteed"),
-      suffix: deemedApprovalsCount > 0 ? " Issued" : "",
+      value: String(deemedApprovalsCount),
+      suffix: " Issued",
       change: t("dash.kpi_deemed_sub", "Auto-issued on statutory timeout"),
       icon: Award,
     },
@@ -123,6 +144,13 @@ export default function DashboardHomePage() {
       href: "/dashboard/inspections",
       icon: CalendarCheck,
       btnLabel: "Inspect Calendar",
+    },
+    {
+      title: "Delay Analytics & Bottlenecks",
+      subtitle: "SLA health, overdue detection & HoD escalation",
+      href: "/dashboard/analytics",
+      icon: TrendingDown,
+      btnLabel: "Analyze Delays",
     },
   ];
 
@@ -251,13 +279,19 @@ export default function DashboardHomePage() {
                           <Badge variant={badge.variant}>{badge.label}</Badge>
                         </td>
                         <td className="px-5 py-3 text-right">
-                          <button
-                            type="button"
-                            className="text-xs font-medium text-[#FE7251] hover:underline cursor-pointer"
-                            onClick={() => initiateRenewal(r.id)}
-                          >
-                            Fast-Track
-                          </button>
+                          {r.status === "critical" ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
+                              ✓ Initiated
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="text-xs font-medium text-[#FE7251] hover:underline cursor-pointer"
+                              onClick={() => initiateRenewal(r.id)}
+                            >
+                              Fast-Track
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
@@ -397,6 +431,22 @@ export default function DashboardHomePage() {
 
       {/* 4. TABS & DETAILED LISTS */}
       <div className="space-y-3">
+        {renewalNotice && (
+          <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900">
+            <p className="text-xs leading-relaxed">
+              <strong>Renewal fast-track initiated:</strong> {renewalNotice} has been dispatched to the issuing authority
+              for expedited processing. Track status from the renewal list.
+            </p>
+            <button
+              type="button"
+              onClick={() => setRenewalNotice(null)}
+              className="text-emerald-500 hover:text-emerald-700 font-bold text-xs cursor-pointer"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {renderTabBar}
         {renderContent()}
       </div>

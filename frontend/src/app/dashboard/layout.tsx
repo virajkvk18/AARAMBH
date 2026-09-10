@@ -20,6 +20,7 @@ import {
   X,
   CalendarCheck,
   FileSpreadsheet,
+  TrendingDown,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -45,6 +46,7 @@ export default function DashboardLayout({
     "/dashboard/prevalidation": "Pre-Validation | AARAMBH",
     "/dashboard/dag": "Track Approvals | AARAMBH",
     "/dashboard/sla": "Application Status | AARAMBH",
+    "/dashboard/analytics": "Delay Analytics | AARAMBH",
     "/dashboard/inspections": "Joint Inspections | AARAMBH",
     "/dashboard/grievances": "Grievance Desk | AARAMBH",
     "/dashboard/profile": "Enterprise Profile | AARAMBH",
@@ -109,6 +111,7 @@ export default function DashboardLayout({
         { label: "Pre-Validation", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
         { label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
         { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
         { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
@@ -149,7 +152,10 @@ export default function DashboardLayout({
     },
     {
       heading: "Monitoring",
-      items: [{ label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] }],
+      items: [
+        { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
+      ],
     },
     {
       heading: "Support",

@@ -133,6 +133,16 @@ aarambh/
 
 You'll need three things running **at the same time**, each in its own terminal.
 
+**Quickest option — one command:**
+```powershell
+# Windows
+.\scripts\start-all.ps1
+```
+```bash
+# macOS / Linux
+./scripts/start-all.sh
+```
+
 **1. The AI service (Python)**
 ```bash
 cd ai-service

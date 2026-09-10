@@ -830,9 +830,16 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           };
         }),
 
-      // Fast‑track renewal stub action
-      initiateRenewal: () => {
-      },
+      // Fast-track renewal kickoff
+      initiateRenewal: (id) =>
+        set((state) => {
+          const target = state.renewals.find((r) => r.id === id);
+          if (!target) return state;
+          return {
+            ...state,
+            renewals: state.renewals.map((r) => (r.id === id ? { ...r, status: "critical" } : r)),
+          };
+        }),
 
       setDAGNodeStatuses: (statuses) =>
         set((state) => ({
