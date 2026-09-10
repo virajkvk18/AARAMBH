@@ -35,6 +35,7 @@ import {
   Award,
   PhoneCall,
   ChevronRight,
+  ChevronDown,
   TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -554,12 +555,14 @@ export default function AskAarambhChatbot() {
   }, []);
 
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
 
-  const speakText = (text: string, lang: "en" | "mr" | "hi") => {
+  const speakText = (text: string, lang: "en" | "mr" | "hi", id?: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const clean = stripActionTags(text);
     if (!clean) return;
     window.speechSynthesis.cancel();
+    setSpeakingId(id || null);
     const utterance = new SpeechSynthesisUtterance(clean);
     const voice = pickSpeechVoice(lang);
     if (voice) {
@@ -570,10 +573,13 @@ export default function AskAarambhChatbot() {
     }
     utterance.rate = 1;
     utterance.pitch = 1;
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
     window.speechSynthesis.speak(utterance);
   };
 
   const stopSpeaking = () => {
+    setSpeakingId(null);
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
@@ -609,6 +615,7 @@ export default function AskAarambhChatbot() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
         if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        setSpeakingId(null);
         setIsOpen(false);
       }
     };
@@ -650,11 +657,11 @@ export default function AskAarambhChatbot() {
     }
   }, [messages, isOpen, isMinimized]);
 
-  const handleSendMessage = async (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string, forcedLang?: "en" | "mr" | "hi") => {
     const query = textToSend || input;
     if (!query.trim() || loading) return;
 
-    const detectedLang = detectQuestionLanguage(query.trim());
+    const detectedLang = forcedLang || detectQuestionLanguage(query.trim());
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -665,7 +672,10 @@ export default function AskAarambhChatbot() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    if (!textToSend) setInput("");
+    if (!textToSend) {
+      setInput("");
+      if (inputRef.current) inputRef.current.style.height = "auto";
+    }
     setLoading(true);
 
     try {
@@ -712,7 +722,7 @@ export default function AskAarambhChatbot() {
       };
 
       setMessages((prev) => [...prev, botMessage]);
-      if (voiceEnabled) speakText(replyText, detectedLang);
+      if (voiceEnabled) speakText(replyText, detectedLang, botMessage.id);
     } catch (err: unknown) {
       console.error("Chat error:", err);
       const errorFallback =
@@ -826,6 +836,11 @@ export default function AskAarambhChatbot() {
     ? DASHBOARD_SUGGESTIONS_MAP[language] || DASHBOARD_SUGGESTIONS_MAP.en
     : LANDING_SUGGESTIONS_MAP[language] || LANDING_SUGGESTIONS_MAP.en;
 
+  const autoResizeTextarea = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+  };
+
   return (
     <>
       {/* 1. Floating Trigger Pill (Bottom Right) */}
@@ -836,6 +851,7 @@ export default function AskAarambhChatbot() {
               setIsOpen(true);
               setIsMinimized(false);
             }}
+            aria-label="Open AARAMBH AI assistant"
             className="group flex items-center space-x-2.5 px-4 py-3 rounded-full bg-[#FE7251] hover:bg-[#E85E3E] text-white shadow-lg transition-colors cursor-pointer"
           >
             {/* Logo Container */}
@@ -856,11 +872,24 @@ export default function AskAarambhChatbot() {
         <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 animate-in fade-in duration-200">
           <div className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-xl">
             <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-5 h-5 object-contain" />
-            <div className="text-xs font-semibold text-white pr-2">AARAMBH Assistant</div>
+            <div className="flex items-center space-x-1.5 pr-2">
+              <span className="text-xs font-semibold text-white">AARAMBH Assistant</span>
+              {listening && <span title="Listening..."><Mic className="w-3 h-3 text-red-400 animate-pulse" /></span>}
+              {loading && !listening && (
+                <span title="Replying...">
+                  <span className="inline-flex items-center gap-0.5">
+                    <span className="w-1 h-1 rounded-full bg-[#FE7251] animate-bounce"></span>
+                    <span className="w-1 h-1 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.15s]"></span>
+                    <span className="w-1 h-1 rounded-full bg-[#FE7251] animate-bounce [animation-delay:0.3s]"></span>
+                  </span>
+                </span>
+              )}
+            </div>
             <button
               onClick={() => setIsMinimized(false)}
               className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer"
               title="Expand Chat"
+              aria-label="Expand chat"
             >
               <Maximize2 className="w-4 h-4" />
             </button>
@@ -868,6 +897,7 @@ export default function AskAarambhChatbot() {
               onClick={handleClose}
               className="p-1 rounded-md bg-slate-800 hover:bg-rose-900/50 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Close"
+              aria-label="Close chat"
             >
               <X className="w-4 h-4" />
             </button>
@@ -877,12 +907,12 @@ export default function AskAarambhChatbot() {
 
       {/* 3. Spacious, Systematic Big Chat Window Modal */}
       {isOpen && !isMinimized && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-900/40 backdrop-blur-2xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
           <div
             className={`bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col transition-all duration-200 ${
               isMaximized
-                ? "w-[98vw] h-[95vh]"
-                : "w-full max-w-5xl h-[85vh] max-h-[800px] min-h-[540px]"
+                ? "w-[98vw] h-[95dvh]"
+                : "w-full max-w-5xl h-[85dvh] max-h-[calc(100dvh-2rem)] sm:min-h-[540px]"
             }`}
           >
             {/* --- Top Header Bar --- */}
@@ -906,41 +936,50 @@ export default function AskAarambhChatbot() {
                 </div>
               </div>
 
-              {/* Controls */}
-              <div className="flex items-center space-x-1">
+              {/* Window Controls */}
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={handleResetChat}
-                  title="Reset Conversation"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer flex items-center space-x-1 text-xs"
+                  title="Start a new conversation"
+                  aria-label="Start a new conversation"
+                  className="inline-flex items-center gap-1.5 pl-2 pr-2 sm:pl-2.5 sm:pr-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/60 transition-colors cursor-pointer text-xs font-medium"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline text-[11px]">New Chat</span>
+                  <span className="hidden sm:inline">New Chat</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsMaximized(!isMaximized)}
-                  title={isMaximized ? "Restore Window" : "Full Screen"}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsMinimized(true)}
-                  title="Minimize"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <Minimize2 className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  title="Close (Esc)"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+
+                <div className="flex items-center rounded-lg border border-slate-700/60 bg-slate-800/50 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setIsMinimized(true)}
+                    title="Minimize to dock"
+                    aria-label="Minimize chat to dock"
+                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/70 transition-colors cursor-pointer"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="w-px h-4 bg-slate-700/60"></span>
+                  <button
+                    type="button"
+                    onClick={() => setIsMaximized(!isMaximized)}
+                    title={isMaximized ? "Exit full screen" : "Full screen"}
+                    aria-label={isMaximized ? "Exit full screen" : "Full screen"}
+                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/70 transition-colors cursor-pointer"
+                  >
+                    {isMaximized ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                  </button>
+                  <span className="w-px h-4 bg-slate-700/60"></span>
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    title="Close (Esc)"
+                    aria-label="Close chat (Esc)"
+                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-rose-400 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -965,7 +1004,7 @@ export default function AskAarambhChatbot() {
                       return (
                         <button
                           key={idx}
-                          onClick={() => handleSendMessage(top.query)}
+                          onClick={() => handleSendMessage(top.query, language)}
                           className="w-full text-left p-2.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 transition-colors group cursor-pointer"
                         >
                           <div className="flex items-center justify-between">
@@ -1038,7 +1077,7 @@ export default function AskAarambhChatbot() {
 
                         {/* Message Bubble */}
                         <div
-                          className={`max-w-[85%] rounded-xl p-3.5 text-xs sm:text-sm ${
+                          className={`max-w-[85%] min-w-0 break-words rounded-xl p-3.5 text-xs sm:text-sm ${
                             msg.role === "user"
                               ? "bg-[#FE7251] text-white rounded-tr-none"
                               : "bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-xs"
@@ -1096,15 +1135,31 @@ export default function AskAarambhChatbot() {
                             {msg.role === "assistant" && (
                               <button
                                 type="button"
-                                onClick={() =>
-                                  speakText(msg.content, msg.lang || detectQuestionLanguage(msg.content))
-                                }
-                                title="Listen to this reply"
-                                aria-label="Listen to this reply"
-                                className="inline-flex items-center gap-1 text-[10px] text-slate-400 hover:text-[#FE7251] transition-colors cursor-pointer"
+                                onClick={() => {
+                                  if (speakingId === msg.id) {
+                                    stopSpeaking();
+                                  } else {
+                                    speakText(
+                                      msg.content,
+                                      msg.lang || detectQuestionLanguage(msg.content),
+                                      msg.id
+                                    );
+                                  }
+                                }}
+                                title={speakingId === msg.id ? "Stop" : "Listen to this reply"}
+                                aria-label={speakingId === msg.id ? "Stop reading this reply" : "Listen to this reply"}
+                                className={`inline-flex items-center gap-1 text-[10px] transition-colors cursor-pointer ${
+                                  speakingId === msg.id
+                                    ? "text-[#FE7251] hover:text-[#E85E3E]"
+                                    : "text-slate-400 hover:text-[#FE7251]"
+                                }`}
                               >
-                                <Volume2 className="w-3 h-3" />
-                                <span>Listen</span>
+                                {speakingId === msg.id ? (
+                                  <VolumeX className="w-3 h-3" />
+                                ) : (
+                                  <Volume2 className="w-3 h-3" />
+                                )}
+                                <span>{speakingId === msg.id ? "Stop" : "Listen"}</span>
                               </button>
                             )}
                           </div>
@@ -1159,7 +1214,10 @@ export default function AskAarambhChatbot() {
                       ref={inputRef}
                       rows={1}
                       value={input}
-                      onChange={(e) => setInput(e.target.value)}
+                      onChange={(e) => {
+                      setInput(e.target.value);
+                      autoResizeTextarea(e.target);
+                    }}
                       onKeyDown={handleKeyDown}
                       placeholder={
                         isDashboard
@@ -1193,13 +1251,14 @@ export default function AskAarambhChatbot() {
                     </button>
                   </div>
 
-                  <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-400 px-0.5">
+                  <div className="mt-1.5 flex items-center justify-between gap-2 flex-wrap text-[10px] text-slate-400 px-0.5">
                     <span>Press <strong>Enter ↵</strong> to send, <strong>Shift + Enter</strong> for newline</span>
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
                         onClick={toggleVoice}
                         title={voiceEnabled ? "Voice replies on — click to mute" : "Voice replies off — click to enable"}
+                        aria-pressed={voiceEnabled}
                         className={`inline-flex items-center gap-1 font-medium transition-colors cursor-pointer ${
                           voiceEnabled ? "text-[#FE7251]" : "text-slate-400 hover:text-slate-600"
                         }`}
@@ -1207,7 +1266,7 @@ export default function AskAarambhChatbot() {
                         {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
                         <span>{voiceEnabled ? "Voice ON" : "Voice OFF"}</span>
                       </button>
-                      <span>{t("topbar.portal_title", "Single Window Clearance Portal")} • {language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
+                      <span className="hidden md:inline">{t("topbar.portal_title", "Single Window Clearance Portal")} • {language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
                     </div>
                   </div>
                 </div>
