@@ -32,49 +32,7 @@ interface CrossDocField {
   docBName: string;
 }
 
-// Tolerance threshold (2%)
-const TOLERANCE_PERCENTAGE = 2.0;
-
-/**
- * Real comparison function to calculate percentage difference between numeric strings
- * or exact equality for textual strings.
- */
-function compareFieldValues(valA: string, valB: string): {
-  isMismatch: boolean;
-  diffPercent: number;
-  valANum: number | null;
-  valBNum: number | null;
-} {
-  if (!valA || !valB) {
-    return { isMismatch: false, diffPercent: 0, valANum: null, valBNum: null };
-  }
-
-  // Extract pure numbers if applicable
-  const cleanA = valA.replace(/[^0-9.]/g, "");
-  const cleanB = valB.replace(/[^0-9.]/g, "");
-
-  const numA = parseFloat(cleanA);
-  const numB = parseFloat(cleanB);
-
-  // If both are numbers
-  if (!isNaN(numA) && !isNaN(numB) && numA > 0 && numB > 0) {
-    const diff = Math.abs(numA - numB);
-    const maxVal = Math.max(numA, numB);
-    const diffPercent = (diff / maxVal) * 100;
-    const isMismatch = diffPercent > TOLERANCE_PERCENTAGE;
-
-    return { isMismatch, diffPercent, valANum: numA, valBNum: numB };
-  }
-
-  // Fallback to strict normalized text comparison
-  const textMismatch = valA.trim().toLowerCase() !== valB.trim().toLowerCase();
-  return {
-    isMismatch: textMismatch,
-    diffPercent: textMismatch ? 100 : 0,
-    valANum: null,
-    valBNum: null,
-  };
-}
+import { compareFieldValues } from "@/lib/fieldComparison";
 
 export default function PreValidationPage() {
   const {

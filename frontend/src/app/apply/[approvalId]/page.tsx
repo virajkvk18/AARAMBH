@@ -29,6 +29,7 @@ import {
   User,
   Check,
   Layers,
+  FolderLock,
 } from "lucide-react";
 import {
   getApprovalConfig,
@@ -36,18 +37,71 @@ import {
   FormFieldConfig,
   DocumentRequirementConfig,
 } from "@/data/approvalsRegistry";
-import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useEnterpriseStore, UploadedDocument } from "@/store/enterpriseStore";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import {
+  buildAutofillSuggestions,
+  summarizeAutofill,
+  applyAutofill,
+  saveFilingRecord,
+  getPreviousFiling,
+  estimateTimeSavedMinutes,
+  SOURCE_META,
+  AutofillReport,
+} from "@/lib/formAutofill";
+
+const VAULT_MATCH_STOPWORDS = new Set([
+  "the",
+  "and",
+  "for",
+  "with",
+  "from",
+  "that",
+  "this",
+  "under",
+  "act",
+  "form",
+  "certificate",
+  "documents",
+  "document",
+  "plan",
+  "policy",
+  "note",
+]);
+
+function matchVaultDocument(title: string, vaultDocs: UploadedDocument[]): UploadedDocument | null {
+  const keywords = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !VAULT_MATCH_STOPWORDS.has(w));
+
+  let best: UploadedDocument | null = null;
+  let bestScore = 0;
+  vaultDocs.forEach((doc) => {
+    const name = `${doc.name} ${(doc.extractedFields && Object.keys(doc.extractedFields).join(" ")) || ""}`.toLowerCase();
+    let score = 0;
+    keywords.forEach((kw) => {
+      if (name.includes(kw)) score += 1;
+    });
+    if (score > bestScore) {
+      bestScore = score;
+      best = doc;
+    }
+  });
+  return bestScore >= 1 ? best : null;
+}
 
 interface UploadedFileRecord {
-  file: File;
+  file?: File;
   name: string;
   size: number;
   type: string;
   uploadedAt: string;
-  previewUrl: string;
+  previewUrl?: string;
+  fromVault?: boolean;
 }
 
 export default function ApplyApprovalPage({
@@ -107,6 +161,12 @@ export default function ApplyApprovalPage({
   const [draftSavedToast, setDraftSavedToast] = useState<string | null>(null);
   const [hasRestoredDraft, setHasRestoredDraft] = useState<boolean>(false);
 
+  // AI Autofill & Cross-Filing Reconciliation
+  const [autofillReport, setAutofillReport] = useState<AutofillReport | null>(null);
+  const [previousFilingDate, setPreviousFilingDate] = useState<string | null>(null);
+  const [showAutofill, setShowAutofill] = useState<boolean>(true);
+  const [autofillToast, setAutofillToast] = useState<string | null>(null);
+
   // Initialize config defaults and check for saved draft
   useEffect(() => {
     if (!config) return;
@@ -148,7 +208,21 @@ export default function ApplyApprovalPage({
     } catch {
       prefillFromStore(initialValues);
     }
-  }, [config?.meta.id]);
+
+    // AI Autofill: merge Master CAF, OCR vault & previous-filing suggestions into empty fields
+    const result = buildAutofillSuggestions({
+      user,
+      store: useEnterpriseStore.getState(),
+      approvalId: config.meta.id,
+    });
+    setAutofillReport(summarizeAutofill(result.entries, result.conflicts));
+    setPreviousFilingDate(getPreviousFiling(config.meta.id)?.submittedAt ?? null);
+    setFormData((prev) => ({
+      ...prev,
+      ...applyAutofill(prev, result.entries),
+    }));
+    setAutofillToast(null);
+  }, [config?.meta.id, user]);
 
   const prefillFromStore = (initialProjectValues?: Record<string, any>) => {
     const updates: Record<string, any> = { ...initialProjectValues };
@@ -493,6 +567,9 @@ export default function ApplyApprovalPage({
     setSubmissionTime(submissionFormatted);
     setSlaTargetDate(targetFormatted);
     setIsSubmitted(true);
+
+    // Remember this filing for AI autofill in future applications
+    saveFilingRecord(config.meta.id, formData);
 
     // Save to enterpriseStore if available
     try {
@@ -888,6 +965,148 @@ export default function ApplyApprovalPage({
             )}
 
             <form onSubmit={handleSubmit} noValidate>
+              {/* AI Autofill & Cross-Filing Reconciliation Panel */}
+              {autofillReport && (
+                <div className="mb-6 rounded-2xl border border-[#FED17A] bg-white shadow-xs overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowAutofill((s) => !s)}
+                    className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-[#FFFDF9] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center justify-center shrink-0">
+                        <Sparkles className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-slate-900">
+                          AI Autofill & Cross-Filing Reconciliation
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          {autofillReport.prefilledCount} fields auto-suggested from{" "}
+                          {Object.values(autofillReport.sourceCounts).filter((c) => c > 0).length} source
+                          {Object.values(autofillReport.sourceCounts).filter((c) => c > 0).length > 1 ? "s" : ""}
+                          {autofillReport.conflicts.length > 0
+                            ? ` • ${autofillReport.conflicts.length} field conflict${autofillReport.conflicts.length > 1 ? "s" : ""} detected`
+                            : undefined}
+                          {previousFilingDate
+                            ? ` • previously filed ${new Date(previousFilingDate).toLocaleDateString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })}`
+                            : undefined}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF2DF] text-[11px] font-bold text-[#9B2A48]">
+                        Saves ~{estimateTimeSavedMinutes(autofillReport.entries)} min of typing
+                      </span>
+                      <ChevronRight
+                        className={`w-4 h-4 text-slate-400 transition-transform ${showAutofill ? "rotate-90" : ""}`}
+                      />
+                    </div>
+                  </button>
+
+                  {showAutofill && (
+                    <div className="px-5 pb-5 pt-1 border-t border-[#F0E5E0]">
+                      {/* Source summary chips */}
+                      <div className="flex flex-wrap items-center gap-2 mt-4">
+                        {(Object.keys(autofillReport.sourceCounts) as (keyof typeof SOURCE_META)[])
+                          .filter((key) => autofillReport.sourceCounts[key] > 0)
+                          .map((key) => (
+                            <span
+                              key={key}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600"
+                            >
+                              {SOURCE_META[key].short} × {autofillReport.sourceCounts[key]}
+                            </span>
+                          ))}
+                      </div>
+
+                      {/* Conflicts */}
+                      {autofillReport.conflicts.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-[11px] font-bold text-[#9B2A48] uppercase tracking-wider">
+                            Cross-source discrepancies — review before submit
+                          </p>
+                          {autofillReport.conflicts.slice(0, 3).map((c) => (
+                            <div
+                              key={c.fieldKey}
+                              className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900"
+                            >
+                              <p className="text-xs font-bold">{c.label}</p>
+                              <p className="text-[11px] mt-1 text-amber-800 leading-relaxed">
+                                {c.values.map((v) => `${v.label} says “${v.value}”`).join(" • ")}
+                                {c.diffPercent > 0 && c.diffPercent < 100
+                                  ? ` (diff ${c.diffPercent.toFixed(1)}%)`
+                                  : ""}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Suggested fields */}
+                      <ul className="mt-4 divide-y divide-slate-100">
+                        {autofillReport.entries.slice(0, 14).map((entry) => {
+                          const current = formData[entry.fieldKey];
+                          const isEmpty = current === undefined || current === null || String(current).trim() === "";
+                          const isApplied = !isEmpty && String(current) === String(entry.value);
+                          return (
+                            <li key={entry.fieldKey} className="flex items-center justify-between gap-3 py-2.5">
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold text-slate-800 truncate">{entry.label}</p>
+                                <p className="text-[11px] text-slate-500 truncate">
+                                  {isApplied ? `Prefilled: ${String(entry.value)}` : "Will auto-fill empty field"}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                                  {SOURCE_META[entry.source].short} {Math.round(entry.confidence * 100)}%
+                                </span>
+                                {isApplied ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700">
+                                    <CheckCircle2 className="w-3.5 h-3.5" /> Applied
+                                  </span>
+                                ) : isEmpty ? (
+                                  <span className="text-[10px] font-bold text-slate-400">Pending</span>
+                                ) : (
+                                  <span className="text-[10px] font-bold text-amber-600">You changed</span>
+                                )}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+
+                      <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!autofillReport) return;
+                            setFormData((prev) => ({ ...prev, ...applyAutofill(prev, autofillReport.entries) }));
+                            setAutofillToast("Autofill applied — blank fields filled from your past filings.");
+                            setTimeout(() => setAutofillToast(null), 4000);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" /> Re-apply suggested values
+                        </button>
+                        <p className="text-[10px] text-slate-400 leading-relaxed">
+                          Autofill sources: Master CAF, OCR vault documents, and this approval&apos;s previous filings. It never
+                          overwrites values you entered.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {autofillToast && (
+                <div className="mb-4 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                  {autofillToast}
+                </div>
+              )}
               {/* ========================================================== */}
               {/* STEP 1: APPLICANT DETAILS */}
               {/* ========================================================== */}
@@ -1324,6 +1543,7 @@ export default function ApplyApprovalPage({
                       const fileRecord = uploadedFiles[doc.id];
                       const isUploaded = !!fileRecord;
                       const hasError = !!errors[`doc_${doc.id}`];
+                      const vaultMatch = matchVaultDocument(doc.title, enterpriseStore.uploadedDocuments || []);
 
                       return (
                         <div
@@ -1364,19 +1584,27 @@ export default function ApplyApprovalPage({
                                       {fileRecord.name}
                                     </p>
                                     <span className="text-[10px] text-slate-400 font-mono">
-                                      {(fileRecord.size / 1024 / 1024).toFixed(2)} MB
+                                      {fileRecord.fromVault ? (
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#9B2A48]">
+                                          <CheckCircle2 className="w-3 h-3" /> Reused from Vault
+                                        </span>
+                                      ) : (
+                                        `${(fileRecord.size / 1024 / 1024).toFixed(2)} MB`
+                                      )}
                                     </span>
                                   </div>
 
-                                  <a
-                                    href={fileRecord.previewUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
-                                    title="View Document"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </a>
+                                  {fileRecord.previewUrl && (
+                                    <a
+                                      href={fileRecord.previewUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
+                                      title="View Document"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </a>
+                                  )}
 
                                   <button
                                     type="button"
@@ -1388,16 +1616,53 @@ export default function ApplyApprovalPage({
                                   </button>
                                 </div>
                               ) : (
-                                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-[#9B2A48]/30 hover:border-[#9B2A48] bg-white hover:bg-[#9B2A48]/5 text-xs font-bold text-[#9B2A48] transition-all cursor-pointer">
-                                  <UploadCloud className="w-4 h-4" />
-                                  <span>Choose File</span>
-                                  <input
-                                    type="file"
-                                    accept={doc.allowedFormats.join(",")}
-                                    onChange={(e) => handleFileUpload(doc.id, e)}
-                                    className="hidden"
-                                  />
-                                </label>
+                                <div className="flex items-center gap-2">
+                                  {vaultMatch && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setUploadedFiles((prev) => ({
+                                          ...prev,
+                                          [doc.id]: {
+                                            name: vaultMatch.name,
+                                            size: vaultMatch.size || 0,
+                                            type: vaultMatch.type || "application/pdf",
+                                            uploadedAt:
+                                              vaultMatch.uploadedAt || new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                                            previewUrl: vaultMatch.fileUrl || "",
+                                            fromVault: true,
+                                          },
+                                        }));
+                                        if (errors[`doc_${doc.id}`]) {
+                                          setErrors((prev) => {
+                                            const copy = { ...prev };
+                                            delete copy[`doc_${doc.id}`];
+                                            return copy;
+                                          });
+                                        }
+                                      }}
+                                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#9B2A48]/20 bg-[#FFF7F0] hover:bg-[#FFF2DF] text-xs font-bold text-[#9B2A48] transition-all cursor-pointer"
+                                      title="Reuse a document already parsed & verified in your Vault"
+                                    >
+                                      <FolderLock className="w-4 h-4 text-[#FE7251]" />
+                                      <span className="hidden sm:inline">Reuse from Vault</span>
+                                      <span className="text-[10px] font-mono text-[#886A75] truncate max-w-[120px]">
+                                        {vaultMatch.name}
+                                      </span>
+                                    </button>
+                                  )}
+
+                                  <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-[#9B2A48]/30 hover:border-[#9B2A48] bg-white hover:bg-[#9B2A48]/5 text-xs font-bold text-[#9B2A48] transition-all cursor-pointer">
+                                    <UploadCloud className="w-4 h-4" />
+                                    <span>Choose File</span>
+                                    <input
+                                      type="file"
+                                      accept={doc.allowedFormats.join(",")}
+                                      onChange={(e) => handleFileUpload(doc.id, e)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                </div>
                               )}
                             </div>
                           </div>

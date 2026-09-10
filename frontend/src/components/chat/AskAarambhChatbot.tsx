@@ -586,6 +586,11 @@ export default function AskAarambhChatbot() {
     });
   };
 
+  const handleClose = () => {
+    stopSpeaking();
+    setIsOpen(false);
+  };
+
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const warm = () => {
@@ -603,6 +608,7 @@ export default function AskAarambhChatbot() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
         setIsOpen(false);
       }
     };
@@ -859,7 +865,7 @@ export default function AskAarambhChatbot() {
               <Maximize2 className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               className="p-1 rounded-md bg-slate-800 hover:bg-rose-900/50 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Close"
             >
@@ -929,7 +935,7 @@ export default function AskAarambhChatbot() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleClose}
                   title="Close (Esc)"
                   className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
                 >
