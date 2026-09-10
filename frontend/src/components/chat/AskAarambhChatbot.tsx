@@ -14,6 +14,8 @@ import {
   Maximize2,
   Mic,
   Square,
+  Volume2,
+  VolumeX,
   RefreshCw,
   Building2,
   ShieldCheck,
@@ -43,6 +45,7 @@ interface Message {
   content: string;
   timestamp: string;
   userQueryContext?: string;
+  lang?: "en" | "mr" | "hi";
 }
 
 interface ActionItem {
@@ -79,6 +82,35 @@ interface ISpeechRecognition extends EventTarget {
   onresult: ((event: ISpeechRecognitionEvent) => void) | null;
   onend: (() => void) | null;
   onerror: (() => void) | null;
+}
+
+function detectQuestionLanguage(text: string): "en" | "mr" | "hi" {
+  if (!/[\u0900-\u097F]/.test(text)) return "en";
+  if (text.includes("\u0933")) return "mr";
+  const hiWords = ["हैं", "क्या", "और", "में", "सकते", "चाहिए", "करने", "कीजिए", "जाए", "है"];
+  const mrWords = ["आहे", "आहेत", "मध्ये", "साठी", "नाही", "येथे", "झाले", "करण्यासाठी", "होईल", "राहील"];
+  let hiScore = 0;
+  let mrScore = 0;
+  for (const w of hiWords) if (text.includes(w)) hiScore++;
+  for (const w of mrWords) if (text.includes(w)) mrScore++;
+  if (mrScore > 0 && mrScore >= hiScore) return "mr";
+  return "hi";
+}
+
+function stripActionTags(text: string): string {
+  return text.replace(/\[action:[^\]]*\]/g, "").trim();
+}
+
+function pickSpeechVoice(lang: string): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+  const prefix = lang.split("-")[0].toLowerCase();
+  const voices = window.speechSynthesis.getVoices();
+  return (
+    voices.find((v) => v.lang.toLowerCase().startsWith(`${prefix}-`)) ||
+    voices.find((v) => v.lang.toLowerCase().split("-")[0] === prefix) ||
+    voices.find((v) => v.lang.toLowerCase().startsWith(lang.toLowerCase())) ||
+    null
+  );
 }
 
 const TOPIC_SHORTCUTS = [
@@ -492,6 +524,48 @@ export default function AskAarambhChatbot() {
     };
   }, []);
 
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+
+  const speakText = (text: string, lang: "en" | "mr" | "hi") => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const clean = stripActionTags(text);
+    if (!clean) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(clean);
+    const voice = pickSpeechVoice(lang);
+    if (voice) utterance.voice = voice;
+    utterance.lang = lang === "mr" ? "mr-IN" : lang === "hi" ? "hi-IN" : "en-IN";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  const toggleVoice = () => {
+    setVoiceEnabled((prev) => {
+      if (prev) stopSpeaking();
+      return !prev;
+    });
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const warm = () => {
+      window.speechSynthesis.getVoices();
+    };
+    warm();
+    window.speechSynthesis.addEventListener("voiceschanged", warm);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", warm);
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -541,11 +615,14 @@ export default function AskAarambhChatbot() {
     const query = textToSend || input;
     if (!query.trim() || loading) return;
 
+    const detectedLang = detectQuestionLanguage(query.trim());
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: "user",
       content: query.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      lang: detectedLang,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -568,7 +645,7 @@ export default function AskAarambhChatbot() {
         body: JSON.stringify({
           messages: history,
           userApiKey: savedKey || undefined,
-          language,
+          language: detectedLang,
         }),
       });
 
@@ -578,27 +655,31 @@ export default function AskAarambhChatbot() {
         throw new Error(data.error || "Failed to fetch response from AARAMBH advisory service");
       }
 
+      const replyText =
+        data.content ||
+        (detectedLang === "mr"
+          ? "सध्या आपल्या विनंतीवर प्रक्रिया करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा १८००-१२०-८०४० वर संपर्क साधा."
+          : detectedLang === "hi"
+          ? "वर्तमान में आपके अनुरोध को संसाधित नहीं किया जा सका। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।"
+          : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040.");
+
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         role: "assistant",
-        content:
-          data.content ||
-          (language === "mr"
-            ? "सध्या आपल्या विनंतीवर प्रक्रिया करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा १८००-१२०-८०४० वर संपर्क साधा."
-            : language === "hi"
-            ? "वर्तमान में आपके अनुरोध को संसाधित नहीं किया जा सका। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।"
-            : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040."),
+        content: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         userQueryContext: query.trim(),
+        lang: detectedLang,
       };
 
       setMessages((prev) => [...prev, botMessage]);
+      if (voiceEnabled) speakText(replyText, detectedLang);
     } catch (err: unknown) {
       console.error("Chat error:", err);
       const errorFallback =
-        language === "mr"
+        detectedLang === "mr"
           ? "या क्षणी आपल्या विनंतीवर प्रक्रिया करण्यात अडचण येत आहे. कृपया पुन्हा विचारून पहा किंवा १८००-१२०-८०४० वर संपर्क साधा."
-          : language === "hi"
+          : detectedLang === "hi"
           ? "इस समय आपके अनुरोध को संसाधित करने में असमर्थ। कृपया पुनः प्रयास करें या 1800-120-8040 पर संपर्क करें।"
           : "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at 1800-120-8040.";
 
@@ -608,6 +689,7 @@ export default function AskAarambhChatbot() {
         content: err instanceof Error ? err.message : errorFallback,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         userQueryContext: query.trim(),
+        lang: detectedLang,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -623,6 +705,7 @@ export default function AskAarambhChatbot() {
   };
 
   const handleResetChat = () => {
+    stopSpeaking();
     const text = isDashboard
       ? DASHBOARD_WELCOME_MAP[language] || DASHBOARD_WELCOME_MAP.en
       : LANDING_WELCOME_MAP[language] || LANDING_WELCOME_MAP.en;
@@ -963,13 +1046,29 @@ export default function AskAarambhChatbot() {
                             </div>
                           )}
 
-                          <span
-                            className={`text-[10px] mt-1.5 block text-right ${
-                              msg.role === "user" ? "text-orange-100" : "text-slate-400"
-                            }`}
-                          >
-                            {msg.timestamp}
-                          </span>
+                          <div className="mt-1.5 flex items-center justify-between gap-2">
+                            <span
+                              className={`text-[10px] block text-right ${
+                                msg.role === "user" ? "text-orange-100" : "text-slate-400"
+                              }`}
+                            >
+                              {msg.timestamp}
+                            </span>
+                            {msg.role === "assistant" && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  speakText(msg.content, msg.lang || detectQuestionLanguage(msg.content))
+                                }
+                                title="Listen to this reply"
+                                aria-label="Listen to this reply"
+                                className="inline-flex items-center gap-1 text-[10px] text-slate-400 hover:text-[#FE7251] transition-colors cursor-pointer"
+                              >
+                                <Volume2 className="w-3 h-3" />
+                                <span>Listen</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -1057,7 +1156,20 @@ export default function AskAarambhChatbot() {
 
                   <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-400 px-0.5">
                     <span>Press <strong>Enter ↵</strong> to send, <strong>Shift + Enter</strong> for newline</span>
-                    <span>{t("topbar.portal_title", "Single Window Clearance Portal")} • {language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={toggleVoice}
+                        title={voiceEnabled ? "Voice replies on — click to mute" : "Voice replies off — click to enable"}
+                        className={`inline-flex items-center gap-1 font-medium transition-colors cursor-pointer ${
+                          voiceEnabled ? "text-[#FE7251]" : "text-slate-400 hover:text-slate-600"
+                        }`}
+                      >
+                        {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                        <span>{voiceEnabled ? "Voice ON" : "Voice OFF"}</span>
+                      </button>
+                      <span>{t("topbar.portal_title", "Single Window Clearance Portal")} • {language === "mr" ? "महाराष्ट्र शासन" : language === "hi" ? "महाराष्ट्र सरकार" : "Govt. of Maharashtra"}</span>
+                    </div>
                   </div>
                 </div>
               </div>
