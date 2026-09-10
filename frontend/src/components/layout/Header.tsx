@@ -22,7 +22,7 @@ export default function Header() {
     user ? target : `/login?redirect=${encodeURIComponent(target)}`;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white text-slate-900 border-b border-slate-200 shadow-xs">
+    <header className="sticky top-0 z-40 w-full shrink-0 bg-white text-slate-900 border-b border-slate-200 shadow-xs">
       {/* Main Navigation Bar */}
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-18">

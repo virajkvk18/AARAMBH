@@ -25,7 +25,7 @@ export default function TopUtilityBar() {
   };
 
   return (
-    <div className="w-full bg-slate-900 text-slate-300 text-[11px] border-b border-slate-800 z-50 select-none">
+    <div className="w-full shrink-0 bg-slate-900 text-slate-300 text-[11px] border-b border-slate-800 z-50 select-none">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-8 flex items-center justify-between">
         {/* Left: Government of Maharashtra Statement */}
         <div className="flex items-center space-x-2">

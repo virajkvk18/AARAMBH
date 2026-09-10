@@ -63,7 +63,7 @@ export default function DashboardLayout({
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-[calc(100vh-140px)] bg-slate-50 flex items-center justify-center" aria-busy="true">
+      <div className="h-[calc(100vh-96px)] sm:h-[calc(100vh-104px)] h-[calc(100dvh-96px)] sm:h-[calc(100dvh-104px)] bg-slate-50 flex items-center justify-center" aria-busy="true">
         <div className="flex flex-col items-center space-y-3">
           <div className="w-8 h-8 border-3 border-[#FE7251] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-medium text-slate-500">Loading workspace...</span>
@@ -178,24 +178,24 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-slate-50 flex">
+    <div className="h-[calc(100vh-96px)] sm:h-[calc(100vh-104px)] h-[calc(100dvh-96px)] sm:h-[calc(100dvh-104px)] w-full bg-slate-50 flex overflow-hidden">
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-xs"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* LEFT PERSISTENT SIDEBAR */}
       <aside
-        className={`fixed lg:sticky top-16 sm:top-18 z-40 h-[calc(100vh-64px)] sm:h-[calc(100vh-72px)] bg-white text-slate-700 border-r border-slate-200 transition-all duration-200 flex flex-col justify-between ${
-          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 h-full bg-white text-slate-700 border-r border-slate-200 transition-all duration-200 flex flex-col justify-between shrink-0 lg:static lg:inset-auto lg:z-20 lg:h-full ${
+          mobileOpen ? "translate-x-0 w-64 shadow-2xl" : "-translate-x-full lg:translate-x-0"
         } ${collapsed ? "lg:w-18" : "lg:w-64"}`}
       >
         {/* Top Header in Sidebar */}
         <div className="flex flex-col min-h-0 flex-1">
-          <div className="p-3.5 border-b border-slate-100 flex items-center justify-between">
+          <div className="p-3.5 border-b border-slate-100 flex items-center justify-between shrink-0">
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : "block"}`}>
               <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
                 {isOfficer ? "GOV" : "ENT"}
@@ -230,14 +230,14 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              className="lg:hidden p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation Links with grouped sections */}
-          <nav className="p-2.5 space-y-3 overflow-y-auto flex-1">
+          <nav className="p-2.5 space-y-3 overflow-y-auto flex-1 min-h-0">
             {sections.map((section, idx) => (
               <div key={idx}>
                 {!collapsed && (
@@ -281,7 +281,7 @@ export default function DashboardLayout({
         </div>
 
         {/* User Card at bottom of Sidebar */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50/80">
+        <div className="p-3 border-t border-slate-200 bg-slate-50/80 shrink-0">
           <div className={`flex items-center justify-between ${collapsed ? "lg:flex-col lg:gap-2" : ""}`}>
             <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : ""}`}>
               <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
@@ -306,9 +306,9 @@ export default function DashboardLayout({
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Top Mobile Bar */}
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shrink-0">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
@@ -324,7 +324,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <div className="flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           {children}
         </div>
       </div>
