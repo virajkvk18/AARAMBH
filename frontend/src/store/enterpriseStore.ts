@@ -710,7 +710,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           clearances: clearances.length > 0 ? clearances : INITIAL_DEFAULT_CLEARANCES,
           applicableIncentives: incentives,
           policyIncentiveDetails: policyDetails || state.policyIncentiveDetails,
-          isAssessed: true,
+isAssessed: false,
         })),
 
       submitApplication: (ref = "MH-CAF-2026-00412") =>

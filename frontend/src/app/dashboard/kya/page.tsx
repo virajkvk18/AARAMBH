@@ -840,6 +840,17 @@ export default function KYAWizardPage() {
             </div>
           )}
 
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-bold">Onboarding complete — your AARAMBH workspace is live</p>
+              <p className="text-xs text-emerald-800 mt-0.5">
+                This checklist is generated only for <strong>{selectedSectorKey}</strong>. Your dashboard, SLA tracker, DAG pipeline
+                and inspections now reflect only these sector-specific approvals and incentives.
+              </p>
+            </div>
+          </div>
+
           {/* 2. STATUTORY CLEARANCES & DAG WORKFLOW */}
           <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
             <div className="p-6 border-b border-[#F0E5E0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -853,6 +864,14 @@ export default function KYAWizardPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Go to Dashboard</span>
+                </Link>
+
                 <Link
                   href="/dashboard/vault"
                   className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[#FFF2DF] hover:bg-[#FFE6C4] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-all"

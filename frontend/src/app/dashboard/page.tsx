@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Compass,
   FolderLock,
@@ -13,10 +14,14 @@ import {
   FileSpreadsheet,
   CalendarCheck,
   TrendingDown,
+  Building2,
+  SlidersHorizontal,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useEnterpriseStore, INITIAL_DEFAULT_CLEARANCES } from "@/store/enterpriseStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -321,6 +326,119 @@ export default function DashboardHomePage() {
         );
     }
   };
+
+  const router = useRouter();
+
+  const runSampleProject = () => {
+    const store = useEnterpriseStore.getState();
+    store.setFormData({
+      sector: "Electric Vehicles",
+      locationZone: "Ranjangoan MIDC (Chhatrapati Sambhajinagar)",
+      capexCr: 120,
+      powerLoadKva: 400,
+      waterDemandKld: 60,
+      workforceSize: 400,
+    });
+    store.setAssessmentResult(
+      "red",
+      INITIAL_DEFAULT_CLEARANCES,
+      [
+        "EV Policy 2021 — 100% electricity duty exemption for 10 years",
+        "20% additional capital subsidy on building, plant & machinery (thrust-sector top-up)",
+        "100% SGST reimbursement up to 7 years (IPS 2019)",
+      ],
+      undefined
+    );
+  };
+
+  // Onboarding gate — show guided profile-completion flow before features unlock
+  if (!isAssessed && !isOfficer) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-6">
+        <Card className="overflow-hidden">
+          <div className="bg-gradient-to-r from-[#16060E] to-[#3A1020] px-6 sm:px-8 py-8 text-white">
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FE7251] text-white text-xs font-bold uppercase tracking-wider">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Single Window Onboarding</span>
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-3">
+              Complete your business profile<br />to unlock AARAMBH
+            </h1>
+            <p className="text-sm text-white/70 mt-2 leading-relaxed">
+              AARAMBH generates a <strong className="text-white">customised approval checklist, incentives and SLA map</strong>{" "}
+              that is unique to your sector, location and project size — not a generic list.
+            </p>
+          </div>
+
+          <div className="p-6 sm:p-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                {
+                  step: "Step 1",
+                  title: "Enterprise & Identity",
+                  desc: "Business name, PAN/GSTIN, sector — synced from DigiLocker.",
+                  icon: <Building2 className="w-4.5 h-4.5 text-[#FE7251]" />,
+                },
+                {
+                  step: "Step 2",
+                  title: "Project Parameters",
+                  desc: "Location (MIDC/Non-MIDC), capex, power load, workforce, water demand.",
+                  icon: <SlidersHorizontal className="w-4.5 h-4.5 text-[#FE7251]" />,
+                },
+                {
+                  step: "Step 3",
+                  title: "Intelligent Assessment",
+                  desc: "Rules engine returns only your applicable approvals, risk tier & incentives.",
+                  icon: <Sparkles className="w-4.5 h-4.5 text-[#FE7251]" />,
+                },
+              ].map((s, idx) => (
+                <div key={idx} className="p-4 rounded-xl border border-[#F0E5E0] bg-[#FFFDFC]">
+                  <div className="w-9 h-9 rounded-lg bg-[#FFF2DF] text-[#9B2A48] flex items-center justify-center mb-2.5">
+                    {s.icon}
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#FE7251]">{s.step}</p>
+                  <h3 className="text-sm font-bold text-slate-900 mt-0.5">{s.title}</h3>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <Button onClick={() => router.push("/dashboard/kya")} className="w-full sm:w-auto">
+                <Compass className="w-4 h-4" />
+                <span>Start Business Onboarding</span>
+              </Button>
+              <button
+                type="button"
+                onClick={runSampleProject}
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#FED17A] text-[#9B2A48] text-xs font-bold shadow-xs transition-colors cursor-pointer hover:bg-[#FFF7F0]"
+              >
+                <Zap className="w-4 h-4" />
+                <span>Explore with Sample EV Project</span>
+              </button>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>
+                Already assessed?{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/dashboard/kya")}
+                  className="text-[#FE7251] font-semibold hover:underline cursor-pointer"
+                >
+                  Re-run assessment
+                </button>
+              </span>
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-[#FE7251]" />
+                No manual entry of clearances — everything is computed.
+              </span>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
