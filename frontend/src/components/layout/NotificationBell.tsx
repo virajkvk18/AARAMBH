@@ -7,19 +7,20 @@ import NotificationDropdown from './NotificationDropdown';
 
 export default function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
 
-  const notifications = useNotificationStore((state) => state.notifications);
+  const notifications = useNotificationStore(
+    (state) => state.notifications
+  );
 
+  // Rehydrate Zustand from localStorage only after the
+  // initial server/client render has completed.
   useEffect(() => {
-    setHydrated(true);
+    useNotificationStore.persist.rehydrate();
   }, []);
 
-  // Keep SSR and the first client render identical.
-  // Only show persisted notification state after hydration.
-  const unread = hydrated
-    ? notifications.filter((notification) => !notification.read).length
-    : 0;
+  const unread = notifications.filter(
+    (notification) => !notification.read
+  ).length;
 
   const toggle = () => setOpen((prev) => !prev);
 
