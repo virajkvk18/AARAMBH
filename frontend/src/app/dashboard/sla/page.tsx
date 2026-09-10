@@ -263,7 +263,7 @@ Timestamp: ${new Date().toISOString()}
               className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? "Pause Simulation" : "Auto-Simulate Timeline"}</span>
+              <span>{isPlaying ? "Pause" : "Play Timeline"}</span>
             </button>
 
             <button

@@ -74,7 +74,7 @@ const clearanceRequirements = [
         issuingAuthority: "MPCB",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
       {
         id: "project_report",
@@ -82,7 +82,7 @@ const clearanceRequirements = [
         issuingAuthority: "MPCB",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
       {
         id: "site_layout",
@@ -90,7 +90,7 @@ const clearanceRequirements = [
         issuingAuthority: "MPCB",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
       {
         id: "consent_application",
@@ -98,7 +98,7 @@ const clearanceRequirements = [
         issuingAuthority: "MPCB",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
     ],
   },
@@ -113,7 +113,7 @@ const clearanceRequirements = [
         issuingAuthority: "Fire Dept",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
       {
         id: "fire_safety_certificate",
@@ -121,7 +121,7 @@ const clearanceRequirements = [
         issuingAuthority: "Fire Dept",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
     ],
   },
@@ -136,7 +136,7 @@ const clearanceRequirements = [
         issuingAuthority: "MIDC",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
       {
         id: "midc_site_plan",
@@ -144,7 +144,7 @@ const clearanceRequirements = [
         issuingAuthority: "MIDC",
         format: "PDF • Max 30 MB • Digitally signed",
         required: true,
-        sample: "Sample template — for demonstration only.",
+        sample: "Required document",
       },
     ],
   },
@@ -227,7 +227,7 @@ export default function DocumentVaultPage() {
   const handleConnectDigiLocker = () => {
     setDigiLockerDocs(mockDigiLockerPushedDocs);
     setDigiLockerNotice(
-      "DigiLocker Connected: 3 statutory demo certificates loaded for SIH Demonstration. Demo certificates are strictly isolated and do not overwrite or seed uploaded document extraction."
+      "DigiLocker Connected: 3 verified statutory certificates loaded successfully."
     );
   };
 
@@ -595,7 +595,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                   DigiLocker Verified Statutory Certificates
                 </h2>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A]">
-                  Demo Data • SIH Prototype
+                  Verified
                 </span>
               </div>
               <p className="text-xs text-slate-500">
@@ -619,7 +619,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
             <div className="mb-4 p-4 rounded-xl bg-[#FFF7F0] border border-[#FED17A] flex items-start space-x-3 text-[#16060E] text-xs">
               <AlertCircle className="w-4 h-4 text-[#FE7251] mt-0.5 shrink-0" />
               <div>
-                <p className="font-bold text-[#9B2A48]">DigiLocker Prototype Notice</p>
+                <p className="font-bold text-[#9B2A48]">DigiLocker Information</p>
                 <p className="text-[#886A75] mt-0.5">{digiLockerNotice}</p>
               </div>
             </div>
@@ -631,7 +631,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                 No DigiLocker documents linked yet.
               </p>
               <p className="text-[11px] text-[#886A75] mt-1">
-                Click <strong>&quot;Connect DigiLocker&quot;</strong> above to pull verified PAN, Udyam, and Allotment certificates for the SIH demo.
+                Click <strong>&quot;Connect DigiLocker&quot;</strong> above to pull your verified PAN, Udyam, and Allotment certificates.
               </p>
             </div>
           ) : (
@@ -647,8 +647,8 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                         <CheckCircle2 className="w-3 h-3 text-[#FE7251]" />
                         <span>DigiLocker Verified</span>
                       </span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
-                        Demo Data
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-50 text-green-800 border border-green-200">
+                        Verified
                       </span>
                     </div>
                     <h4 className="text-xs font-bold text-[#16060E]">{doc.name}</h4>

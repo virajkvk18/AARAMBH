@@ -274,7 +274,7 @@ export default function PreValidationPage() {
               }}
               className="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-[#FED17A] bg-[#FFF7F0] hover:bg-[#FFF2DF] text-[#9B2A48] transition-colors cursor-pointer"
             >
-              Simulate Mismatch (5000 vs 4800)
+              Test Discrepancy (5000 vs 4800)
             </button>
             <button
               type="button"
@@ -284,7 +284,7 @@ export default function PreValidationPage() {
               }}
               className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white transition-colors cursor-pointer"
             >
-              Simulate Match (5000 vs 5000)
+              Test Match (5000 vs 5000)
             </button>
           </div>
         </div>

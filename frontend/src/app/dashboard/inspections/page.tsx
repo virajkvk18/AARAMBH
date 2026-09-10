@@ -305,7 +305,7 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
                       className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Simulate Completion</span>
+                      <span>Mark as Completed</span>
                     </button>
                   )}
                 </div>
