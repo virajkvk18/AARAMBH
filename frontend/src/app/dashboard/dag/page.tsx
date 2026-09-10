@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   GitFork,
   Building2,
@@ -25,6 +24,16 @@ import { useAuth } from "@/context/AuthContext";
 import { supabaseClient, isBrowserSupabaseConfigured } from "@/lib/supabase";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+let dagBroadcastChannel: BroadcastChannel | null = null;
+
+function getDagBroadcastChannel(): BroadcastChannel | null {
+  if (typeof window === "undefined" || !("BroadcastChannel" in window)) return null;
+  if (!dagBroadcastChannel) {
+    dagBroadcastChannel = new BroadcastChannel("aarambh_dag_sync");
+  }
+  return dagBroadcastChannel;
+}
 
 export type NodeStatus = "locked" | "active" | "approved";
 
@@ -172,7 +181,6 @@ export default function DAGWorkflowPage() {
             filter: `enterprise_id=eq.${enterpriseId}`,
           },
           (payload) => {
-            console.log("⚡ Supabase Realtime DAG change received:", payload);
             fetchPersistedNodes();
           }
         )
@@ -180,9 +188,8 @@ export default function DAGWorkflowPage() {
     }
 
     // 2. Cross-Tab Broadcast Channel (for instant 2-person live demo across tabs)
-    let bc: BroadcastChannel | null = null;
-    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
-      bc = new BroadcastChannel("aarambh_dag_sync");
+    const bc = getDagBroadcastChannel();
+    if (bc) {
       bc.onmessage = (event) => {
         if (event.data?.type === "DAG_NODE_UPDATED") {
           setNodeStatuses(event.data.nodeStatuses);
@@ -199,7 +206,7 @@ export default function DAGWorkflowPage() {
         supabaseClient.removeChannel(channel);
       }
       if (bc) {
-        bc.close();
+        bc.onmessage = null;
       }
     };
   }, [enterpriseId, fetchPersistedNodes]);
@@ -249,14 +256,12 @@ export default function DAGWorkflowPage() {
     // Broadcast update across open tabs
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       try {
-        const bc = new BroadcastChannel("aarambh_dag_sync");
-        bc.postMessage({
+        getDagBroadcastChannel()?.postMessage({
           type: "DAG_NODE_UPDATED",
           nodeId,
           nodeStatuses: updatedStatuses,
         });
-        bc.close();
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { allApprovalsList } from "@/data/approvalsRegistry";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export default function ApprovalsDirectoryPage() {
   const { t } = useLanguage();
+  usePageTitle("Approvals Directory | AARAMBH");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"All" | "Pre-Establishment" | "Pre-Operation">("All");
 

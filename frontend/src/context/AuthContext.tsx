@@ -8,7 +8,7 @@ type Profile = Omit<User, "email" | "role">;
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<string | null>;
+  signIn: (email: string, password: string, role?: "applicant" | "officer", department?: string) => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   updateProfile: (profile: Partial<Profile>) => Promise<string | null>;
   loginWithDigiLocker: () => Promise<string>;
@@ -75,18 +75,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, role?: "applicant" | "officer", department?: string) => {
     const s = getSupabaseClient();
     if (!s) {
       if (email && password) {
-        const isOfficer = email.toLowerCase().includes("officer");
+        const isOfficer = role === "officer" || email.toLowerCase().includes("officer");
         const demoUser: User = {
           name: isOfficer ? "Verification Officer (MIDC)" : "Authorized Signatory",
           email,
           role: isOfficer ? "officer" : "applicant",
           enterpriseId: "MH-ENT-2026-0881",
           enterpriseName: "Smart Electronics",
-          department: isOfficer ? "MIDC Industrial Clearances" : undefined,
+          department: isOfficer ? (department || "MIDC Industrial Clearances") : undefined,
           isDigiLockerVerified: false,
         };
         setUser(demoUser);
@@ -183,7 +183,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (s) await s.auth.signOut();
     localStorage.removeItem("aarambh_user");
     setUser(null);
-    router.push("/signin");
+    router.push("/login");
   };
 
   return (

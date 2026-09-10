@@ -293,9 +293,14 @@ export default function DashboardHomePage() {
       {/* 1. WELCOME GREETING HEADER */}
       <Card className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-[11px] font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
-            Single Window Control Center
-          </span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px] font-semibold text-[#FE7251] uppercase tracking-wider">
+              Single Window Control Center
+            </span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">
+              Demo
+            </span>
+          </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Welcome back, {userName}
           </h1>

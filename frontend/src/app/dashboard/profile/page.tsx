@@ -215,8 +215,8 @@ export default function ProfilePage() {
 
       {/* EDIT PROFILE MODAL */}
       {isEditing && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-[#F0E5E0] space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsEditing(false)}>
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-[#F0E5E0] space-y-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-[#F0E5E0] pb-4">
               <div>
                 <h3 className="text-lg font-black text-[#16060E]">Edit Investor Profile</h3>
@@ -234,8 +234,9 @@ export default function ProfilePage() {
             <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Signatory Name</label>
+                  <label htmlFor="edit-name" className="block font-bold text-[#16060E] uppercase mb-1">Signatory Name</label>
                   <input
+                    id="edit-name"
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
@@ -245,8 +246,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Company / Enterprise Name</label>
+                  <label htmlFor="edit-company" className="block font-bold text-[#16060E] uppercase mb-1">Company / Enterprise Name</label>
                   <input
+                    id="edit-company"
                     type="text"
                     value={editCompanyName}
                     onChange={(e) => setEditCompanyName(e.target.value)}
@@ -256,8 +258,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Email Address</label>
+                  <label htmlFor="edit-email" className="block font-bold text-[#16060E] uppercase mb-1">Email Address</label>
                   <input
+                    id="edit-email"
                     type="email"
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
@@ -267,8 +270,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Contact Phone</label>
+                  <label htmlFor="edit-phone" className="block font-bold text-[#16060E] uppercase mb-1">Contact Phone</label>
                   <input
+                    id="edit-phone"
                     type="text"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
@@ -278,8 +282,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Corporate PAN</label>
+                  <label htmlFor="edit-pan" className="block font-bold text-[#16060E] uppercase mb-1">Corporate PAN</label>
                   <input
+                    id="edit-pan"
                     type="text"
                     value={editPan}
                     onChange={(e) => setEditPan(e.target.value)}
@@ -289,8 +294,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#16060E] uppercase mb-1">Maharashtra GSTIN</label>
+                  <label htmlFor="edit-gstin" className="block font-bold text-[#16060E] uppercase mb-1">Maharashtra GSTIN</label>
                   <input
+                    id="edit-gstin"
                     type="text"
                     value={editGstin}
                     onChange={(e) => setEditGstin(e.target.value)}
@@ -301,8 +307,9 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block font-bold text-[#16060E] uppercase mb-1">District</label>
+                <label htmlFor="edit-district" className="block font-bold text-[#16060E] uppercase mb-1">District</label>
                 <input
+                  id="edit-district"
                   type="text"
                   value={editDistrict}
                   onChange={(e) => setEditDistrict(e.target.value)}
@@ -312,8 +319,9 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block font-bold text-[#16060E] uppercase mb-1">Plot / Factory Address</label>
+                <label htmlFor="edit-address" className="block font-bold text-[#16060E] uppercase mb-1">Plot / Factory Address</label>
                 <textarea
+                  id="edit-address"
                   rows={2}
                   value={editAddress}
                   onChange={(e) => setEditAddress(e.target.value)}

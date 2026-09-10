@@ -512,10 +512,11 @@ export default function KYAWizardPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
                   <div>
-                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                    <label htmlFor="kya-district" className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Maharashtra District
                     </label>
                     <select
+                      id="kya-district"
                       value={selectedDistrict}
                       onChange={(e) => handleDistrictChange(e.target.value)}
                       className="block w-full px-4 py-3 bg-[#FFFDFC] border border-[#F0E5E0] rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#FE7251]"
@@ -529,10 +530,11 @@ export default function KYAWizardPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                    <label htmlFor="kya-taluka" className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                       Taluka / Sub-District
                     </label>
                     <select
+                      id="kya-taluka"
                       value={selectedTaluka}
                       onChange={(e) => {
                         setSelectedTaluka(e.target.value);
@@ -552,10 +554,11 @@ export default function KYAWizardPage() {
                 </div>
 
                 <div className="max-w-2xl">
-                  <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                  <label htmlFor="kya-zone" className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                     Commercial Area / Industrial Zone Details
                   </label>
                   <input
+                    id="kya-zone"
                     type="text"
                     value={locationZone}
                     onChange={(e) => setLocationZone(e.target.value)}
@@ -579,12 +582,13 @@ export default function KYAWizardPage() {
                 <div className="max-w-2xl space-y-6">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-bold text-[#16060E] uppercase tracking-wider">
+                      <label htmlFor="kya-capex" className="text-xs font-bold text-[#16060E] uppercase tracking-wider">
                         Capital Expenditure (Fixed Assets in ₹ Crores)
                       </label>
                       <span className="text-base font-black text-[#9B2A48]">₹{capexCr} Crores</span>
                     </div>
                     <input
+                      id="kya-capex"
                       type="range"
                       min={0.5}
                       max={250}
@@ -603,10 +607,11 @@ export default function KYAWizardPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
+                      <label htmlFor="kya-workforce" className="block text-xs font-bold text-[#16060E] uppercase tracking-wider mb-2">
                         Direct Employment (Workforce Count)
                       </label>
                       <input
+                        id="kya-workforce"
                         type="number"
                         min={1}
                         value={workforceSize}
@@ -646,11 +651,12 @@ export default function KYAWizardPage() {
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Zap className="w-4 h-4 text-[#FE7251]" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
+                      <label htmlFor="kya-power" className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Power Load (kW)
                       </label>
                     </div>
                     <input
+                      id="kya-power"
                       type="number"
                       min={5}
                       value={powerLoadKva}
@@ -663,11 +669,12 @@ export default function KYAWizardPage() {
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Droplets className="w-4 h-4 text-[#FE7251]" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
+                      <label htmlFor="kya-water" className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Water Demand (KLD)
                       </label>
                     </div>
                     <input
+                      id="kya-water"
                       type="number"
                       min={1}
                       value={waterDemandKld}
@@ -680,11 +687,12 @@ export default function KYAWizardPage() {
                   <div className="p-4 bg-[#FFF9F5] rounded-2xl border border-[#F0E5E0]">
                     <div className="flex items-center space-x-2 text-[#9B2A48] mb-2">
                       <Flame className="w-4 h-4 text-[#FE7251]" />
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
+                      <label htmlFor="kya-height" className="text-xs font-bold uppercase tracking-wider text-[#16060E]">
                         Building Height (m)
                       </label>
                     </div>
                     <input
+                      id="kya-height"
                       type="number"
                       min={3}
                       value={buildingHeightMeters}

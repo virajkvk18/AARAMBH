@@ -39,6 +39,7 @@ import {
 import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 interface UploadedFileRecord {
   file: File;
@@ -57,6 +58,7 @@ export default function ApplyApprovalPage({
   const resolvedParams = use(params);
   const approvalId = resolvedParams.approvalId;
   const config = getApprovalConfig(approvalId);
+  usePageTitle(config?.meta?.title ? `${config.meta.title} | AARAMBH` : "Apply | AARAMBH");
 
   const { t } = useLanguage();
   const { user } = useAuth();

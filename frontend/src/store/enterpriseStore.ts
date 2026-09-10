@@ -1,14 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export interface EnterpriseState {
-  // Allow any existing state fields
-  [key: string]: any;
-  // Fast‑track renewal action
-  initiateRenewal: (id: string) => void;
-}
-
-
 export type RiskTrack = "green" | "orange" | "red";
 export type SectorType =
   | "Food Processing"
@@ -308,6 +300,7 @@ export interface EnterpriseState {
     reportSummary?: string
   ) => void;
   toggleChecklistItem: (inspectionId: string, checklistId: string) => void;
+  initiateRenewal: (id: string) => void;
   resetAssessment: () => void;
   reset: () => void;
 }
@@ -838,8 +831,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
         }),
 
       // Fast‑track renewal stub action
-      initiateRenewal: (id: string) => {
-        console.log('Fast‑track renewal initiated for ID:', id);
+      initiateRenewal: () => {
       },
 
       setDAGNodeStatuses: (statuses) =>

@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Eye,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,7 @@ function LoginForm() {
   const { signIn, loginWithDigiLocker, loginWithGoogle } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
+  usePageTitle("Sign In | AARAMBH");
 
   const [activeRole, setActiveRole] = useState<"applicant" | "officer">("applicant");
   const [email, setEmail] = useState("");
@@ -36,7 +39,7 @@ function LoginForm() {
     e.preventDefault();
     if (!email) return;
 
-    const error = await signIn(email, password);
+    const error = await signIn(email, password, activeRole, activeRole === "officer" ? officerDept : undefined);
     if (error) {
       setAuthError(error);
       return;
@@ -65,10 +68,10 @@ function LoginForm() {
   };
 
   const handleForgotPassword = () => {
-    setResetNotice(`Password reset instructions and security OTP have been dispatched to ${email || "your registered email"}.`);
+    setResetNotice(`Password reset is currently handled by the administrator. Please contact admin@aarambh.gov.in to request a password reset.`);
     setTimeout(() => {
       setResetNotice(null);
-    }, 6000);
+    }, 8000);
   };
 
   return (
@@ -76,7 +79,7 @@ function LoginForm() {
       {/* Top Branding */}
       <div className="w-full max-w-md mb-6 text-center">
         <Link href="/" className="inline-flex items-center space-x-2.5 group mb-2">
-          <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-9 h-9 object-contain" />
+          <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={36} height={36} className="w-9 h-9 object-contain" />
           <div className="text-left">
             <span className="text-xl font-bold tracking-tight text-slate-900 block font-sans">
               AARAMBH
@@ -149,9 +152,9 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <Label htmlFor="email">{t("auth.email", "Email Address")}</Label>
+              <Label htmlFor="login-email">{t("auth.email", "Email Address")}</Label>
               <Input
-                id="email"
+                id="login-email"
                 type="email"
                 required
                 value={email}
@@ -162,7 +165,7 @@ function LoginForm() {
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">{t("auth.password", "Password")}</Label>
+                <Label htmlFor="login-password">{t("auth.password", "Password")}</Label>
                 <button
                   type="button"
                   onClick={handleForgotPassword}
@@ -173,7 +176,7 @@ function LoginForm() {
               </div>
               <div className="relative">
                 <Input
-                  id="password"
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}

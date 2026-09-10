@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function DashboardLayout({
   children,
@@ -36,14 +37,37 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const pageTitles: Record<string, string> = {
+    "/dashboard": "Dashboard | AARAMBH",
+    "/dashboard/kya": "Know Your Approvals | AARAMBH",
+    "/dashboard/caf": "Unified CAF | AARAMBH",
+    "/dashboard/vault": "Document Vault | AARAMBH",
+    "/dashboard/prevalidation": "Pre-Validation | AARAMBH",
+    "/dashboard/dag": "Track Approvals | AARAMBH",
+    "/dashboard/sla": "Application Status | AARAMBH",
+    "/dashboard/inspections": "Joint Inspections | AARAMBH",
+    "/dashboard/grievances": "Grievance Desk | AARAMBH",
+    "/dashboard/profile": "Enterprise Profile | AARAMBH",
+    "/dashboard/officer-workspace": "Officer Workspace | AARAMBH",
+  };
+  const currentTitle = pageTitles[pathname] || "Dashboard | AARAMBH";
+  usePageTitle(currentTitle);
+
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace(`/signin?redirect=${encodeURIComponent(pathname || "/dashboard")}`);
+      router.replace(`/login?redirect=${encodeURIComponent(pathname || "/dashboard")}`);
     }
   }, [isLoading, pathname, router, user]);
 
   if (isLoading || !user) {
-    return <div className="min-h-[calc(100vh-140px)] bg-slate-50" aria-busy="true" />;
+    return (
+      <div className="min-h-[calc(100vh-140px)] bg-slate-50 flex items-center justify-center" aria-busy="true">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-8 h-8 border-3 border-[#FE7251] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium text-slate-500">Loading workspace...</span>
+        </div>
+      </div>
+    );
   }
 
   const isOfficer = user?.role === "officer";
@@ -152,7 +176,7 @@ export default function DashboardLayout({
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden backdrop-blur-2xs"
+          className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setMobileOpen(false)}
         />
       )}

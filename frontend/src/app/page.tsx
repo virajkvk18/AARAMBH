@@ -15,31 +15,21 @@ import {
   FileCheck2,
   FileText,
   Search,
-  ExternalLink,
-  ChevronRight,
   ChevronDown,
   X,
-  AlertCircle,
-  Sparkles,
-  User,
   Briefcase,
   Layers,
   Check,
-  HelpCircle,
-  Award,
   Droplets,
-  Calendar,
   AlertTriangle,
   FolderLock,
   Compass,
-  ArrowUpRight,
-  ShieldAlert,
   FileSpreadsheet,
 } from "lucide-react";
-import { allApprovalsList, ApprovalConfig } from "@/data/approvalsRegistry";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 // Extended statutory clearances data with additional operational clearances
 interface ApprovalCardData {
@@ -141,6 +131,7 @@ export default function HomePage() {
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const enterprise = useEnterpriseStore();
+  usePageTitle("AARAMBH | Single Window Industrial Clearance Portal - Govt. of Maharashtra");
 
   const authHref = (target: string) =>
     user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
@@ -206,19 +197,19 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
             {/* Government Badging */}
-            <div className="inline-flex items-center space-x-2.5 px-4.5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
+            <div className="inline-flex items-center space-x-2.5 px-5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse" />
               <span>AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA</span>
             </div>
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-md">
-              {t('hero.headline_start')} 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
-                  {t('hero.headline_highlight')}
-                </span>{" "}
-                {t('hero.headline_end')}
-              </h1>
+              {t('hero.headline_start')}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
+                {t('hero.headline_highlight')}
+              </span>{" "}
+              {t('hero.headline_end')}
+            </h1>
 
             {/* Supporting Content */}
             <p className="mt-5 text-base sm:text-lg text-slate-100 leading-relaxed max-w-3xl mx-auto font-medium drop-shadow-sm">
@@ -289,9 +280,9 @@ export default function HomePage() {
               {[
                 { name: "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
                 { name: "MPCB CTE", href: "/apply/mpcb-consent" },
-                { name: "Fire NOC", href: "/apply/fire-noc" },
+                { name: "Fire NOC", href: "/apply/fire-safety-noc" },
                 { name: "DISH Factory License", href: "/apply/dish-factory-license" },
-                { name: "HT Power Sanction", href: "/apply/mseb-power" },
+                { name: "HT Power Sanction", href: "/apply/msedcl-power-sanction" },
               ].map((chip) => (
                 <Link
                   key={chip.name}
@@ -557,7 +548,7 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
               From idea to expansion — AARAMBH stays with you.
             </h2>
-            <p className="text-sm sm:text-base text-[#C4A89C] mt-3">
+            <p className="text-sm sm:text-base text-[#D4B8AC] mt-3">
               A continuous regulatory companion guiding your enterprise through every milestone of establishment and operation.
             </p>
           </div>
@@ -614,7 +605,7 @@ export default function HomePage() {
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider mt-2 group-hover:text-[#FFCA7C]">
                     {stage.title}
                   </h3>
-                  <p className="text-[11px] text-[#C4A89C] mt-1.5 leading-relaxed">
+                  <p className="text-[11px] text-[#D4B8AC] mt-1.5 leading-relaxed">
                     {stage.desc}
                   </p>
                 </div>
@@ -787,6 +778,25 @@ export default function HomePage() {
             </div>
 
             {/* Interactive Readiness Meter Card (7 cols) */}
+            {(() => {
+              const docs = enterprise.uploadedDocuments;
+              const fields = enterprise.extractedFields;
+              const totalRequired = 5;
+              const completed = [
+                enterprise.masterCAF.companyDetails.companyName ? 1 : 0,
+                enterprise.masterCAF.companyDetails.pan ? 1 : 0,
+                enterprise.masterCAF.locationDetails.address ? 1 : 0,
+                docs.length > 0 ? 1 : 0,
+                Object.keys(fields).length >= 3 ? 1 : 0,
+              ].reduce((a, b) => a + b, 0);
+              const pct = Math.round((completed / totalRequired) * 100);
+              const pendingItems: string[] = [];
+              if (!enterprise.masterCAF.companyDetails.companyName) pendingItems.push("Business Details Not Provided");
+              if (!enterprise.masterCAF.companyDetails.pan) pendingItems.push("PAN Not Verified");
+              if (!enterprise.masterCAF.locationDetails.address) pendingItems.push("Address Details Missing");
+              if (docs.length === 0) pendingItems.push("Documents Not Uploaded");
+              if (Object.keys(fields).length < 3) pendingItems.push("Insufficient Extracted Fields");
+              return (
             <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#F0E5E0] shadow-sm space-y-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -794,48 +804,42 @@ export default function HomePage() {
                     Composite Readiness Score
                   </span>
                   <span className="text-2xl font-black text-slate-900 font-mono">
-                    Application Readiness: 67%
+                    Application Readiness: {pct}%
                   </span>
                 </div>
 
-                <span className="px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
-                  2 Items Pending
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${pendingItems.length > 0 ? "bg-amber-50 border border-amber-200 text-amber-800" : "bg-emerald-50 border border-emerald-200 text-emerald-800"}`}>
+                  {pendingItems.length > 0 ? `${pendingItems.length} Items Pending` : "All Complete"}
                 </span>
               </div>
 
               {/* Progress bar */}
               <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                <div className="bg-[#FE7251] h-3 rounded-full w-[67%]" />
+                <div className="bg-[#FE7251] h-3 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
               </div>
 
               {/* Checklist items */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="font-semibold">Business Details Verified</span>
-                </div>
-
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="font-semibold">Applicant Identity Endorsed</span>
-                </div>
-
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50/50 border border-emerald-200 text-emerald-900">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="font-semibold">Income Tax PAN Verified</span>
-                </div>
-
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-900">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="font-semibold">Project Feasibility Report Pending</span>
-                </div>
-
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-900 sm:col-span-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="font-semibold">Required Land Ownership / Allotment Deed Missing</span>
-                </div>
+                {[
+                  { label: "Business Details Verified", done: !!enterprise.masterCAF.companyDetails.companyName },
+                  { label: "Applicant Identity Endorsed", done: !!enterprise.masterCAF.companyDetails.signatoryName },
+                  { label: "Income Tax PAN Verified", done: !!enterprise.masterCAF.companyDetails.pan },
+                  { label: "Documents Uploaded", done: docs.length > 0 },
+                  { label: "Location & Address Complete", done: !!enterprise.masterCAF.locationDetails.address },
+                ].map((item) => (
+                  <div key={item.label} className={`flex items-center space-x-2.5 p-3 rounded-xl ${item.done ? "bg-emerald-50/50 border border-emerald-200 text-emerald-900" : "bg-amber-50/50 border border-amber-200 text-amber-900"}`}>
+                    {item.done ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    )}
+                    <span className="font-semibold">{item.label}{item.done ? "" : " — Pending"}</span>
+                  </div>
+                ))}
               </div>
             </div>
+              );
+            })()}
           </div>
         </div>
       </section>
@@ -856,7 +860,7 @@ export default function HomePage() {
                 Don't leave government support on the table.
               </h2>
 
-              <p className="text-sm text-[#C4A89C] leading-relaxed">
+              <p className="text-sm text-[#D4B8AC] leading-relaxed">
                 Discover subsidies, fiscal benefits, and infrastructure exemptions based on your industry activity, taluka category, and fixed capital investment under the Maharashtra Industrial Policy.
               </p>
 
@@ -876,7 +880,7 @@ export default function HomePage() {
               <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
                 <span className="text-lg font-black text-[#FE7251] block font-mono">100%</span>
                 <h4 className="font-bold text-white">Stamp Duty Exemption</h4>
-                <p className="text-[11px] text-[#C4A89C]">
+                <p className="text-[11px] text-[#D4B8AC]">
                   Full waiver on land acquisition and industrial lease deeds in C, D, D+ talukas.
                 </p>
               </div>
@@ -884,7 +888,7 @@ export default function HomePage() {
               <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
                 <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 10 Yrs</span>
                 <h4 className="font-bold text-white">Electricity Duty Waiver</h4>
-                <p className="text-[11px] text-[#C4A89C]">
+                <p className="text-[11px] text-[#D4B8AC]">
                   Exemption from statutory electricity duties for eligible industrial units.
                 </p>
               </div>
@@ -892,7 +896,7 @@ export default function HomePage() {
               <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
                 <span className="text-lg font-black text-[#FE7251] block font-mono">₹1.00 - ₹2.00</span>
                 <h4 className="font-bold text-white">Power Tariff Subsidy</h4>
-                <p className="text-[11px] text-[#C4A89C]">
+                <p className="text-[11px] text-[#D4B8AC]">
                   Direct per-unit electricity subsidy for MSMEs in Vidarbha and Marathwada.
                 </p>
               </div>
@@ -900,7 +904,7 @@ export default function HomePage() {
               <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
                 <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 5%</span>
                 <h4 className="font-bold text-white">Interest Subvention</h4>
-                <p className="text-[11px] text-[#C4A89C]">
+                <p className="text-[11px] text-[#D4B8AC]">
                   Interest subsidy on term loans for plant, machinery, and clean technology.
                 </p>
               </div>
@@ -1059,7 +1063,7 @@ export default function HomePage() {
       {/* 10. MY BUSINESS SECTION ("Your business, managed from one place.")        */}
       {/* ========================================================================= */}
       <section className="bg-slate-900 text-white py-16 sm:py-20 border-t border-slate-800">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl space-y-6">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[#FE7251] text-xs font-bold uppercase tracking-wider">
             <Briefcase className="w-3.5 h-3.5" />
             <span>Industrialist Cockpit</span>
@@ -1123,8 +1127,8 @@ export default function HomePage() {
       {/* 12. REQUIREMENTS MODAL DIALOG (View Requirements)                         */}
       {/* ========================================================================= */}
       {activeModalApproval && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150" onClick={() => setActiveModalApproval(null)}>
+          <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase tracking-wider">

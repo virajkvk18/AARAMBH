@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   UserPlus,
   Menu,
@@ -18,7 +19,7 @@ export default function Header() {
   const { user } = useAuth();
 
   const authHref = (target: string) =>
-    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
+    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white text-slate-900 border-b border-slate-200 shadow-xs">
@@ -27,7 +28,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Left Brand Identity: Logo + AARAMBH + Single Window System */}
           <Link href="/" className="flex items-center space-x-3 group focus:outline-hidden">
-            <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-10 h-10 object-contain" />
+            <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={40} height={40} className="w-10 h-10 object-contain" />
 
             <div className="flex flex-col">
               <div className="flex items-center space-x-2">
@@ -137,7 +138,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="sm:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3 shadow-md">
           <Link
-            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/signin?redirect=%2Fdashboard"}
+            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/login?redirect=%2Fdashboard"}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-semibold text-slate-800 hover:text-[#FE7251]"
           >
@@ -154,7 +155,7 @@ export default function Header() {
             {!user ? (
               <>
                 <Link
-                  href="/signin"
+                  href="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex-1 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-center text-xs font-medium text-slate-700"
                 >

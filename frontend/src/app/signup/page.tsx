@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Building2,
@@ -21,6 +22,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,6 +37,7 @@ function SignupForm() {
   const { signUpApplicant, loginWithDigiLocker, loginWithGoogle } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
+  usePageTitle("Register Enterprise | AARAMBH");
   const { setFormData, setExtractedFields, updateMasterCAF, reset } = useEnterpriseStore();
 
   // Current Step: 1 = Initial Credentials, 2 = Entity Type, 3 = PAN Validation, 4 = Address
@@ -73,7 +76,6 @@ function SignupForm() {
   // Step 4 State
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
-  const [showSecondAddress, setShowSecondAddress] = useState(false);
   const [country, setCountry] = useState("India");
   const [pinCode, setPinCode] = useState("");
   const [stateName, setStateName] = useState("Maharashtra");
@@ -211,7 +213,7 @@ function SignupForm() {
         pinCode,
         district,
         state: stateName,
-        enterpriseId: `ENT-MH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        enterpriseId: `ENT-MH-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
       }
     );
     if (registration.error) {
@@ -279,7 +281,7 @@ function SignupForm() {
       {/* Top Header Brand & Sign In link */}
       <div className="w-full max-w-5xl mb-6 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2.5 group">
-          <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-9 h-9 object-contain" />
+          <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={36} height={36} className="w-9 h-9 object-contain" />
           <div className="flex flex-col">
             <span className="text-lg font-bold tracking-tight text-slate-900 font-sans">
               AARAMBH
@@ -431,8 +433,9 @@ function SignupForm() {
                 </h3>
 
                 <div className="space-y-1">
-                  <Label>Full Name of Authorized Signatory *</Label>
+                  <Label htmlFor="signup-name">Full Name of Authorized Signatory *</Label>
                   <Input
+                    id="signup-name"
                     type="text"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
@@ -442,8 +445,9 @@ function SignupForm() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>Email Address *</Label>
+                    <Label htmlFor="signup-email">Email Address *</Label>
                     <Input
+                      id="signup-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -451,8 +455,9 @@ function SignupForm() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>Mobile Number *</Label>
+                    <Label htmlFor="signup-mobile">Mobile Number *</Label>
                     <Input
+                      id="signup-mobile"
                       type="tel"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
@@ -462,8 +467,9 @@ function SignupForm() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>Set Portal Password *</Label>
+                  <Label htmlFor="signup-password">Set Portal Password *</Label>
                   <Input
+                    id="signup-password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -594,8 +600,9 @@ function SignupForm() {
 
                 <div className="mt-5 space-y-3">
                   <div className="space-y-1">
-                    <Label>Registered Business / Enterprise Name *</Label>
+                    <Label htmlFor="signup-business-name">Registered Business / Enterprise Name *</Label>
                     <Input
+                      id="signup-business-name"
                       type="text"
                       value={businessName}
                       onChange={(e) => setBusinessName(e.target.value)}
@@ -604,8 +611,9 @@ function SignupForm() {
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Primary Industry / Sector Category *</Label>
+                    <Label htmlFor="signup-sector">Primary Industry / Sector Category *</Label>
                     <select
+                      id="signup-sector"
                       value={primarySector}
                       onChange={(e) => setPrimarySector(e.target.value)}
                       className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
@@ -687,9 +695,10 @@ function SignupForm() {
 
                 <div className="mt-6 space-y-4">
                   <div className="space-y-1">
-                    <Label>Permanent Account Number (PAN) *</Label>
+                    <Label htmlFor="signup-pan">Permanent Account Number (PAN) *</Label>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                       <Input
+                        id="signup-pan"
                         type="text"
                         maxLength={10}
                         value={panNumber}
@@ -781,8 +790,9 @@ function SignupForm() {
 
                 <div className="mt-4 space-y-3">
                   <div className="space-y-1">
-                    <Label>Address Line 1 *</Label>
+                    <Label htmlFor="signup-addr1">Address Line 1 *</Label>
                     <Input
+                      id="signup-addr1"
                       type="text"
                       value={addressLine1}
                       onChange={(e) => setAddressLine1(e.target.value)}
@@ -791,8 +801,9 @@ function SignupForm() {
                   </div>
 
                   <div className="space-y-1">
-                    <Label>Address Line 2</Label>
+                    <Label htmlFor="signup-addr2">Address Line 2</Label>
                     <Input
+                      id="signup-addr2"
                       type="text"
                       value={addressLine2}
                       onChange={(e) => setAddressLine2(e.target.value)}
@@ -802,8 +813,9 @@ function SignupForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label>Country *</Label>
+                      <Label htmlFor="signup-country">Country *</Label>
                       <select
+                        id="signup-country"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
                         className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
@@ -812,8 +824,9 @@ function SignupForm() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label>PIN Code *</Label>
+                      <Label htmlFor="signup-pincode">PIN Code *</Label>
                       <Input
+                        id="signup-pincode"
                         type="text"
                         value={pinCode}
                         onChange={(e) => setPinCode(e.target.value)}
@@ -824,8 +837,9 @@ function SignupForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label>State *</Label>
+                      <Label htmlFor="signup-state">State *</Label>
                       <select
+                        id="signup-state"
                         value={stateName}
                         onChange={(e) => setStateName(e.target.value)}
                         className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
@@ -837,8 +851,9 @@ function SignupForm() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label>District *</Label>
+                      <Label htmlFor="signup-district">District *</Label>
                       <select
+                        id="signup-district"
                         value={district}
                         onChange={(e) => setDistrict(e.target.value)}
                         className="w-full h-10 px-3 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-hidden focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251]"
@@ -874,8 +889,8 @@ function SignupForm() {
 
       {/* "Why is PAN required?" Modal */}
       {panModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 relative animate-in fade-in duration-150 space-y-3">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPanModalOpen(false)}>
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 relative space-y-3 transition-opacity duration-150" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               onClick={() => setPanModalOpen(false)}

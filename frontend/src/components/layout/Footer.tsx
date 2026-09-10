@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   MapPin,
   Mail,
@@ -43,7 +44,7 @@ export default function Footer() {
           {/* Column 1: AARAMBH Identity */}
           <div className="lg:col-span-2 space-y-4 pr-0 lg:pr-6">
             <div className="flex items-center space-x-3">
-              <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-9 h-9 object-contain" />
+              <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={36} height={36} className="w-9 h-9 object-contain" />
               <div>
                 <span className="text-lg font-bold tracking-tight text-white block">
                   AARAMBH
@@ -255,11 +256,11 @@ export default function Footer() {
             © 2026 AARAMBH Single Window Industrial Facilitation Portal. Government of Maharashtra.
           </p>
           <div className="flex items-center space-x-4 text-[11px]">
-            <Link href="/dashboard/sla" className="hover:text-white transition-colors">Accessibility</Link>
+            <span className="hover:text-white transition-colors cursor-default">Accessibility</span>
             <span className="text-slate-700">|</span>
-            <Link href="/dashboard/vault" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="hover:text-white transition-colors cursor-default">Privacy Policy</span>
             <span className="text-slate-700">|</span>
-            <Link href="/dashboard/grievances" className="hover:text-white transition-colors">Terms of Use</Link>
+            <span className="hover:text-white transition-colors cursor-default">Terms of Use</span>
           </div>
         </div>
       </div>
