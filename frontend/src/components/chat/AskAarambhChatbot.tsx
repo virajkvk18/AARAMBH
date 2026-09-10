@@ -12,6 +12,8 @@ import {
   User,
   Minimize2,
   Maximize2,
+  Mic,
+  Square,
   RefreshCw,
   Building2,
   ShieldCheck,
@@ -47,6 +49,36 @@ interface ActionItem {
   url: string;
   title: string;
   subtitle?: string;
+}
+
+interface ISpeechRecognitionAlternative {
+  transcript: string;
+}
+
+interface ISpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  [index: number]: ISpeechRecognitionAlternative;
+}
+
+interface ISpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: ISpeechRecognitionResult;
+  };
+}
+
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
 }
 
 const TOPIC_SHORTCUTS = [
@@ -389,6 +421,76 @@ export default function AskAarambhChatbot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const transcriptRef = useRef("");
+
+  const getSpeechRecognition = (): ISpeechRecognition | null => {
+    if (typeof window === "undefined") return null;
+    const w = window as unknown as {
+      SpeechRecognition?: new () => ISpeechRecognition;
+      webkitSpeechRecognition?: new () => ISpeechRecognition;
+    };
+    const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
+    return Ctor ? new Ctor() : null;
+  };
+
+  const stopListening = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+    setListening(false);
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      stopListening();
+      return;
+    }
+    const recognition = getSpeechRecognition();
+    if (!recognition) return;
+    recognitionRef.current = recognition;
+    transcriptRef.current = "";
+    recognition.lang = language === "mr" ? "mr-IN" : language === "hi" ? "hi-IN" : "en-IN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          transcriptRef.current += result[0].transcript;
+        } else {
+          interim += result[0].transcript;
+        }
+      }
+      setInput(transcriptRef.current + interim);
+    };
+
+    recognition.onend = () => {
+      recognitionRef.current = null;
+      setListening(false);
+    };
+
+    recognition.onerror = () => {
+      recognitionRef.current = null;
+      setListening(false);
+    };
+
+    try {
+      recognition.start();
+      setListening(true);
+    } catch {
+      recognitionRef.current = null;
+      setListening(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.abort();
+    };
+  }, []);
 
   // Close on Escape key
   useEffect(() => {
@@ -928,6 +1030,20 @@ export default function AskAarambhChatbot() {
                       }
                       className="flex-1 max-h-32 min-h-[40px] px-3.5 py-2 rounded-lg border border-slate-300 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-[#FE7251] focus:ring-1 focus:ring-[#FE7251] focus:outline-hidden resize-none leading-relaxed"
                     />
+                    <button
+                      type="button"
+                      onClick={toggleListening}
+                      disabled={loading}
+                      title={listening ? "Stop voice input" : "Speak your question"}
+                      aria-label={listening ? "Stop voice input" : "Speak your question"}
+                      className={`h-10 w-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0 border ${
+                        listening
+                          ? "bg-red-500 hover:bg-red-600 text-white border-red-500 animate-pulse"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-300"
+                      }`}
+                    >
+                      {listening ? <Square className="w-3.5 h-3.5 fill-current" /> : <Mic className="w-4 h-4" />}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleSendMessage()}
