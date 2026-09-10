@@ -85,7 +85,7 @@ function LoginForm() {
               AARAMBH
             </span>
             <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
-              {t("topbar.portal_title", "Govt. of Maharashtra Single Window")}
+              {t("brand.govt_single_window", "Govt. of Maharashtra Single Window")}
             </span>
           </div>
         </Link>
@@ -213,7 +213,7 @@ function LoginForm() {
             <div className="pt-3 border-t border-slate-100 space-y-2">
               <div className="relative flex py-1 items-center">
                 <div className="grow border-t border-slate-200"></div>
-                <span className="shrink mx-2 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Or continue with</span>
+                <span className="shrink mx-2 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{t("auth.or_continue", "Or continue with")}</span>
                 <div className="grow border-t border-slate-200"></div>
               </div>
 
@@ -251,7 +251,7 @@ function LoginForm() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>Sign in with Google</span>
+                <span>{t("auth.google_login", "Sign in with Google")}</span>
               </Button>
             </div>
           )}

@@ -150,6 +150,18 @@ export default function HomePage() {
   const [discoveryInvestment, setDiscoveryInvestment] = useState("₹10 Cr - ₹50 Cr");
   const [discoveryZone, setDiscoveryZone] = useState("MIDC Industrial Estate");
 
+  const approvalKeyPrefixById: Record<string, string> = {
+    "midc-land-allotment": "midc",
+    "mpcb-consent": "mpcb",
+    "fire-safety-noc": "fire",
+    "dish-factory-license": "dish",
+    "msedcl-power-sanction": "msedcl",
+    "boiler-registration": "boiler",
+  };
+
+  const approvalIdLabel = (id: string, field: string) =>
+    "landing.app_" + (approvalKeyPrefixById[id] ?? "midc") + "_" + field;
+
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setApprovalSearch(heroSearch);
@@ -199,7 +211,7 @@ export default function HomePage() {
             {/* Government Badging */}
             <div className="inline-flex items-center space-x-2.5 px-5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse" />
-              <span>AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA</span>
+              <span>{t("landing.hero_gov_badge", "AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA")}</span>
             </div>
 
             {/* Main Hero Headline */}
@@ -228,11 +240,11 @@ export default function HomePage() {
                   onChange={(e) => setHeroCategory(e.target.value)}
                   className="w-full sm:w-auto bg-[#FFF5ED] hover:bg-[#FFEBE0] text-xs font-bold text-slate-900 px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] focus:ring-2 focus:ring-[#FE7251] cursor-pointer appearance-none pr-8 transition-colors"
                 >
-                  <option value="All Approvals">All Approvals</option>
-                  <option value="Pre-Establishment">Pre-Establishment</option>
-                  <option value="Pre-Operation">Pre-Operation</option>
-                  <option value="Operations">Operations</option>
-                  <option value="Renewals">Renewals</option>
+                  <option value="All Approvals">{t("landing.hero_opt_all", "All Approvals")}</option>
+                  <option value="Pre-Establishment">{t("landing.hero_opt_pre_est", "Pre-Establishment")}</option>
+                  <option value="Pre-Operation">{t("landing.hero_opt_pre_op", "Pre-Operation")}</option>
+                  <option value="Operations">{t("landing.hero_opt_ops", "Operations")}</option>
+                  <option value="Renewals">{t("landing.hero_opt_renewals", "Renewals")}</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
@@ -242,7 +254,7 @@ export default function HomePage() {
                 <Search className="w-4 h-4 text-slate-500 mr-2.5 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search approvals, licences, registrations... e.g. MIDC, MPCB CTE"
+                  placeholder={t("landing.hero_search_ph", "Search approvals, licences, registrations... e.g. MIDC, MPCB CTE")}
                   value={heroSearch}
                   onChange={(e) => setHeroSearch(e.target.value)}
                   className="w-full text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 bg-transparent border-0 focus:outline-hidden focus:ring-0"
@@ -270,7 +282,7 @@ export default function HomePage() {
                 <ArrowRight className="w-4 h-4 text-orange-100" />
               </Link>
               <span className="text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
-                Get a customized list of clearances relevant to your business.
+                {t("landing.hero_cta_sub", "Get a customized list of clearances relevant to your business.")}
               </span>
             </div>
 
@@ -278,11 +290,11 @@ export default function HomePage() {
             <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-xs text-white">
               <span className="text-[#FED17A] font-bold tracking-wide drop-shadow-xs">{t('hero.popular_clearances')}</span>
               {[
-                { name: "MIDC Land Allotment", href: "/apply/midc-land-allotment" },
-                { name: "MPCB CTE", href: "/apply/mpcb-consent" },
-                { name: "Fire NOC", href: "/apply/fire-safety-noc" },
-                { name: "DISH Factory License", href: "/apply/dish-factory-license" },
-                { name: "HT Power Sanction", href: "/apply/msedcl-power-sanction" },
+                { name: t("landing.chip_midc", "MIDC Land Allotment"), href: "/apply/midc-land-allotment" },
+                { name: t("landing.chip_mpcb", "MPCB CTE"), href: "/apply/mpcb-consent" },
+                { name: t("landing.chip_fire", "Fire NOC"), href: "/apply/fire-safety-noc" },
+                { name: t("landing.chip_dish", "DISH Factory License"), href: "/apply/dish-factory-license" },
+                { name: t("landing.chip_ht", "HT Power Sanction"), href: "/apply/msedcl-power-sanction" },
               ].map((chip) => (
                 <Link
                   key={chip.name}
@@ -308,15 +320,15 @@ export default function HomePage() {
               <div className="lg:col-span-5 space-y-4">
                 <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>Know Your Approvals (KYA Engine)</span>
+                  <span>{t("landing.kya_badge", "Know Your Approvals (KYA Engine)")}</span>
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-                  Tell us about your business.
+                  {t("landing.kya_heading", "Tell us about your business.")}
                 </h2>
 
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Answer a few basic parameters and AARAMBH will generate a comprehensive, personalized statutory roadmap of required approvals, environmental classifications, document checklists, and eligible government financial incentives.
+                  {t("landing.kya_desc", "Answer a few basic parameters and AARAMBH will generate a comprehensive, personalized statutory roadmap of required approvals, environmental classifications, document checklists, and eligible government financial incentives.")}
                 </p>
 
                 <div className="pt-2">
@@ -324,7 +336,7 @@ export default function HomePage() {
                     href={authHref("/dashboard/kya")}
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#9B2A48] hover:bg-[#82213B] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
                   >
-                    <span>Build My Personalized Roadmap</span>
+                    <span>{t("landing.kya_cta", "Build My Personalized Roadmap")}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -333,13 +345,13 @@ export default function HomePage() {
               {/* Right interactive quick-selector preview (7 cols) */}
               <div className="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-[#F0E5E0] shadow-xs space-y-5">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-                  Quick Requirement Estimator
+                  {t("landing.est_label", "Quick Requirement Estimator")}
                 </span>
 
                 {/* 1. Sector selector */}
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-2">
-                    Select Your Industry Activity:
+                    {t("landing.est_sector_label", "Select Your Industry Activity:")}
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -349,7 +361,16 @@ export default function HomePage() {
                       "Textiles & Garments",
                       "Electronics & IT Parks",
                       "Pharma & Active Ingredients",
-                    ].map((sec) => (
+                    ].map((sec) => {
+                      const sectorLabels: Record<string, string> = {
+                        "Automotive & Engineering": t("landing.est_sector_auto", "Automotive & Engineering"),
+                        "Chemicals & Solvents": t("landing.est_sector_chem", "Chemicals & Solvents"),
+                        "Food Processing & Agro": t("landing.est_sector_food", "Food Processing & Agro"),
+                        "Textiles & Garments": t("landing.est_sector_text", "Textiles & Garments"),
+                        "Electronics & IT Parks": t("landing.est_sector_elec", "Electronics & IT Parks"),
+                        "Pharma & Active Ingredients": t("landing.est_sector_pharma", "Pharma & Active Ingredients"),
+                      };
+                      return (
                       <button
                         key={sec}
                         type="button"
@@ -360,19 +381,26 @@ export default function HomePage() {
                             : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
                         }`}
                       >
-                        {sec}
+                        {sectorLabels[sec]}
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* 2. Capital Investment */}
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-2">
-                    Planned Fixed Capital Investment:
+                    {t("landing.est_capex_label", "Planned Fixed Capital Investment:")}
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {["Below ₹10 Cr (MSME)", "₹10 Cr - ₹50 Cr", "Above ₹50 Cr (Large / Mega)"].map((tier) => (
+                    {["Below ₹10 Cr (MSME)", "₹10 Cr - ₹50 Cr", "Above ₹50 Cr (Large / Mega)"].map((tier) => {
+                      const tierLabels: Record<string, string> = {
+                        "Below ₹10 Cr (MSME)": t("landing.est_tier_small", "Below ₹10 Cr (MSME)"),
+                        "₹10 Cr - ₹50 Cr": t("landing.est_tier_med", "₹10 Cr - ₹50 Cr"),
+                        "Above ₹50 Cr (Large / Mega)": t("landing.est_tier_large", "Above ₹50 Cr (Large / Mega)"),
+                      };
+                      return (
                       <button
                         key={tier}
                         type="button"
@@ -383,9 +411,10 @@ export default function HomePage() {
                             : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
                         }`}
                       >
-                        {tier}
+                        {tierLabels[tier]}
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -393,10 +422,10 @@ export default function HomePage() {
                 <div className="p-4 rounded-xl bg-[#FFF9F6] border border-[#FED17A]/60 flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div>
                     <span className="font-bold text-slate-900 block">
-                      Estimated Profile for {discoverySector}:
+                      {t("landing.est_profile", "Estimated Profile for {sector}:").replace("{sector}", discoverySector)}
                     </span>
                     <span className="text-slate-600 text-[11px] block mt-0.5">
-                      ~14 Statutory Clearances • 21-Day Statutory Max SLA • Eligible for PSI 2019 Incentives
+                      {t("landing.est_stats", "~14 Statutory Clearances • 21-Day Statutory Max SLA • Eligible for PSI 2019 Incentives")}
                     </span>
                   </div>
 
@@ -404,7 +433,7 @@ export default function HomePage() {
                     href={authHref("/dashboard/kya")}
                     className="inline-flex items-center gap-1 font-bold text-[#9B2A48] hover:underline"
                   >
-                    <span>View Full Breakdown</span>
+                    <span>{t("landing.est_breakdown", "View Full Breakdown")}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -421,13 +450,13 @@ export default function HomePage() {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
             <Layers className="w-3.5 h-3.5" />
-            <span>Single-Window Core Architecture</span>
+            <span>{t("landing.platform_badge", "Single-Window Core Architecture")}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
-            One platform for your entire industrial journey.
+            {t("landing.platform_heading", "One platform for your entire industrial journey.")}
           </h2>
           <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
-            Integrated statutory workflows designed to eliminate bureaucratic silos and accelerate industrial commissioning across Maharashtra.
+            {t("landing.platform_desc", "Integrated statutory workflows designed to eliminate bureaucratic silos and accelerate industrial commissioning across Maharashtra.")}
           </p>
         </div>
 
@@ -438,10 +467,10 @@ export default function HomePage() {
               <Building2 className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              1. Approvals & Clearances
+              {t("landing.platform_f1_title", "1. Approvals & Clearances")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Find every approval your project requires across MIDC, MPCB, Fire Services, DISH, and state utility providers in one consolidated inventory.
+              {t("landing.platform_f1_desc", "Find every approval your project requires across MIDC, MPCB, Fire Services, DISH, and state utility providers in one consolidated inventory.")}
             </p>
             <a href="#approvals" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
               <span>{t('common.browse_catalog')}</span>
@@ -455,13 +484,13 @@ export default function HomePage() {
               <FileSpreadsheet className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              2. Guided Applications
+              {t("landing.platform_f2_title", "2. Guided Applications")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Know exactly what to fill, upload, and submit. The integrated Common Application Form (CAF) maps once across multiple departmental portals.
+              {t("landing.platform_f2_desc", "Know exactly what to fill, upload, and submit. The integrated Common Application Form (CAF) maps once across multiple departmental portals.")}
             </p>
             <Link href={authHref("/dashboard/caf")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>Open Common Form</span>
+              <span>{t("landing.platform_f2_link", "Open Common Form")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -472,13 +501,13 @@ export default function HomePage() {
               <FolderLock className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              3. Document Management
+              {t("landing.platform_f3_title", "3. Document Management")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Upload once, digitally verify with OCR, and securely reuse documents across all clearance requests without repeated manual submissions.
+              {t("landing.platform_f3_desc", "Upload once, digitally verify with OCR, and securely reuse documents across all clearance requests without repeated manual submissions.")}
             </p>
             <Link href={authHref("/dashboard/vault")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>Document Vault</span>
+              <span>{t("landing.platform_f3_link", "Document Vault")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -489,13 +518,13 @@ export default function HomePage() {
               <Clock className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              4. Application Tracking
+              {t("landing.platform_f4_title", "4. Application Tracking")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Track status, statutory SLA countdowns, and desk reviews with statutory deemed approval enforcement under the Maharashtra Right to Services Act.
+              {t("landing.platform_f4_desc", "Track status, statutory SLA countdowns, and desk reviews with statutory deemed approval enforcement under the Maharashtra Right to Services Act.")}
             </p>
             <Link href={authHref("/dashboard/sla")} className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>SLA Tracker</span>
+              <span>{t("landing.platform_f4_link", "SLA Tracker")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -506,13 +535,13 @@ export default function HomePage() {
               <Coins className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              5. Incentives & Schemes
+              {t("landing.platform_f5_title", "5. Incentives & Schemes")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Discover eligible financial incentives, electricity duty waivers, stamp duty exemptions, and capital subsidies under Maharashtra Industrial Policy.
+              {t("landing.platform_f5_desc", "Discover eligible financial incentives, electricity duty waivers, stamp duty exemptions, and capital subsidies under Maharashtra Industrial Policy.")}
             </p>
             <a href="#incentives" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>View Schemes</span>
+              <span>{t("landing.platform_f5_link", "View Schemes")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -523,13 +552,13 @@ export default function HomePage() {
               <FileCheck2 className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              6. Compliance
+              {t("landing.platform_f6_title", "6. Compliance")}
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Stay ahead of mandatory renewals, annual environmental returns, joint site inspections, and statutory factory audits without regulatory surprises.
+              {t("landing.platform_f6_desc", "Stay ahead of mandatory renewals, annual environmental returns, joint site inspections, and statutory factory audits without regulatory surprises.")}
             </p>
             <a href="#compliance" className="inline-flex items-center gap-1 text-xs font-bold text-[#9B2A48] hover:underline">
-              <span>Readiness Check</span>
+              <span>{t("landing.platform_f6_link", "Readiness Check")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -543,13 +572,13 @@ export default function HomePage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#250C19] text-[#FFCA7C] border border-[#521C35] text-xs font-bold uppercase tracking-wider mb-3">
-              <span>Regulatory Lifecycle</span>
+              <span>{t("landing.journey_badge", "Regulatory Lifecycle")}</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-              From idea to expansion — AARAMBH stays with you.
+              {t("landing.journey_heading", "From idea to expansion — AARAMBH stays with you.")}
             </h2>
             <p className="text-sm sm:text-base text-[#D4B8AC] mt-3">
-              A continuous regulatory companion guiding your enterprise through every milestone of establishment and operation.
+              {t("landing.journey_desc", "A continuous regulatory companion guiding your enterprise through every milestone of establishment and operation.")}
             </p>
           </div>
 
@@ -592,7 +621,16 @@ export default function HomePage() {
                 desc: "Scale capacity & file amendment applications",
                 href: "/dashboard/caf",
               },
-            ].map((stage, idx) => (
+            ].map((stage, idx) => {
+              const journeyStageLabels = [
+                { title: t("landing.journey_s1_title", "PLAN"), desc: t("landing.journey_s1_desc", "Understand project requirements & KYA assessment") },
+                { title: t("landing.journey_s2_title", "LAND & ESTABLISH"), desc: t("landing.journey_s2_desc", "Identify MIDC plots & zone building bylaws") },
+                { title: t("landing.journey_s3_title", "APPROVALS"), desc: t("landing.journey_s3_desc", "Apply for statutory CTE, Fire NOC & licences") },
+                { title: t("landing.journey_s4_title", "OPERATE"), desc: t("landing.journey_s4_desc", "Manage DISH safety licences & factory compliance") },
+                { title: t("landing.journey_s5_title", "INCENTIVES"), desc: t("landing.journey_s5_desc", "Discover & claim eligible PSI 2019 financial support") },
+                { title: t("landing.journey_s6_title", "EXPAND"), desc: t("landing.journey_s6_desc", "Scale capacity & file amendment applications") },
+              ][idx];
+              return (
               <Link
                 key={stage.step}
                 href={stage.href.startsWith("#") ? stage.href : authHref(stage.href)}
@@ -603,18 +641,19 @@ export default function HomePage() {
                     {stage.step}
                   </span>
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider mt-2 group-hover:text-[#FFCA7C]">
-                    {stage.title}
+                    {journeyStageLabels.title}
                   </h3>
                   <p className="text-[11px] text-[#D4B8AC] mt-1.5 leading-relaxed">
-                    {stage.desc}
+                    {journeyStageLabels.desc}
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#36101E] flex items-center justify-between text-[10px] text-[#FFCA7C] font-semibold">
-                  <span>Explore</span>
+                  <span>{t("landing.journey_explore", "Explore")}</span>
                   <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -627,13 +666,13 @@ export default function HomePage() {
           <div>
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
               <Building2 className="w-3.5 h-3.5" />
-              <span>Statutory Directory</span>
+              <span>{t("landing.dir_badge", "Statutory Directory")}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-              Find the approvals your project needs.
+              {t("landing.dir_heading", "Find the approvals your project needs.")}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
-              Search Maharashtra's industrial approvals, licences and statutory clearances from one place.
+              {t("landing.dir_desc", "Search Maharashtra's industrial approvals, licences and statutory clearances from one place.")}
             </p>
           </div>
 
@@ -641,7 +680,7 @@ export default function HomePage() {
             href={authHref("/apply")}
             className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9B2A48] hover:underline shrink-0"
           >
-            <span>View All Approvals Directory</span>
+            <span>{t("landing.dir_view_all", "View All Approvals Directory")}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -655,13 +694,13 @@ export default function HomePage() {
                 type="text"
                 value={approvalSearch}
                 onChange={(e) => setApprovalSearch(e.target.value)}
-                placeholder="Search approval, licence or department name..."
+                placeholder={t("landing.dir_search_ph", "Search approval, licence or department name...")}
                 className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-[#9B2A48]/20 focus:border-[#9B2A48]"
               />
             </div>
 
             <div className="md:col-span-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {["All", "Pre-Establishment", "Pre-Operation", "Operations"].map((cat) => (
+              {[["All", t("landing.filter_all", "All")], ["Pre-Establishment", t("landing.filter_pre_est", "Pre-Establishment")], ["Pre-Operation", t("landing.filter_pre_op", "Pre-Operation")], ["Operations", t("landing.filter_ops", "Operations")]].map(([cat, catLabel]) => (
                 <button
                   key={cat}
                   type="button"
@@ -672,7 +711,7 @@ export default function HomePage() {
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
-                  {cat}
+                  {catLabel}
                 </button>
               ))}
             </div>
@@ -701,23 +740,23 @@ export default function HomePage() {
 
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#9B2A48] transition-colors leading-snug">
-                      {app.name}
+                      {t(approvalIdLabel(app.id, "name"), app.name)}
                     </h3>
                     <span className="text-[11px] text-slate-500 font-medium block mt-0.5">
-                      {app.department}
+                      {t(approvalIdLabel(app.id, "dept"), app.department)}
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                    {app.description}
+                    {t(approvalIdLabel(app.id, "desc"), app.description)}
                   </p>
 
                   <div className="p-2.5 rounded-xl bg-[#F8FAFC] border border-slate-100 flex items-center justify-between text-xs font-semibold">
                     <span className="text-slate-500 flex items-center gap-1 text-[11px]">
-                      <Clock className="w-3.5 h-3.5 text-[#FE7251]" /> {app.slaDays} Working Days
+                      <Clock className="w-3.5 h-3.5 text-[#FE7251]" /> {app.slaDays} {t("landing.dir_working_days", "Working Days")}
                     </span>
                     <span className="text-slate-500 flex items-center gap-1 text-[11px]">
-                      <FileText className="w-3.5 h-3.5 text-slate-400" /> {app.mandatoryDocsCount} Mandatory Docs
+                      <FileText className="w-3.5 h-3.5 text-slate-400" /> {app.mandatoryDocsCount} {t("landing.dir_mandatory_docs", "Mandatory Docs")}
                     </span>
                   </div>
                 </div>
@@ -729,14 +768,14 @@ export default function HomePage() {
                     onClick={() => setActiveModalApproval(app)}
                     className="text-xs font-bold text-slate-600 hover:text-slate-900 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors"
                   >
-                    View Requirements
+{t("landing.dir_view_req", "View Requirements")}
                   </button>
 
                   <Link
                     href={authHref(app.applyHref)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-colors"
                   >
-                    <span>Apply Online</span>
+                    <span>{t("landing.dir_apply", "Apply Online")}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -755,15 +794,15 @@ export default function HomePage() {
             <div className="lg:col-span-5 space-y-4">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
                 <FileCheck2 className="w-3.5 h-3.5" />
-                <span>Pre-Submission Scrutiny</span>
+                <span>{t("landing.ready_badge", "Pre-Submission Scrutiny")}</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-                Before you apply.
+                {t("landing.ready_heading", "Before you apply.")}
               </h2>
 
               <p className="text-sm text-slate-600 leading-relaxed">
-                AARAMBH pre-checks your dossier completeness before statutory submission, ensuring zero delays or rejections due to missing paperwork or mismatching parameters.
+                {t("landing.ready_desc", "AARAMBH pre-checks your dossier completeness before statutory submission, ensuring zero delays or rejections due to missing paperwork or mismatching parameters.")}
               </p>
 
               <div className="pt-2">
@@ -771,7 +810,7 @@ export default function HomePage() {
                   href={authHref("/dashboard/vault")}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
                 >
-                  <span>Complete Requirements</span>
+                  <span>{t("landing.ready_cta", "Complete Requirements")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -801,15 +840,15 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-                    Composite Readiness Score
+                    {t("landing.ready_score_label", "Composite Readiness Score")}
                   </span>
                   <span className="text-2xl font-black text-slate-900 font-mono">
-                    Application Readiness: {pct}%
+                    {t("landing.ready_app_label", "Application Readiness:")} {pct}%
                   </span>
                 </div>
 
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${pendingItems.length > 0 ? "bg-amber-50 border border-amber-200 text-amber-800" : "bg-emerald-50 border border-emerald-200 text-emerald-800"}`}>
-                  {pendingItems.length > 0 ? `${pendingItems.length} Items Pending` : "All Complete"}
+                  {pendingItems.length > 0 ? `${pendingItems.length} ${t("landing.ready_items_pending", "Items Pending")}` : t("landing.ready_all_complete", "All Complete")}
                 </span>
               </div>
 
@@ -826,16 +865,25 @@ export default function HomePage() {
                   { label: "Income Tax PAN Verified", done: !!enterprise.masterCAF.companyDetails.pan },
                   { label: "Documents Uploaded", done: docs.length > 0 },
                   { label: "Location & Address Complete", done: !!enterprise.masterCAF.locationDetails.address },
-                ].map((item) => (
+                ].map((item, ci) => {
+                  const readyLabel = [
+                    t("landing.ready_check1", "Business Details Verified"),
+                    t("landing.ready_check2", "Applicant Identity Endorsed"),
+                    t("landing.ready_check3", "Income Tax PAN Verified"),
+                    t("landing.ready_check4", "Documents Uploaded"),
+                    t("landing.ready_check5", "Location & Address Complete"),
+                  ][ci];
+                  return (
                   <div key={item.label} className={`flex items-center space-x-2.5 p-3 rounded-xl ${item.done ? "bg-emerald-50/50 border border-emerald-200 text-emerald-900" : "bg-amber-50/50 border border-amber-200 text-amber-900"}`}>
                     {item.done ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     ) : (
                       <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                     )}
-                    <span className="font-semibold">{item.label}{item.done ? "" : " — Pending"}</span>
+                    <span className="font-semibold">{readyLabel}{item.done ? "" : t("landing.ready_pending", " — Pending")}</span>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
               );
@@ -853,15 +901,15 @@ export default function HomePage() {
             <div className="lg:col-span-6 space-y-4">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#250C19] text-[#FFCA7C] border border-[#521C35] text-xs font-bold uppercase tracking-wider">
                 <Coins className="w-3.5 h-3.5" />
-                <span>Package Scheme of Incentives (PSI 2019)</span>
+                <span>{t("landing.incent_badge", "Package Scheme of Incentives (PSI 2019)")}</span>
               </div>
 
               <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-                Don't leave government support on the table.
+                {t("landing.incent_heading", "Don't leave government support on the table.")}
               </h2>
 
               <p className="text-sm text-[#D4B8AC] leading-relaxed">
-                Discover subsidies, fiscal benefits, and infrastructure exemptions based on your industry activity, taluka category, and fixed capital investment under the Maharashtra Industrial Policy.
+                {t("landing.incent_desc", "Discover subsidies, fiscal benefits, and infrastructure exemptions based on your industry activity, taluka category, and fixed capital investment under the Maharashtra Industrial Policy.")}
               </p>
 
               <div className="pt-2">
@@ -869,7 +917,7 @@ export default function HomePage() {
                   href={authHref("/dashboard/kya")}
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-xs transition-colors"
                 >
-                  <span>Check My Eligibility</span>
+                  <span>{t("landing.incent_cta", "Check My Eligibility")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -877,37 +925,20 @@ export default function HomePage() {
 
             {/* Verified Policy Pillars Grid (6 cols) */}
             <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
-                <span className="text-lg font-black text-[#FE7251] block font-mono">100%</span>
-                <h4 className="font-bold text-white">Stamp Duty Exemption</h4>
-                <p className="text-[11px] text-[#D4B8AC]">
-                  Full waiver on land acquisition and industrial lease deeds in C, D, D+ talukas.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
-                <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 10 Yrs</span>
-                <h4 className="font-bold text-white">Electricity Duty Waiver</h4>
-                <p className="text-[11px] text-[#D4B8AC]">
-                  Exemption from statutory electricity duties for eligible industrial units.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
-                <span className="text-lg font-black text-[#FE7251] block font-mono">₹1.00 - ₹2.00</span>
-                <h4 className="font-bold text-white">Power Tariff Subsidy</h4>
-                <p className="text-[11px] text-[#D4B8AC]">
-                  Direct per-unit electricity subsidy for MSMEs in Vidarbha and Marathwada.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
-                <span className="text-lg font-black text-[#FFCA7C] block font-mono">Up to 5%</span>
-                <h4 className="font-bold text-white">Interest Subvention</h4>
-                <p className="text-[11px] text-[#D4B8AC]">
-                  Interest subsidy on term loans for plant, machinery, and clean technology.
-                </p>
-              </div>
+              {[
+                { val: t("landing.incent_s1_val", "100%"), title: t("landing.incent_s1_title", "Stamp Duty Exemption"), desc: t("landing.incent_s1_desc", "Full waiver on land acquisition and industrial lease deeds in C, D, D+ talukas."), accent: "text-[#FE7251]" },
+                { val: t("landing.incent_s2_val", "Up to 10 Yrs"), title: t("landing.incent_s2_title", "Electricity Duty Waiver"), desc: t("landing.incent_s2_desc", "Exemption from statutory electricity duties for eligible industrial units."), accent: "text-[#FFCA7C]" },
+                { val: t("landing.incent_s3_val", "₹1.00 - ₹2.00"), title: t("landing.incent_s3_title", "Power Tariff Subsidy"), desc: t("landing.incent_s3_desc", "Direct per-unit electricity subsidy for MSMEs in Vidarbha and Marathwada."), accent: "text-[#FE7251]" },
+                { val: t("landing.incent_s4_val", "Up to 5%"), title: t("landing.incent_s4_title", "Interest Subvention"), desc: t("landing.incent_s4_desc", "Interest subsidy on term loans for plant, machinery, and clean technology."), accent: "text-[#FFCA7C]" },
+              ].map((pillar, pi) => (
+                <div key={pi} className="p-4 rounded-2xl bg-[#250C19] border border-[#521C35] space-y-1.5">
+                  <span className={`text-lg font-black ${pillar.accent} block font-mono`}>{pillar.val}</span>
+                  <h4 className="font-bold text-white">{pillar.title}</h4>
+                  <p className="text-[11px] text-[#D4B8AC]">
+                    {pillar.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -922,15 +953,15 @@ export default function HomePage() {
             <div className="lg:col-span-5 space-y-4">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A]">
                 <FolderLock className="w-3.5 h-3.5" />
-                <span>Single Digital Dossier</span>
+                <span>{t("landing.docs_badge", "Single Digital Dossier")}</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-                Your documents. One secure place.
+                {t("landing.docs_heading", "Your documents. One secure place.")}
               </h2>
 
               <p className="text-sm text-slate-600 leading-relaxed">
-                Upload once. Validate before submission. Reuse across all statutory departments. Always know what document is expired, verified, or missing.
+                {t("landing.docs_desc", "Upload once. Validate before submission. Reuse across all statutory departments. Always know what document is expired, verified, or missing.")}
               </p>
 
               <div className="pt-2">
@@ -938,7 +969,7 @@ export default function HomePage() {
                   href={authHref("/dashboard/vault")}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#9B2A48] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#82213B] transition-colors shadow-xs"
                 >
-                  <span>Open Document Vault</span>
+                  <span>{t("landing.docs_cta", "Open Document Vault")}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -948,10 +979,10 @@ export default function HomePage() {
             <div className="lg:col-span-7 bg-[#F8FAFC] p-6 sm:p-7 rounded-3xl border border-[#F0E5E0] shadow-sm space-y-3">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200 text-xs">
                 <span className="font-bold text-slate-500 uppercase tracking-wider">
-                  Enterprise Document Repository
+                  {t("landing.docs_repo_label", "Enterprise Document Repository")}
                 </span>
                 <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  OCR Engine Active
+                  {t("landing.docs_ocr", "OCR Engine Active")}
                 </span>
               </div>
 
@@ -961,7 +992,20 @@ export default function HomePage() {
                 { name: "Certificate of Incorporation", sub: "MCA Registrar of Companies", status: "Verified", type: "success" },
                 { name: "MIDC Land Allotment Deed", sub: "Dimension check mismatch with DPR", status: "Action Required", type: "warning" },
                 { name: "Detailed Project Report (DPR)", sub: "Awaiting CA Certified Balance Sheet", status: "Pending", type: "pending" },
-              ].map((doc) => (
+              ].map((doc, di) => {
+                const docLabels = [
+                  { name: t("landing.docs_d1_name", "Entity PAN Card"), sub: t("landing.docs_d1_sub", "Permanent Account Number") },
+                  { name: t("landing.docs_d2_name", "GSTIN Certificate"), sub: t("landing.docs_d2_sub", "Form GST REG-06") },
+                  { name: t("landing.docs_d3_name", "Certificate of Incorporation"), sub: t("landing.docs_d3_sub", "MCA Registrar of Companies") },
+                  { name: t("landing.docs_d4_name", "MIDC Land Allotment Deed"), sub: t("landing.docs_d4_sub", "Dimension check mismatch with DPR") },
+                  { name: t("landing.docs_d5_name", "Detailed Project Report (DPR)"), sub: t("landing.docs_d5_sub", "Awaiting CA Certified Balance Sheet") },
+                ][di];
+                const statusLabels: Record<string, string> = {
+                  "Verified": t("landing.docs_status_verified", "Verified"),
+                  "Action Required": t("landing.docs_status_action", "Action Required"),
+                  "Pending": t("landing.docs_status_pending", "Pending"),
+                };
+                return (
                 <div
                   key={doc.name}
                   className="bg-white p-3.5 rounded-xl border border-slate-200 flex items-center justify-between"
@@ -970,10 +1014,10 @@ export default function HomePage() {
                     <FileText className="w-4 h-4 text-[#9B2A48] shrink-0" />
                     <div className="truncate">
                       <span className="text-xs font-bold text-slate-800 block truncate">
-                        {doc.name}
+                        {docLabels.name}
                       </span>
                       <span className="text-[11px] text-slate-400 block truncate">
-                        {doc.sub}
+                        {docLabels.sub}
                       </span>
                     </div>
                   </div>
@@ -987,10 +1031,11 @@ export default function HomePage() {
                         : "bg-slate-100 text-slate-500 border border-slate-200"
                     }`}
                   >
-                    {doc.status}
+                    {statusLabels[doc.status]}
                   </span>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1003,13 +1048,13 @@ export default function HomePage() {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] text-[#9B2A48] text-xs font-bold uppercase tracking-wider border border-[#FED17A] mb-3">
             <Clock className="w-3.5 h-3.5" />
-            <span>Right to Services (RTS) Transparency</span>
+            <span>{t("landing.track_badge", "Right to Services (RTS) Transparency")}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
-            Know exactly where every application stands.
+            {t("landing.track_heading", "Know exactly where every application stands.")}
           </h2>
           <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
-            Transparent desk-by-desk status monitoring with statutory time-limits guaranteed under the Maharashtra Right to Services Act, 2015.
+            {t("landing.track_desc", "Transparent desk-by-desk status monitoring with statutory time-limits guaranteed under the Maharashtra Right to Services Act, 2015.")}
           </p>
         </div>
 
@@ -1022,7 +1067,15 @@ export default function HomePage() {
               { num: "3", title: "Department Review", sub: "Scrutiny Officer Reviewing", state: "active" },
               { num: "4", title: "Joint Site Inspection", sub: "Single-window Field Visit", state: "pending" },
               { num: "5", title: "Statutory Decision", sub: "NOC Issuance / Deemed", state: "pending" },
-            ].map((step, idx) => (
+            ].map((step, idx) => {
+              const stepLabels = [
+                { title: t("landing.track_s1_title", "Application Submitted"), sub: t("landing.track_s1_sub", "E-Challan Transmitted") },
+                { title: t("landing.track_s2_title", "Documents Verified"), sub: t("landing.track_s2_sub", "Desk 1 Clearance") },
+                { title: t("landing.track_s3_title", "Department Review"), sub: t("landing.track_s3_sub", "Scrutiny Officer Reviewing") },
+                { title: t("landing.track_s4_title", "Joint Site Inspection"), sub: t("landing.track_s4_sub", "Single-window Field Visit") },
+                { title: t("landing.track_s5_title", "Statutory Decision"), sub: t("landing.track_s5_sub", "NOC Issuance / Deemed") },
+              ][idx];
+              return (
               <div key={step.num} className="flex flex-col items-center text-center p-3">
                 <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs mb-3 ${
@@ -1035,24 +1088,25 @@ export default function HomePage() {
                 >
                   {step.state === "done" ? <Check className="w-4 h-4" /> : step.num}
                 </div>
-                <span className="text-xs font-bold text-slate-900">{step.title}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5">{step.sub}</span>
+                <span className="text-xs font-bold text-slate-900">{stepLabels.title}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5">{stepLabels.sub}</span>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <div className="flex items-center space-x-2 text-slate-600">
-              <span className="font-bold text-slate-900">Live Case Tracking:</span>
+              <span className="font-bold text-slate-900">{t("landing.track_live_label", "Live Case Tracking:")}</span>
               <span className="font-mono text-[#9B2A48] font-bold">MH-SWS-2026-MPCB-449120</span>
-              <span className="text-slate-400">• SLA: 21 Working Days (Day 8 of 21)</span>
+              <span className="text-slate-400">{t("landing.track_sla", "• SLA: 21 Working Days (Day 8 of 21)")}</span>
             </div>
 
             <Link
               href={authHref("/dashboard/sla")}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
             >
-              <span>View Full SLA Audit</span>
+              <span>{t("landing.track_view_audit", "View Full SLA Audit")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -1066,15 +1120,15 @@ export default function HomePage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[#FE7251] text-xs font-bold uppercase tracking-wider">
             <Briefcase className="w-3.5 h-3.5" />
-            <span>Industrialist Cockpit</span>
+            <span>{t("landing.mybiz_badge", "Industrialist Cockpit")}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            Your business, managed from one place.
+            {t("landing.mybiz_heading", "Your business, managed from one place.")}
           </h2>
 
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-            After signing in, access your active applications, verified document vault, statutory compliance schedule, incentive disbursements, and official department correspondence.
+            {t("landing.mybiz_desc", "After signing in, access your active applications, verified document vault, statutory compliance schedule, incentive disbursements, and official department correspondence.")}
           </p>
 
           <div className="pt-4 flex items-center justify-center gap-4">
@@ -1082,7 +1136,7 @@ export default function HomePage() {
               href={authHref("/dashboard")}
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-extrabold text-xs uppercase tracking-wider shadow-xs transition-colors"
             >
-              <span>Open My Business</span>
+              <span>{t("landing.mybiz_cta", "Open My Business")}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -1095,7 +1149,7 @@ export default function HomePage() {
       <section className="py-14 sm:py-16 bg-[#F8FAFC] border-t border-[#F0E5E0]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-6">
-            Institutional Clearance Authorities & Statutory Departments
+            {t("landing.trust_label", "Institutional Clearance Authorities & Statutory Departments")}
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -1106,7 +1160,16 @@ export default function HomePage() {
               { code: "DISH", name: "Directorate of Industrial Safety & Health" },
               { code: "MSEDCL", name: "State Electricity Distribution Co." },
               { code: "DIR-IND", name: "Directorate of Industries, Maharashtra" },
-            ].map((auth) => (
+            ].map((auth, ai) => {
+              const authNames = [
+                t("landing.trust_midc", "Maharashtra Industrial Development Corp."),
+                t("landing.trust_mpcb", "Maharashtra Pollution Control Board"),
+                t("landing.trust_fire", "Directorate of Maharashtra Fire Services"),
+                t("landing.trust_dish", "Directorate of Industrial Safety & Health"),
+                t("landing.trust_msedcl", "State Electricity Distribution Co."),
+                t("landing.trust_dirind", "Directorate of Industries, Maharashtra"),
+              ][ai];
+              return (
               <div
                 key={auth.code}
                 className="bg-white p-4 rounded-2xl border border-slate-200 text-center shadow-2xs"
@@ -1115,10 +1178,11 @@ export default function HomePage() {
                   {auth.code}
                 </span>
                 <span className="text-[11px] text-slate-500 font-medium block mt-1 line-clamp-2">
-                  {auth.name}
+                  {authNames}
                 </span>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1135,9 +1199,9 @@ export default function HomePage() {
                   {activeModalApproval.category} • {activeModalApproval.departmentCode}
                 </span>
                 <h3 className="text-lg font-bold text-slate-900 mt-1">
-                  {activeModalApproval.name}
+                  {t(approvalIdLabel(activeModalApproval.id, "name"), activeModalApproval.name)}
                 </h3>
-                <span className="text-xs text-slate-500">{activeModalApproval.department}</span>
+                <span className="text-xs text-slate-500">{t(approvalIdLabel(activeModalApproval.id, "dept"), activeModalApproval.department)}</span>
               </div>
 
               <button
@@ -1152,37 +1216,37 @@ export default function HomePage() {
             <div className="space-y-4 text-xs">
               <div>
                 <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
-                  Statutory Governing Act
+                  {t("landing.modal_act_label", "Statutory Governing Act")}
                 </span>
-                <p className="text-slate-800 font-medium mt-0.5">{activeModalApproval.act}</p>
+                <p className="text-slate-800 font-medium mt-0.5">{t(approvalIdLabel(activeModalApproval.id, "act"), activeModalApproval.act)}</p>
               </div>
 
               <div>
                 <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
-                  Statutory SLA Guarantee
+                  {t("landing.modal_sla_label", "Statutory SLA Guarantee")}
                 </span>
                 <p className="text-slate-800 font-semibold mt-0.5">
-                  {activeModalApproval.slaDays} Working Days under Maharashtra Right to Services Act, 2015
+                  {activeModalApproval.slaDays} {t("landing.modal_sla_text", "Working Days under Maharashtra Right to Services Act, 2015")}
                 </p>
               </div>
 
               <div>
                 <span className="font-bold text-slate-700 block uppercase tracking-wider text-[10px]">
-                  Purpose & Scope
+                  {t("landing.modal_purpose", "Purpose & Scope")}
                 </span>
-                <p className="text-slate-600 leading-relaxed mt-0.5">{activeModalApproval.description}</p>
+                <p className="text-slate-600 leading-relaxed mt-0.5">{t(approvalIdLabel(activeModalApproval.id, "desc"), activeModalApproval.description)}</p>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                 <span className="font-bold text-slate-800 block mb-2">
-                  Checklist of Mandatory Dossier Attachments ({activeModalApproval.mandatoryDocsCount} Files)
+                  {t("landing.modal_checklist", "Checklist of Mandatory Dossier Attachments")} ({activeModalApproval.mandatoryDocsCount} {t("landing.modal_files", "Files")})
                 </span>
                 <ul className="space-y-1.5 text-slate-600 text-[11px] list-disc list-inside">
-                  <li>Detailed Project Report (DPR) / Machinery Layout Plan</li>
-                  <li>Proof of Legal Land Ownership / Registered Lease Deed</li>
-                  <li>Entity Constitutional Documents (Certificate of Incorporation / Partnership Deed)</li>
-                  <li>CA Certified Fixed Capital Investment & Net Worth Certificate</li>
-                  <li>Board Resolution appointing Authorized Signatory</li>
+                  <li>{t("landing.modal_doc1", "Detailed Project Report (DPR) / Machinery Layout Plan")}</li>
+                  <li>{t("landing.modal_doc2", "Proof of Legal Land Ownership / Registered Lease Deed")}</li>
+                  <li>{t("landing.modal_doc3", "Entity Constitutional Documents (Certificate of Incorporation / Partnership Deed)")}</li>
+                  <li>{t("landing.modal_doc4", "CA Certified Fixed Capital Investment & Net Worth Certificate")}</li>
+                  <li>{t("landing.modal_doc5", "Board Resolution appointing Authorized Signatory")}</li>
                 </ul>
               </div>
             </div>
@@ -1193,14 +1257,14 @@ export default function HomePage() {
                 onClick={() => setActiveModalApproval(null)}
                 className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50"
               >
-                Close
+                {t("landing.modal_close", "Close")}
               </button>
 
               <Link
                 href={authHref(activeModalApproval.applyHref)}
                 className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold uppercase tracking-wider transition-colors"
               >
-                <span>Apply for this Clearance</span>
+                <span>{t("landing.modal_apply", "Apply for this Clearance")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>

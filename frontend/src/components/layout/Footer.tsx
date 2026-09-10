@@ -14,7 +14,7 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 text-sm">
@@ -25,13 +25,13 @@ export default function Footer() {
             <div className="flex items-center space-x-2 text-slate-300">
               <CheckCircle2 className="w-4 h-4 text-[#FE7251] shrink-0" />
               <span>
-                <strong className="text-white font-semibold">Statutory SLA Enforcement</strong>: Clearances governed by the Maharashtra Right to Public Services Act, 2015 with deemed approval provisions.
+                <strong className="text-white font-semibold">{t("footer.enforcement_title", "Statutory SLA Enforcement")}</strong>: {t("footer.enforcement_desc", "Clearances governed by the Maharashtra Right to Public Services Act, 2015 with deemed approval provisions.")}
               </span>
             </div>
             <div className="flex items-center space-x-4 text-slate-400">
               <span className="flex items-center space-x-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="text-slate-200 font-medium">State Gateway: 100% Operational</span>
+                <span className="text-slate-200 font-medium">{t("footer.state_gateway", "State Gateway: 100% Operational")}</span>
               </span>
             </div>
           </div>
@@ -50,22 +50,22 @@ export default function Footer() {
                   AARAMBH
                 </span>
                 <span className="text-[11px] font-medium text-slate-400 block tracking-wide uppercase">
-                  Single Window Industrial Facilitation
+                  {t("footer.sw_facilitation", "Single Window Industrial Facilitation")}
                 </span>
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              The unified digital gateway by the Government of Maharashtra for industrial planning, statutory clearances, common application processing, and verified government incentive schemes.
+              {t("footer.desc_full", "The unified digital gateway by the Government of Maharashtra for industrial planning, statutory clearances, common application processing, and verified government incentive schemes.")}
             </p>
             <div className="flex items-center space-x-2 text-xs text-slate-300 pt-1">
               <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
-              <span>Integrated with DigiLocker & National Single Window System</span>
+              <span>{t("footer.digilocker_line", "Integrated with DigiLocker & National Single Window System")}</span>
             </div>
 
             {/* Language Selection */}
             <div className="pt-2">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1.5">
-                Portal Language:
+                {t("footer.portal_language", "Portal Language:")}
               </span>
               <div className="inline-flex items-center bg-slate-800 border border-slate-700 rounded-md p-0.5 text-xs">
                 <button
@@ -108,37 +108,37 @@ export default function Footer() {
           {/* Column 2: For Businesses */}
           <div>
             <h3 className="text-white font-semibold text-xs tracking-wider uppercase mb-3 border-b border-slate-800 pb-2">
-              For Businesses
+              {t("footer.for_businesses", "For Businesses")}
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/dashboard/kya" className="text-slate-400 hover:text-white transition-colors block">
-                  Plan Your Project
+                  {t("footer.plan_project", "Plan Your Project")}
                 </Link>
               </li>
               <li>
                 <Link href="/#approvals" className="text-slate-400 hover:text-white transition-colors block">
-                  Approvals & Licences
+                  {t("footer.approvals_licences", "Approvals & Licences")}
                 </Link>
               </li>
               <li>
                 <Link href="/#incentives" className="text-slate-400 hover:text-white transition-colors block">
-                  Incentives (PSI 2019)
+                  {t("footer.incentives_psi", "Incentives (PSI 2019)")}
                 </Link>
               </li>
               <li>
                 <Link href="/#compliance" className="text-slate-400 hover:text-white transition-colors block">
-                  Compliance & Readiness
+                  {t("footer.compliance", "Compliance & Readiness")}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/sla" className="text-slate-400 hover:text-white transition-colors block">
-                  Track Applications
+                  {t("footer.track_applications", "Track Applications")}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/caf" className="text-slate-400 hover:text-white transition-colors block">
-                  Common Application Form
+                  {t("footer.common_app_form", "Common Application Form")}
                 </Link>
               </li>
             </ul>
@@ -147,7 +147,7 @@ export default function Footer() {
           {/* Column 3: Government Departments */}
           <div>
             <h3 className="text-white font-semibold text-xs tracking-wider uppercase mb-3 border-b border-slate-800 pb-2">
-              Statutory Bodies
+              {t("footer.statutory_bodies", "Statutory Bodies")}
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
@@ -157,7 +157,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
                 >
-                  <span>MIDC Industrial Parks</span>
+                  <span>{t("footer.midc", "MIDC Industrial Parks")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -168,7 +168,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
                 >
-                  <span>MPCB Pollution Control</span>
+                  <span>{t("footer.mpcb", "MPCB Pollution Control")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -179,7 +179,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
                 >
-                  <span>Maharashtra Fire Services</span>
+                  <span>{t("footer.fire_services", "Maharashtra Fire Services")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -190,7 +190,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
                 >
-                  <span>DISH Industrial Safety</span>
+                  <span>{t("footer.dish", "DISH Industrial Safety")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -201,7 +201,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
                 >
-                  <span>National Single Window (NSWS)</span>
+                  <span>{t("footer.nsws", "National Single Window (NSWS)")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -211,20 +211,20 @@ export default function Footer() {
           {/* Column 4: Support & Grievances */}
           <div>
             <h3 className="text-white font-semibold text-xs tracking-wider uppercase mb-3 border-b border-slate-800 pb-2">
-              Support & Desk
+              {t("footer.support_desk", "Support & Desk")}
             </h3>
 
             <div className="space-y-2.5 text-xs text-slate-300">
               <div className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 text-[#FE7251] shrink-0 mt-0.5" />
                 <span className="text-slate-400 leading-tight">
-                  Industries & Labour Department, Mantralaya, Mumbai - 400032.
+                  {t("footer.address", "Industries & Labour Department, Mantralaya, Mumbai - 400032.")}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4 text-[#FE7251] shrink-0" />
                 <span className="text-slate-400">
-                  Toll-Free:{" "}
+                  {t("footer.toll_free", "Toll-Free:")}{" "}
                   <a href="tel:18001208040" className="text-slate-200 font-mono hover:underline font-semibold">
                     1800-120-8040
                   </a>
@@ -241,7 +241,7 @@ export default function Footer() {
                   href="/dashboard/grievances"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 hover:text-white font-medium text-[11px] transition-colors"
                 >
-                  Grievance & Dispute Desk
+                  {t("footer.grievance_desk", "Grievance & Dispute Desk")}
                 </Link>
               </div>
             </div>
@@ -253,14 +253,14 @@ export default function Footer() {
       <div className="bg-slate-950 border-t border-slate-800/80 py-4">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
           <p>
-            © 2026 AARAMBH Single Window Industrial Facilitation Portal. Government of Maharashtra.
+            {t("footer.copyright", "© 2026 AARAMBH Single Window Industrial Facilitation Portal. Government of Maharashtra.")}
           </p>
           <div className="flex items-center space-x-4 text-[11px]">
-            <span className="hover:text-white transition-colors cursor-default">Accessibility</span>
+            <span className="hover:text-white transition-colors cursor-default">{t("footer.accessibility", "Accessibility")}</span>
             <span className="text-slate-700">|</span>
-            <span className="hover:text-white transition-colors cursor-default">Privacy Policy</span>
+            <span className="hover:text-white transition-colors cursor-default">{t("footer.privacy", "Privacy Policy")}</span>
             <span className="text-slate-700">|</span>
-            <span className="hover:text-white transition-colors cursor-default">Terms of Use</span>
+            <span className="hover:text-white transition-colors cursor-default">{t("footer.terms", "Terms of Use")}</span>
           </div>
         </div>
       </div>

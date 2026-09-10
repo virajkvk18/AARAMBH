@@ -287,7 +287,7 @@ function SignupForm() {
               AARAMBH
             </span>
             <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-              Govt. of Maharashtra Single Window
+              {t("brand.govt_single_window", "Govt. of Maharashtra Single Window")}
             </span>
           </div>
         </Link>
@@ -296,7 +296,7 @@ function SignupForm() {
           href="/login"
           className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-medium transition-colors"
         >
-          Sign In Instead
+          {t("auth.sign_in_instead", "Sign In Instead")}
         </Link>
       </div>
 
@@ -355,13 +355,13 @@ function SignupForm() {
             <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
-                  Welcome to AARAMBH
+                  {t("auth.welcome_tag", "Welcome to AARAMBH")}
                 </span>
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                  Create Investor Account
+                  {t("auth.create_investor", "Create Investor Account")}
                 </h2>
                 <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                  Start your single-window journey for statutory industrial clearances, incentives, and utility connections in Maharashtra.
+                  {t("auth.signup_intro", "Start your single-window journey for statutory industrial clearances, incentives, and utility connections in Maharashtra.")}
                 </p>
 
                 <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-3">
@@ -369,11 +369,11 @@ function SignupForm() {
                     <div className="flex items-center space-x-2 mb-1">
                       <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
                       <h4 className="text-xs font-semibold text-slate-900">
-                        Quick Registration
+                        {t("auth.quick_registration", "Quick Registration")}
                       </h4>
                     </div>
                     <p className="text-[11px] text-slate-500 leading-relaxed">
-                      Instantly populate verified enterprise identity without manual data entry.
+                      {t("auth.quick_registration_desc", "Instantly populate verified enterprise identity without manual data entry.")}
                     </p>
                   </div>
 
@@ -386,7 +386,7 @@ function SignupForm() {
                       onClick={handleDigiLockerFastTrack}
                     >
                       <ShieldCheck className="w-4 h-4 text-[#FE7251]" />
-                      <span>Register with DigiLocker</span>
+                      <span>{t("auth.register_digilocker", "Register with DigiLocker")}</span>
                     </Button>
 
                     <Button
@@ -414,14 +414,14 @@ function SignupForm() {
                           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                         />
                       </svg>
-                      <span>Register with Google</span>
+                      <span>{t("auth.register_google", "Register with Google")}</span>
                     </Button>
                   </div>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-500 mt-6">
-                Already registered? <Link href="/login" className="text-[#FE7251] font-semibold hover:underline">Sign In</Link>
+                {t("auth.already_registered", "Already registered?")} <Link href="/login" className="text-[#FE7251] font-semibold hover:underline">{t("sign_in", "Sign In")}</Link>
               </div>
             </div>
 
@@ -429,11 +429,11 @@ function SignupForm() {
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div className="space-y-4 max-w-lg">
                 <h3 className="text-base font-semibold text-slate-900">
-                  Investor Contact Information
+                  {t("auth.investor_contact", "Investor Contact Information")}
                 </h3>
 
                 <div className="space-y-1">
-                  <Label htmlFor="signup-name">Full Name of Authorized Signatory *</Label>
+                  <Label htmlFor="signup-name">{t("auth.full_name_label", "Full Name of Authorized Signatory *")}</Label>
                   <Input
                     id="signup-name"
                     type="text"
@@ -445,7 +445,7 @@ function SignupForm() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="signup-email">Email Address *</Label>
+                    <Label htmlFor="signup-email">{t("auth.email_label", "Email Address *")}</Label>
                     <Input
                       id="signup-email"
                       type="email"
@@ -455,7 +455,7 @@ function SignupForm() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="signup-mobile">Mobile Number *</Label>
+                    <Label htmlFor="signup-mobile">{t("auth.mobile_label", "Mobile Number *")}</Label>
                     <Input
                       id="signup-mobile"
                       type="tel"
@@ -467,7 +467,7 @@ function SignupForm() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="signup-password">Set Portal Password *</Label>
+                  <Label htmlFor="signup-password">{t("auth.password_label", "Set Portal Password *")}</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -495,22 +495,22 @@ function SignupForm() {
             <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900">
-                  Welcome, {applicantName.split(" ")[0]}
+                  {t("auth.welcome_name", "Welcome")}, {applicantName.split(" ")[0]}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Select your legal entity structure for single-window compliance.
+                  {t("auth.enter_sector_compliance", "Select your legal entity structure for single-window compliance.")}
                 </p>
 
                 <div className="mt-8 p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 space-y-2 shadow-2xs">
-                  <p className="font-semibold text-slate-900">Why Entity Type Matters:</p>
+                  <p className="font-semibold text-slate-900">{t("auth.why_entity_title", "Why Entity Type Matters:")}</p>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Different enterprise categories require specific documentation sets (e.g. CIN for Private Ltd vs Shop Act for Proprietorships).
+                    {t("auth.why_entity_desc", "Different enterprise categories require specific documentation sets (e.g. CIN for Private Ltd vs Shop Act for Proprietorships).")}
                   </p>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-400">
-                Step 2 of 4: Organization Structure
+                {t("auth.step2_of", "Step 2 of 4: Organization Structure")}
               </div>
             </div>
 
@@ -518,10 +518,10 @@ function SignupForm() {
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
-                  Setup your profile
+                  {t("auth.signup_title", "Setup your profile")}
                 </span>
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Select your legal entity type
+                  {t("auth.legal_entity", "Select your legal entity type")}
                 </h2>
 
                 <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -536,10 +536,10 @@ function SignupForm() {
                   >
                     <Building className="w-6 h-6 mb-1.5" />
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      Incorporated Company
+                      {t("auth.legal_company", "Incorporated Company")}
                     </span>
                     <span className={`text-[10px] mt-0.5 ${legalEntity === "company" ? "text-orange-100" : "text-slate-500"}`}>
-                      Select if you have a CIN
+                      {t("auth.legal_company_hint", "Select if you have a CIN")}
                     </span>
                   </button>
 
@@ -554,10 +554,10 @@ function SignupForm() {
                   >
                     <Handshake className="w-6 h-6 mb-1.5" />
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      LLP
+                      {t("auth.legal_llp", "LLP")}
                     </span>
                     <span className={`text-[10px] mt-0.5 ${legalEntity === "llp" ? "text-orange-100" : "text-slate-500"}`}>
-                      Select if you have an LLPIN
+                      {t("auth.legal_llp_hint", "Select if you have an LLPIN")}
                     </span>
                   </button>
 
@@ -572,10 +572,10 @@ function SignupForm() {
                   >
                     <User className="w-6 h-6 mb-1.5" />
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      Sole Proprietor
+                      {t("auth.legal_proprietor", "Sole Proprietor")}
                     </span>
                     <span className={`text-[10px] mt-0.5 ${legalEntity === "proprietor" ? "text-orange-100" : "text-slate-500"}`}>
-                      Individual enterprise / MSME
+                      {t("auth.legal_proprietor_hint", "Individual enterprise / MSME")}
                     </span>
                   </button>
 
@@ -590,17 +590,17 @@ function SignupForm() {
                   >
                     <Users className="w-6 h-6 mb-1.5" />
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      Others
+                      {t("auth.legal_others", "Others")}
                     </span>
                     <span className={`text-[10px] mt-0.5 ${legalEntity === "others" ? "text-orange-100" : "text-slate-500"}`}>
-                      Trust / Society / Cooperative
+                      {t("auth.legal_others_hint", "Trust / Society / Cooperative")}
                     </span>
                   </button>
                 </div>
 
                 <div className="mt-5 space-y-3">
                   <div className="space-y-1">
-                    <Label htmlFor="signup-business-name">Registered Business / Enterprise Name *</Label>
+                    <Label htmlFor="signup-business-name">{t("auth.business_name_label", "Registered Business / Enterprise Name *")}</Label>
                     <Input
                       id="signup-business-name"
                       type="text"
@@ -611,7 +611,7 @@ function SignupForm() {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="signup-sector">Primary Industry / Sector Category *</Label>
+                    <Label htmlFor="signup-sector">{t("auth.sector_label", "Primary Industry / Sector Category *")}</Label>
                     <select
                       id="signup-sector"
                       value={primarySector}
@@ -651,12 +651,12 @@ function SignupForm() {
                   {businessName || "Smart Electronics"}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Tax Identity Verification
+                  {t("auth.tax_identity", "Tax Identity Verification")}
                 </p>
 
                 <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-900">Income Tax Department</span>
+                    <span className="text-xs font-semibold text-slate-900">{t("auth.income_tax", "Income Tax Department")}</span>
                     <span className="text-[10px] text-slate-500 font-mono">PAN</span>
                   </div>
                   <p className="font-mono text-base font-bold text-slate-900 tracking-wider">
@@ -671,12 +671,12 @@ function SignupForm() {
                   className="mt-4 text-xs font-medium text-[#FE7251] hover:underline flex items-center space-x-1 cursor-pointer"
                 >
                   <HelpCircle className="w-3.5 h-3.5" />
-                  <span>Why is PAN required?</span>
+                  <span>{t("auth.why_pan", "Why is PAN required?")}</span>
                 </button>
               </div>
 
               <div className="text-[11px] text-slate-400">
-                Step 3 of 4: Statutory Tax Identity
+                {t("auth.step3_of", "Step 3 of 4: Statutory Tax Identity")}
               </div>
             </div>
 
@@ -684,18 +684,18 @@ function SignupForm() {
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
-                  Setup your profile
+                  {t("auth.signup_title", "Setup your profile")}
                 </span>
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Validate Permanent Account Number (PAN)
+                  {t("auth.validate_pan", "Validate Permanent Account Number (PAN)")}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  We use your PAN to authenticate enterprise credentials across state regulatory databases.
+                  {t("auth.validate_pan_desc", "We use your PAN to authenticate enterprise credentials across state regulatory databases.")}
                 </p>
 
                 <div className="mt-6 space-y-4">
                   <div className="space-y-1">
-                    <Label htmlFor="signup-pan">Permanent Account Number (PAN) *</Label>
+                    <Label htmlFor="signup-pan">{t("auth.pan_label", "Permanent Account Number (PAN) *")}</Label>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                       <Input
                         id="signup-pan"
@@ -714,7 +714,7 @@ function SignupForm() {
                         disabled={panLoading || !panNumber}
                         className="shrink-0"
                       >
-                        {panLoading ? "Validating..." : "Get Details"}
+                        {panLoading ? t("auth.validating", "Validating...") : t("auth.get_details", "Get Details")}
                       </Button>
                     </div>
                   </div>
@@ -724,12 +724,12 @@ function SignupForm() {
                       <div className="flex items-center space-x-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <div>
-                          <p className="font-semibold">PAN Validated Successfully</p>
-                          <p className="text-[11px] text-emerald-700">Matched with Income Tax Department records</p>
+                          <p className="font-semibold">{t("auth.pan_success", "PAN Validated Successfully")}</p>
+                          <p className="text-[11px] text-emerald-700">{t("auth.pan_success_sub", "Matched with Income Tax Department records")}</p>
                         </div>
                       </div>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
-                        Verified
+                        {t("auth.verified", "Verified")}
                       </span>
                     </div>
                   )}
@@ -759,22 +759,22 @@ function SignupForm() {
                   {businessName || "Smart Electronics"}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Location & Industrial District
+                  {t("auth.location_district", "Location & Industrial District")}
                 </p>
 
                 <div className="mt-6 p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 shadow-2xs space-y-1.5">
                   <div className="flex items-center space-x-2 text-slate-900 font-semibold">
                     <MapPin className="w-4 h-4 text-[#FE7251]" />
-                    <span>District Jurisdiction</span>
+                    <span>{t("auth.district_jurisdiction", "District Jurisdiction")}</span>
                   </div>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Determines applicable MIDC regional offices, local municipal bodies, and district-level single-window facilitation officers.
+                    {t("auth.district_jurisdiction_desc", "Determines applicable MIDC regional offices, local municipal bodies, and district-level single-window facilitation officers.")}
                   </p>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-400">
-                Step 4 of 4: Physical Location
+                {t("auth.step4_of", "Step 4 of 4: Physical Location")}
               </div>
             </div>
 
@@ -782,15 +782,15 @@ function SignupForm() {
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
-                  Setup your profile
+                  {t("auth.signup_title", "Setup your profile")}
                 </span>
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Enter your Address
+                  {t("auth.address", "Enter your Address")}
                 </h2>
 
                 <div className="mt-4 space-y-3">
                   <div className="space-y-1">
-                    <Label htmlFor="signup-addr1">Address Line 1 *</Label>
+                    <Label htmlFor="signup-addr1">{t("auth.addr1_label", "Address Line 1 *")}</Label>
                     <Input
                       id="signup-addr1"
                       type="text"
@@ -801,7 +801,7 @@ function SignupForm() {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="signup-addr2">Address Line 2</Label>
+                    <Label htmlFor="signup-addr2">{t("auth.addr2_label", "Address Line 2")}</Label>
                     <Input
                       id="signup-addr2"
                       type="text"
@@ -813,7 +813,7 @@ function SignupForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="signup-country">Country *</Label>
+                      <Label htmlFor="signup-country">{t("auth.country_label", "Country *")}</Label>
                       <select
                         id="signup-country"
                         value={country}
@@ -824,7 +824,7 @@ function SignupForm() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="signup-pincode">PIN Code *</Label>
+                      <Label htmlFor="signup-pincode">{t("auth.pincode_label", "PIN Code *")}</Label>
                       <Input
                         id="signup-pincode"
                         type="text"
@@ -837,7 +837,7 @@ function SignupForm() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="signup-state">State *</Label>
+                      <Label htmlFor="signup-state">{t("auth.state_label", "State *")}</Label>
                       <select
                         id="signup-state"
                         value={stateName}
@@ -851,7 +851,7 @@ function SignupForm() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="signup-district">District *</Label>
+                      <Label htmlFor="signup-district">{t("auth.district_label", "District *")}</Label>
                       <select
                         id="signup-district"
                         value={district}
@@ -900,25 +900,25 @@ function SignupForm() {
             </button>
             <div className="flex items-center space-x-2 text-xs font-semibold text-[#FE7251] uppercase tracking-wider">
               <CreditCard className="w-4 h-4" />
-              <span>Statutory Requirement</span>
+              <span>{t("auth.statutory_req", "Statutory Requirement")}</span>
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              Why is PAN required for AARAMBH?
+              {t("auth.why_pan_title", "Why is PAN required for AARAMBH?")}
             </h3>
             <div className="space-y-2 text-xs text-slate-600 leading-relaxed">
               <p>
-                1. <strong>Direct Regulatory Synchronization:</strong> Your PAN is used by MIDC, MPCB, and DISH to verify company registration without requiring redundant paper returns.
+                1. <strong>{t("auth.pan_point1_title", "Direct Regulatory Synchronization:")}</strong> {t("auth.pan_point1_desc", "Your PAN is used by MIDC, MPCB, and DISH to verify company registration without requiring redundant paper returns.")}
               </p>
               <p>
-                2. <strong>Incentive & Subsidy Tracking:</strong> Under the Package Scheme of Incentives (PSI 2019), industrial subsidies and electricity duty exemptions are credited against your PAN-linked corporate entity.
+                2. <strong>{t("auth.pan_point2_title", "Incentive & Subsidy Tracking:")}</strong> {t("auth.pan_point2_desc", "Under the Package Scheme of Incentives (PSI 2019), industrial subsidies and electricity duty exemptions are credited against your PAN-linked corporate entity.")}
               </p>
               <p>
-                3. <strong>Anti-Fraud Compliance:</strong> Ensures all single-window applications originate from verified directors and authorized signatories.
+                3. <strong>{t("auth.pan_point3_title", "Anti-Fraud Compliance:")}</strong> {t("auth.pan_point3_desc", "Ensures all single-window applications originate from verified directors and authorized signatories.")}
               </p>
             </div>
             <div className="pt-2 flex justify-end">
               <Button size="sm" onClick={() => setPanModalOpen(false)}>
-                Got It
+                {t("auth.got_it", "Got It")}
               </Button>
             </div>
           </div>
