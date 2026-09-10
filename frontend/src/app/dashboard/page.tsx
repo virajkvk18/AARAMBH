@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useEnterpriseStore, INITIAL_DEFAULT_CLEARANCES } from "@/store/enterpriseStore";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { SAMPLE_PROFILES, buildSampleAssessment } from "@/lib/sampleProjects";
 import { useNotificationStore } from "@/store/notificationStore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -329,26 +330,13 @@ export default function DashboardHomePage() {
 
   const router = useRouter();
 
-  const runSampleProject = () => {
+  const runSampleProject = (profileKey: string) => {
+    const profile = SAMPLE_PROFILES.find((p) => p.sectorKey === profileKey);
+    if (!profile) return;
+    const result = buildSampleAssessment(profile);
     const store = useEnterpriseStore.getState();
-    store.setFormData({
-      sector: "Electric Vehicles",
-      locationZone: "Ranjangoan MIDC (Chhatrapati Sambhajinagar)",
-      capexCr: 120,
-      powerLoadKva: 400,
-      waterDemandKld: 60,
-      workforceSize: 400,
-    });
-    store.setAssessmentResult(
-      "red",
-      INITIAL_DEFAULT_CLEARANCES,
-      [
-        "EV Policy 2021 — 100% electricity duty exemption for 10 years",
-        "20% additional capital subsidy on building, plant & machinery (thrust-sector top-up)",
-        "100% SGST reimbursement up to 7 years (IPS 2019)",
-      ],
-      undefined
-    );
+    store.setFormData(result.formData);
+    store.setAssessmentResult(result.riskTrack, result.clearances, result.incentives, result.policyDetails);
   };
 
   // Onboarding gate — show guided profile-completion flow before features unlock
@@ -403,19 +391,33 @@ export default function DashboardHomePage() {
               ))}
             </div>
 
+            <div className="mt-7">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Or preview with a live sector sample — approvals are pre-computed by the rules engine
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {SAMPLE_PROFILES.map((p) => (
+                  <button
+                    key={p.sectorKey}
+                    type="button"
+                    onClick={() => runSampleProject(p.sectorKey)}
+                    className="text-left p-4 rounded-xl bg-[#FFFDFC] border border-[#F0E5E0] hover:border-[#FE7251] hover:bg-[#FFF7F0] transition-colors cursor-pointer group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-[#FFF2DF] text-[#9B2A48] flex items-center justify-center mb-2.5 group-hover:text-[#FE7251]">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">{p.label}</h3>
+                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{p.hint}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button onClick={() => router.push("/dashboard/kya")} className="w-full sm:w-auto">
                 <Compass className="w-4 h-4" />
                 <span>Start Business Onboarding</span>
               </Button>
-              <button
-                type="button"
-                onClick={runSampleProject}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#FED17A] text-[#9B2A48] text-xs font-bold shadow-xs transition-colors cursor-pointer hover:bg-[#FFF7F0]"
-              >
-                <Zap className="w-4 h-4" />
-                <span>Explore with Sample EV Project</span>
-              </button>
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
