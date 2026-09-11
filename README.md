@@ -123,7 +123,6 @@ AARAMBH/
 │       ├── generate-sample-pdf.js     # Statutory test PDF generator
 │       └── sample-dossier.pdf         # Demo statutory PDF file
 │
-│── docs/                              # PRD, technical spec, and architectural briefs
 │── .env.example                       # Reference environment configuration
 └── README.md                          # Project documentation
 ```
