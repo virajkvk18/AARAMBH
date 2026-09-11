@@ -236,6 +236,8 @@ function LoginForm() {
           ) : (
             <div className="pt-2">
               <EmailOtpForm
+                otpType="email"
+                verifyButtonText="Verify & Sign In"
                 onSuccess={() => router.replace(getRedirectDestination())}
               />
             </div>

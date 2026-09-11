@@ -40,6 +40,7 @@ function SignupForm() {
   const {
     signUpApplicant,
     signUpWithEmailOtp,
+    resendSignupOtp,
     verifyEmailOtp,
     completeSignup,
     updateProfile,
@@ -267,7 +268,7 @@ function SignupForm() {
     }
 
     if (result.needsConfirmation) {
-      setEmailOptNotice("Account created! Please check your email to confirm your account before logging in.");
+      setCurrentStep(5);
       return;
     }
 
@@ -498,7 +499,9 @@ function SignupForm() {
                   </h3>
                   <EmailOtpForm
                     showSignupHint
+                    otpType="email"
                     onSendCode={signUpWithEmailOtp}
+                    verifyButtonText="Verify & Continue"
                     onSuccess={() => {
                       // Email verified — continue the flow to the business profile wizard.
                       setSignupMethod("otp");
@@ -945,13 +948,17 @@ function SignupForm() {
                   {t("auth.signup_title", "Setup your profile")}
                 </span>
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  {t("auth.enter_otp", "Enter your Email Code")}
+                  Enter the 6-digit code sent to your email
                 </h2>
 
                 <div className="mt-6">
                   <EmailOtpForm
                     initialEmail={email}
-                    onSendCode={signUpWithEmailOtp}
+                    initialCodeSent={true}
+                    otpType="signup"
+                    onSendCode={resendSignupOtp}
+                    onChangeEmail={() => setCurrentStep(1)}
+                    verifyButtonText="Verify & Complete Registration"
                     onSuccess={() => void finalizeRegistration()}
                   />
                 </div>

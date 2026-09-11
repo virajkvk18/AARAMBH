@@ -33,7 +33,8 @@ interface AuthContextType {
   signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<string | null>;
   signInWithEmailOtp: (email: string) => Promise<string | null>;
   signUpWithEmailOtp: (email: string) => Promise<string | null>;
-  verifyEmailOtp: (email: string, token: string) => Promise<string | null>;
+  resendSignupOtp: (email: string) => Promise<string | null>;
+  verifyEmailOtp: (email: string, token: string, type?: "email" | "signup") => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   completeSignup: (email: string, password: string, profile: Profile) => Promise<string | null>;
   resetPassword: (email: string) => Promise<string | null>;
@@ -292,18 +293,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? error.message : null;
   };
 
-  // Verify Email OTP
-  const verifyEmailOtp = async (email: string, token: string): Promise<string | null> => {
+  // Resend 6-digit signup confirmation OTP
+  const resendSignupOtp = async (email: string): Promise<string | null> => {
     const s = getBrowserSupabaseClient();
     if (!s) {
       return "Supabase client is not configured.";
     }
 
-    const { error } = await s.auth.verifyOtp({
-      email: email.trim().toLowerCase(),
-      token: token.trim(),
-      type: "email",
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      return "Please enter your email address.";
+    }
+
+    const { error } = await s.auth.resend({
+      type: "signup",
+      email: normalizedEmail,
     });
+
+    return error ? error.message : null;
+  };
+
+  // Verify 6-digit Email OTP (supports type: 'email' | 'signup')
+  const verifyEmailOtp = async (
+    email: string,
+    token: string,
+    type: "email" | "signup" = "email"
+  ): Promise<string | null> => {
+    const s = getBrowserSupabaseClient();
+    if (!s) {
+      return "Supabase client is not configured.";
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const cleanToken = token.trim();
+
+    let { error } = await s.auth.verifyOtp({
+      email: normalizedEmail,
+      token: cleanToken,
+      type,
+    });
+
+    // Fallback: if 'signup' failed, try 'email', and vice versa
+    if (error && (type === "signup" || type === "email")) {
+      const alternateType = type === "signup" ? "email" : "signup";
+      const retry = await s.auth.verifyOtp({
+        email: normalizedEmail,
+        token: cleanToken,
+        type: alternateType,
+      });
+      if (!retry.error) {
+        error = null;
+      }
+    }
 
     if (error) {
       return error.message;
@@ -488,6 +529,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           signIn,
           signInWithEmailOtp,
           signUpWithEmailOtp,
+          resendSignupOtp,
           verifyEmailOtp,
           signUpApplicant,
           completeSignup,
