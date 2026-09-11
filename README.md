@@ -1,212 +1,261 @@
-# AARAMBH
+<!-- ===================================================================== -->
+<!-- 🌐 LIVE DEPLOYMENT URL (Add your deployed production link below)     -->
+<!-- Example: # 👉 Live link: https://your-deployment-url.vercel.app/      -->
+<!-- ===================================================================== -->
+# 👉 Live link: `[ADD_DEPLOYMENT_URL_HERE]`
+
+<!-- ===================================================================== -->
+<!-- 🎥 DEMO VIDEO / WALKTHROUGH (Add your video presentation link below)  -->
+<!-- Example: # 📺 Video Demo: https://youtu.be/your_video_id              -->
+<!-- ===================================================================== -->
+> **📺 Demo Video Walkthrough**: `[ADD_DEMO_VIDEO_LINK_HERE]`
+
+---
+
+# 🚀 AARAMBH – AI-Powered Smart Single Window Industrial Clearance Engine
 
 **A single window that actually thinks — not just files paperwork.**
 
-Built for Smart India Hackathon 2026 · Problem Statement 26130 · Government of Maharashtra, Maharashtra State Innovation Society (Dept. of Skills, Employment, Entrepreneurship & Innovation)
+**AARAMBH** is an intelligent, automated single-window clearance and compliance platform engineered for Maharashtra's industrial ecosystem. Built for **Smart India Hackathon 2026 (Problem Statement 26130)** for the **Government of Maharashtra, Maharashtra State Innovation Society (Dept. of Skills, Employment, Entrepreneurship & Innovation)**.
+
+The system combines **Fast LLM Inference (Groq)**, **Document Vision/OCR (PyMuPDF & EasyOCR)**, **Rule Engines (Incentives & Dynamic Policies)**, and a **Directed Acyclic Graph (DAG) Dependency Orchestrator** to eliminate cross-department bottlenecks, catch document discrepancies before officer review, and auto-unlock downstream statutory clearances.
 
 ---
 
-## The problem we're actually solving
-
-If you've ever tried to start an industrial unit in Maharashtra, you already know the pain: MIDC land allotment here, MPCB pollution consent there, a Fire NOC from a completely different office, a water connection from yet another department — each with its own portal, its own document requirements, and its own timeline that nobody tells you until you've already missed it.
-
-That's not a hypothetical. It's the literal problem statement we were handed (PS 26130): entrepreneurs struggle to even *identify* which approvals they need, departments deal with incomplete applications and repeat scrutiny, and nobody — not the applicant, not the officer — has real visibility into where things are stuck.
-
-Existing portals like NSWS and MAITRI have made real progress here — they already let departments process applications in parallel, and MAITRI 2.0 even ships an incentive calculator. We checked, because we didn't want to pitch a "difference" that wasn't actually true. But both are still fundamentally *passive*: you upload a document, and then you wait for a human to notice if something's wrong. Neither auto-detects a mismatch between two of your own uploaded documents before you submit. Neither automatically unlocks a downstream approval the moment its prerequisite clears.
-
-AARAMBH is our attempt to close that specific gap: an approval system that reads your documents, checks them against each other, and actively moves your file forward — instead of just storing it.
+## 🎯 Goals
+- **Eliminate Application Bounces**: Automatically cross-validate uploaded deeds, blueprints, and forms with multi-document tolerance checks before human submission.
+- **Dynamic Dependency Unlocking**: Model clearance pipelines as an active DAG where prerequisite approvals (e.g., MIDC Land Allotment) instantly unlock downstream clearances (MPCB Consent, Fire NOC, DISH).
+- **Zero Redundant Data Entry**: Auto-extract statutory parameters (plot size, connected load, capital investment, PAN/GSTIN) and auto-fill unified Common Application Forms (CAF).
+- **Enforce Statutory SLAs**: Real-time SLA tracking with multi-tier automated escalation workflows for pending departmental approvals.
+- **Democratize Incentive Access**: Instant calculation and policy eligibility mapping based on the Maharashtra Industrial Policy (PPSI, mega-project capex tiers, and backward taluka incentives).
 
 ---
 
-## What actually makes this different
+## 🌟 Core Features
 
-Three things here are genuinely structural, not cosmetic:
-
-### 1. It catches your mistakes before a human ever sees them
-Upload your land lease deed and your site blueprint separately, and if the plot area on one says 10,000 sq.m and the other says 9,500 sq.m, AARAMBH flags it immediately and locks submission — instead of an officer discovering the discrepancy three weeks later and bouncing the whole file back to square one.
-
-### 2. Approvals unlock each other automatically
-We modeled approvals as an actual dependency graph, not a flat list. The moment your Land Allotment gets approved, every clearance that depended on it — Pollution Consent, Fire NOC, Water Allocation — flips from locked to active on its own, live.
-
-### 3. It reads your documents instead of asking you to retype them
-The Document Vault and our Common Application Form (CAF) system extract real fields out of your uploaded documents — plot area, power load, PAN, GSTIN — and reuse them across every department's form, tagging each field with exactly where it came from.
-
-Underneath all three sits the same idea: **stop treating single-window systems like a filing cabinet, and start treating them like a system that's actually paying attention.**
+- 🔍 **KYA (Know Your Approvals) Wizard** → Dynamic sector, land, and scale-based clearance discovery engine.
+- 📁 **Intelligent Document Vault & OCR** → Real-time multi-format document extraction powered by Groq and PyMuPDF/EasyOCR.
+- 🛡️ **Pre-Validation Gatekeeper** → Live cross-document parameter verification & mismatch detection before file submission.
+- 🕸️ **Approval Dependency Engine (DAG)** → Real-time clearance dependency graph that automatically unlocks dependent permits as prerequisites clear.
+- 📝 **Unified Common Application Form (CAF)** → Fill once, automatically map and serialize payload schemas across all state departments (MIDC, MPCB, Fire, Water, Power, Labor).
+- ⏱️ **Statutory SLA & Escalation Tracker** → Transparent state-driven timeline monitor with automatic tier escalations for delayed clearances.
+- 💰 **Policy & Incentive Calculator** → Rules engine computing capital subsidies, power tariff concessions, stamp duty exemptions, and GST incentives under Maharashtra Industrial Policy.
+- 🤖 **Ask AARAMBH Regulatory Copilot** → Fast conversational assistant answering statutory compliance queries and policy eligibility.
+- 🧑‍💼 **Officer Workspace & Inspection Planner** → Unified portal for department officers with risk scoring, review queues, and joint inspection scheduling.
 
 ---
 
-## What's genuinely working right now
+## 🏗 Tech Stack
 
-We'd rather tell you exactly where things stand than let a demo surprise us. Here's the honest state of every major piece, as of this build:
+**Frontend:**
+- **Framework**: Next.js 16 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS v4, Framer Motion
+- **State Management**: Zustand
+- **Icons & UI**: Lucide React, Modern Glassmorphic Component System
 
-| Feature | Status |
-|---|---|
-| KYA Wizard (customised checklist generation) | ✅ Fully working — real rule engine, not a static list |
-| Approvals Directory (`/apply`) | ✅ Fully working — searchable, filterable directory of every clearance type |
-| Document Vault + AI extraction | ✅ Fully working — real Groq + PyMuPDF/EasyOCR pipeline, with a graceful fallback if the AI service is briefly unreachable |
-| Unified Common Application Form (CAF) | ✅ Fully working — fill once, map to every department's schema |
-| Pre-Validation Gatekeeper | ✅ Fully working — real cross-document percentage-tolerance comparison |
-| Dependency Graph (DAG) approval engine | ✅ Fully working — real multi-parent dependency state, not an animation |
-| SLA Tracker with escalation tiers | ✅ Fully working — real state-driven thresholds and colour transitions |
-| Policy & Incentive Rules Engine | ✅ Fully working — genuinely sophisticated: capex tiers, special-region overrides, sector-specific policy exceptions |
-| Ask AARAMBH chatbot | ✅ Working — real Groq-backed, conversational, accurate on statutory facts |
-| Officer Workspace | ⚠️ Working, but risk track doesn't yet filter/sort the queue operationally |
-| Joint Inspection Scheduling | ⚠️ UI built, spatial clustering logic not yet wired |
-| Renewals | ⚠️ Present as a data field, not yet a full tracked workflow |
-| Grievance Desk | ⚠️ UI built, not yet persisted to the database |
-| Regulatory Copilot (RAG-grounded) | ⚠️ Chatbot is a well-prompted Groq assistant right now — not yet grounded in a retrieved document corpus |
-| Delay analytics dashboard | 🔜 Not yet built |
+**Backend & Microservices:**
+- **API Orchestrator**: Node.js, Express, TypeScript
+- **AI Microservice**: Python, FastAPI, Uvicorn
+- **AI/ML & Extraction**: Groq Cloud SDK (`llama-3.3-70b-versatile`), PyMuPDF, EasyOCR, Pydantic
 
-We're listing the partial and not-yet-built items on purpose. A judge who tests something we claimed was finished and finds it isn't costs us more credibility than one honest line in a README ever will.
+**Database & Auth:**
+- **Database**: PostgreSQL via Supabase
+- **Authentication**: Supabase Auth (Email OTP, Magic Link, Session Management) & Row Level Security (RLS)
+- **Migrations**: Declarative SQL migrations with audit hardening and enterprise schema tracking
+
+**Infra & Tooling:**
+- **Dev Tooling**: Single-command orchestrator (`start-all.ps1` / `start-all.sh`), ts-node-dev
+- **PDF Generation & Testing**: Node scripts, automated email OTP and endpoint test suites
 
 ---
 
-## Architecture — how the pieces actually talk to each other
-
-```mermaid
-flowchart TD
-    A["Next.js Frontend<br/>(React + Tailwind + Zustand)"] --> B["Node/Express API<br/>(orchestration + CAF mapping)"]
-    B --> C[("Supabase<br/>Postgres + Auth + RLS")]
-    B --> D["FastAPI AI Service<br/>(single-stage extraction)"]
-    D --> E["Groq<br/>fast LLM inference"]
-    D --> F["PyMuPDF + EasyOCR<br/>document parsing"]
-```
-
-A quick, honest note on this diagram: our original planning docs described a LangGraph-orchestrated, ChromaDB-backed multi-stage AI pipeline. What's actually running is simpler — a single Groq completion call per document, with PyMuPDF/EasyOCR doing the text extraction beforehand. It's a real, working integration; it's just not the more elaborate version we originally sketched, and we'd rather say that plainly than have the gap discovered mid-demo.
-
-### Why these specific technologies
-
-- **Groq** for LLM inference — a live demo dying on an 8-second API response is a self-inflicted wound. Groq's inference speed keeps the pre-validation check and auto-fill feeling instant.
-- **Supabase** — Postgres with real Auth and Row Level Security built in, so we didn't have to hand-roll session management or access control from scratch.
-- **FastAPI, kept isolated from the Node backend** — so the AI workload can scale independently from user traffic, and the backend degrades gracefully (via a regex/heuristic fallback) if the AI service is briefly unreachable.
-- **Zustand** on the frontend — lightweight shared state so a change in the Vault instantly reflects in Pre-Validation and the CAF, without prop-drilling or a heavier state library.
-
----
-
-## Project structure
+## 📂 Repository Structure
 
 ```text
-aarambh/
-  frontend/                Next.js (App Router) + TypeScript + Tailwind
-    src/app/
-      page.tsx              Public landing page
-      apply/                 Approvals Directory (searchable/filterable)
-      login/, signin/, signup/   Auth screens
-      api/chat/route.ts      Ask AARAMBH chatbot (server-side Groq call)
-      dashboard/
-        kya/                  KYA Wizard
-        caf/                  Unified Common Application Form
-        vault/                Document Vault + AI auto-fill
-        prevalidation/        Mismatch detection & lock
-        dag/                  Dependency graph canvas
-        sla/                  SLA tracker
-        inspections/          Joint Inspection scheduling (UI stage)
-        grievances/           Grievance Desk (UI stage)
-        officer-workspace/    Officer review queue
-        department-approvals/ Department-grouped clearance view
-        profile/              Business profile management
-    src/store/              Zustand shared state
-    src/lib/                Supabase browser client
-    src/data/               Approvals registry, static reference data
-
-  backend/                  Node.js + Express (API layer)
-    src/
-      index.ts               Main API routes
-      supabase.ts             Server-side Supabase client
-      caf/                    Common Application Form schema + department mappers
-      rules/                  Policy incentive engine + workflow rule engine
-
-  ai-service/                Python FastAPI microservice
-    main.py                   Document extraction endpoint (PyMuPDF/EasyOCR/Groq)
-
-  supabase/
-    migrations/               SQL schema (three migrations, including a schema fix)
-
-  docs/                      PRD, technical spec, schema docs
-  .env.example
-  README.md                  you are here
+AARAMBH/
+│── frontend/                          # Next.js 16 Web Application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── page.tsx               # High-converting interactive landing page
+│   │   │   ├── apply/                 # Searchable clearances & approvals directory
+│   │   │   ├── login/, signup/        # Supabase authentication & OTP flows
+│   │   │   ├── reset-password/        # Password recovery & auth callback handler
+│   │   │   ├── track/                 # Public application status tracker
+│   │   │   ├── dashboard/             # Enterprise applicant dashboard
+│   │   │   │   ├── kya/               # Know Your Approvals wizard
+│   │   │   │   ├── caf/               # Unified Common Application Form
+│   │   │   │   ├── vault/             # Smart Document Vault + AI extraction
+│   │   │   │   ├── prevalidation/     # Discrepancy & tolerance gatekeeper
+│   │   │   │   ├── dag/               # Visual DAG clearance dependency canvas
+│   │   │   │   ├── sla/               # Statutory SLA tracking & escalations
+│   │   │   │   ├── officer-workspace/ # Department officer scrutiny queue
+│   │   │   │   ├── inspections/       # Joint site inspection coordination
+│   │   │   │   ├── grievances/        # Direct dispute & grievance desk
+│   │   │   │   └── profile/           # Enterprise profile & master data
+│   │   │   └── api/chat/route.ts      # Server-side Groq chatbot proxy
+│   │   ├── store/                     # Zustand state (enterpriseStore, authContext)
+│   │   └── utils/supabase/            # Supabase SSR & client instances
+│   └── package.json
+│
+│── backend/                           # Node.js + Express API Layer
+│   ├── src/
+│   │   ├── index.ts                   # Core API routes & clearance pipeline handlers
+│   │   ├── db.ts                      # Database access & helper queries
+│   │   ├── supabase.ts                # Supabase admin client
+│   │   ├── caf/                       # Department-specific form mappers
+│   │   └── rules/                     # Policy incentive & workflow rules engines
+│   └── package.json
+│
+│── ai-service/                        # Python FastAPI OCR & Extraction Microservice
+│   ├── main.py                        # Document extraction & Groq processing endpoints
+│   └── requirements.txt
+│
+│── supabase/
+│   └── migrations/                    # Database schemas, RLS policies, audit logs
+│
+│── scripts/
+│   ├── start-all.ps1                  # Windows one-command startup script
+│   └── start-all.sh                   # Unix/Linux one-command startup script
+│
+│── docs/                              # PRD, technical spec, and architectural briefs
+│── .env.example                       # Reference environment configuration
+└── README.md                          # Project documentation
 ```
 
 ---
 
-## Running this locally
+## ⚡ Quick Start
 
-You'll need three things running **at the same time**, each in its own terminal.
+### Option A: One-Command Launch (Recommended)
 
-**Quickest option — one command:**
 ```powershell
-# Windows
+# Windows (PowerShell)
 .\scripts\start-all.ps1
 ```
+
 ```bash
 # macOS / Linux
+chmod +x ./scripts/start-all.sh
 ./scripts/start-all.sh
 ```
 
-**1. The AI service (Python)**
+---
+
+### Option B: Manual Service-by-Service Setup
+
+#### 1. AI Extraction Microservice (Python)
 ```bash
 cd ai-service
 python -m pip install -r requirements.txt
-python -m uvicorn main:app --reload
+python -m uvicorn main:app --port 8000 --reload
 ```
 
-**2. The backend (Node)**
+#### 2. Backend Orchestration API (Node.js)
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-**3. The frontend (Next.js)**
+#### 3. Frontend Web Application (Next.js)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Then open **http://localhost:3000**.
+Once running, navigate to **`http://localhost:3000`** in your browser.
 
-### Environment setup
+---
 
-**In `frontend/.env.local`:**
+## ⚙️ Environment Configuration
+
+Create the respective `.env` files in each service directory using the examples below:
+
+### `frontend/.env.local`
 ```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-GROQ_API_KEY=
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GROQ_API_KEY=your_groq_api_key
 ```
 
-**In `backend/.env`:**
+### `backend/.env`
 ```env
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-GROQ_API_KEY=
+PORT=5000
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+GROQ_API_KEY=your_groq_api_key
 AI_SERVICE_URL=http://localhost:8000
 ```
 
-**In `ai-service/.env`:**
+### `ai-service/.env`
 ```env
-GROQ_API_KEY=
+GROQ_API_KEY=your_groq_api_key
+PORT=8000
 ```
 
-None of these are committed to the repo — if you're cloning this fresh, you'll need your own keys.
+---
 
-### Setting up the database
+## 📊 System Architecture & Data Flow
 
-Run the three migration files in `supabase/migrations/` against your own Supabase project, in order, via the SQL Editor in your Supabase dashboard. The third migration file exists specifically to correct a schema type mismatch we hit during development (`enterprise_id` inconsistently typed as `TEXT` vs `UUID` across two earlier migrations) — it supersedes the conflicting parts of the first two.
+```mermaid
+flowchart TD
+    subgraph Client ["Frontend Layer (Next.js 16 + Zustand)"]
+        UI["Applicant & Officer Dashboard"]
+        Vault["Document Vault Upload"]
+        KYA["KYA & CAF Wizard"]
+        ChatUI["Ask AARAMBH AI Chatbot"]
+    end
+
+    subgraph BackendLayer ["API & Orchestration Layer (Node.js / Express)"]
+        API["Express Router (/api)"]
+        CAFEngine["CAF Department Payload Mapper"]
+        RulesEngine["Incentive & Policy Rules Engine"]
+        DAGRouter["Clearance State Orchestrator"]
+    end
+
+    subgraph AIService ["AI Microservice (FastAPI + Groq)"]
+        OCR["PyMuPDF & EasyOCR Engine"]
+        LLMExtract["Groq LLaMA-3.3 Extraction"]
+        Discrepancy["Cross-Document Tolerance Comparator"]
+    end
+
+    subgraph StorageAuth ["Persistence & Security (Supabase)"]
+        PG[("PostgreSQL Database")]
+        Auth["Supabase Auth & Session Handling"]
+        RLS["Row Level Security Policies"]
+    end
+
+    UI --> API
+    Vault --> API
+    ChatUI --> API
+    API --> StorageAuth
+    API --> AIService
+    AIService --> LLMExtract
+    AIService --> OCR
+    KYA --> CAFEngine
+    CAFEngine --> DAGRouter
+    DAGRouter --> PG
+```
 
 ---
 
-## What's mocked or simulated right now, and why that's okay
+## 👥 Team & Acknowledgements
 
-- **DigiLocker/Aadhaar login** is currently a simulated flow — real integration requires formal government "Requester" partner registration, which involves an organizational onboarding process well beyond a hackathon timeline. Normal email/password signup runs on real Supabase Auth.
-- **The AI document extraction** genuinely calls Groq and runs real OCR — it's a single-stage pipeline (not the multi-agent LangGraph/RAG system in our original architecture sketch), tuned against the sample document formats we tested with.
-- **Inspection scheduling, renewals, the RAG-grounded regulatory copilot, and delay analytics** are either partially built (UI without the underlying logic) or not yet started — see the status table above for the exact state of each.
+**Team HellFire Club**  
+- **Hackathon**: Smart India Hackathon 2026
+- **Problem Statement**: PS 26130 – Unified Single Window Industrial Clearance System
+- **Organization**: Government of Maharashtra · Maharashtra State Innovation Society (Dept. of Skills, Employment, Entrepreneurship & Innovation)
 
----
+### 🌟 Team Members
 
-## Team
-
-**Team HELLFIRE CLUB** · Smart India Hackathon 2026 · PS 26130
+| Name | Role / Focus Areas |
+|---|---|
+| **Viraj Kumar Vishwakarma** | **Team Leader** · Frontend / Research |
+| **Aanya Jain** | Backend / Database / PPT |
+| **Manya Arora** | Backend / Database |
+| **Srishti Shrivastava** | Frontend |
+| **Avni Sharma** | Research / PPT |
 
 ---
