@@ -38,6 +38,7 @@ function SignupForm() {
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const {
+    user,
     signUpApplicant,
     signUpWithEmailOtp,
     resendSignupOtp,
@@ -259,6 +260,19 @@ function SignupForm() {
     setPanLoading(true);
 
     const profilePayload = buildProfile();
+
+    // If the user already authenticated via OTP or existing session, update profile and enter dashboard
+    if (user || signupMethod === "otp") {
+      try {
+        await updateProfile(profilePayload);
+      } catch (e: any) {
+        console.warn("Profile update error:", e);
+      }
+      setPanLoading(false);
+      syncStoreAndRedirect();
+      return;
+    }
+
     const result = await signUpApplicant(email, password, profilePayload);
     setPanLoading(false);
 

@@ -486,7 +486,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (profErr) console.warn("Error updating profile in Supabase:", profErr);
     }
 
-    // 2. Update enterprise if enterprise exists
+    // 2. Update enterprise if enterprise exists or insert if new
     if (user?.enterpriseId) {
       const enterprisePayload: Record<string, any> = {};
       if (profileUpdate.enterpriseName) enterprisePayload.name = profileUpdate.enterpriseName;
@@ -500,6 +500,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq("id", user.enterpriseId);
         if (entErr) console.warn("Error updating enterprise in Supabase:", entErr);
       }
+    } else if (profileUpdate.enterpriseName) {
+      const { error: newEntErr } = await s
+        .from("enterprises")
+        .insert({
+          user_id: sbUser.id,
+          name: profileUpdate.enterpriseName,
+          entity_type: profileUpdate.entityType || "Private Limited",
+          pan: profileUpdate.panNumber || null,
+          registered_address: {
+            address: profileUpdate.addressLine1 || "",
+            district: profileUpdate.district || "",
+            state: profileUpdate.state || "Maharashtra",
+            pincode: profileUpdate.pinCode || "",
+          },
+        });
+      if (newEntErr) console.warn("Error inserting enterprise in Supabase:", newEntErr);
     }
 
     await refreshProfile();
