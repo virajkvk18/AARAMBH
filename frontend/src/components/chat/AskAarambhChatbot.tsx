@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  MessageCircle,
   X,
   Send,
   Sparkles,
@@ -20,23 +19,16 @@ import {
   Building2,
   ShieldCheck,
   CheckCircle2,
-  HelpCircle,
   Utensils,
   Store,
   Factory,
   Flame,
   ArrowRight,
   Compass,
-  FileText,
-  ExternalLink,
-  Layers,
   Zap,
   BookOpen,
   Award,
-  PhoneCall,
-  ChevronRight,
   ChevronDown,
-  TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -483,6 +475,7 @@ export default function AskAarambhChatbot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messageIdRef = useRef(0);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const transcriptRef = useRef("");
@@ -630,25 +623,7 @@ export default function AskAarambhChatbot() {
     }
   }, [isOpen, isMinimized]);
 
-  // Update greeting when language or dashboard context switches if no user chat history yet
-  useEffect(() => {
-    setMessages((prev) => {
-      if (prev.length <= 1) {
-        const text = isDashboard
-          ? DASHBOARD_WELCOME_MAP[language] || DASHBOARD_WELCOME_MAP.en
-          : LANDING_WELCOME_MAP[language] || LANDING_WELCOME_MAP.en;
-        return [
-          {
-            id: "welcome-msg",
-            role: "assistant",
-            content: text,
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          },
-        ];
-      }
-      return prev;
-    });
-  }, [language, isDashboard]);
+  
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -664,7 +639,7 @@ export default function AskAarambhChatbot() {
     const detectedLang = forcedLang || detectQuestionLanguage(query.trim());
 
     const userMessage: Message = {
-      id: `user-${Date.now()}`,
+      id: `user-${++messageIdRef.current}`,
       role: "user",
       content: query.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -713,7 +688,7 @@ export default function AskAarambhChatbot() {
           : "I couldn't process your request right now. Please try again or contact the Investor Helpline at 1800-120-8040.");
 
       const botMessage: Message = {
-        id: `bot-${Date.now()}`,
+        id: `bot-${++messageIdRef.current}`,
         role: "assistant",
         content: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -733,7 +708,7 @@ export default function AskAarambhChatbot() {
           : "Unable to process your request at this moment. Please try asking again or contact the Single Window Investor Helpline at 1800-120-8040.";
 
       const errorMessage: Message = {
-        id: `err-${Date.now()}`,
+        id: `err-${++messageIdRef.current}`,
         role: "assistant",
         content: err instanceof Error ? err.message : errorFallback,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -1047,13 +1022,12 @@ export default function AskAarambhChatbot() {
                 {/* Messages Body */}
                 <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
                   {messages.map((msg) => {
+                    const displayedContent = msg.id === "welcome-msg" ? welcomeText : msg.content;
                     const { cleanContent, actions } =
                       msg.role === "assistant" && msg.id !== "welcome-msg"
-                        ? extractActionItems(msg.content, msg.userQueryContext, isDashboard)
+                        ? extractActionItems(displayedContent, msg.userQueryContext, isDashboard)
                         : {
-                            cleanContent: msg.content
-                              .replace(/\[action:([^|\]]+)\|([^|\]]+)(?:\|([^\]]*))?\]/g, "")
-                              .trim(),
+                            cleanContent: displayedContent,
                             actions: [],
                           };
 
