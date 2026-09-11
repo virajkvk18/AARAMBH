@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import EmailOtpForm from "@/components/auth/EmailOtpForm";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -28,6 +29,7 @@ function LoginForm() {
   usePageTitle("Sign In | AARAMBH");
 
   const [activeRole, setActiveRole] = useState<"APPLICANT" | "OFFICER">("APPLICANT");
+  const [loginMethod, setLoginMethod] = useState<"password" | "otp">("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -133,6 +135,34 @@ function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {/* Login Method Toggle */}
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
+            <button
+              type="button"
+              onClick={() => setLoginMethod("password")}
+              className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                loginMethod === "password"
+                  ? "bg-[#FE7251] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Password
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMethod("otp")}
+              className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                loginMethod === "otp"
+                  ? "bg-[#FE7251] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Email Code (OTP)
+            </button>
+          </div>
+
+          {loginMethod === "password" ? (
+          <>
           {/* Officer Dept Selector */}
           {activeRole === "OFFICER" && (
             <div className="p-3 rounded-lg bg-orange-50/50 border border-orange-200 space-y-1">
@@ -207,6 +237,16 @@ function LoginForm() {
               {t("auth.sign_in", "Sign In")}
             </Button>
           </form>
+          </>
+          ) : (
+            <div className="pt-2">
+              <EmailOtpForm
+                onSuccess={() =>
+                  router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard")
+                }
+              />
+            </div>
+          )}
 
           {/* Single Sign-On Options */}
           {activeRole === "APPLICANT" && (

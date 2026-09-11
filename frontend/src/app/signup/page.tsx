@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import EmailOtpForm from "@/components/auth/EmailOtpForm";
 
 type LegalEntityType = "company" | "llp" | "proprietor" | "others" | "new";
 
@@ -43,6 +44,7 @@ function SignupForm() {
   // Current Step: 1 = Initial Credentials, 2 = Entity Type, 3 = PAN Validation, 4 = Address
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [stepError, setStepError] = useState<string | null>(null);
+  const [signupMethod, setSignupMethod] = useState<"password" | "otp">("password");
 
   // Form State
   const [applicantName, setApplicantName] = useState("");
@@ -427,6 +429,34 @@ function SignupForm() {
 
             {/* Right Form Panel */}
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+              {/* Signup Method Toggle */}
+              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs w-fit mb-4">
+                <button
+                  type="button"
+                  onClick={() => setSignupMethod("password")}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                    signupMethod === "password"
+                      ? "bg-[#FE7251] text-white"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSignupMethod("otp")}
+                  className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                    signupMethod === "otp"
+                      ? "bg-[#FE7251] text-white"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Email Code (OTP)
+                </button>
+              </div>
+
+              {signupMethod === "password" ? (
+              <>
               <div className="space-y-4 max-w-lg">
                 <h3 className="text-base font-semibold text-slate-900">
                   {t("auth.investor_contact", "Investor Contact Information")}
@@ -484,6 +514,20 @@ function SignupForm() {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
+              </>
+              ) : (
+                <div className="space-y-4 max-w-lg">
+                  <h3 className="text-base font-semibold text-slate-900">
+                    Email Sign-In
+                  </h3>
+                  <EmailOtpForm
+                    showSignupHint
+                    onSuccess={() =>
+                      router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard/kya")
+                    }
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -9,6 +9,8 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<string | null>;
+  signInWithEmailOtp: (email: string) => Promise<string | null>;
+  verifyEmailOtp: (email: string, token: string) => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   updateProfile: (profile: Partial<Profile>) => Promise<string | null>;
   loginWithDigiLocker: () => Promise<string>;
@@ -97,6 +99,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const { error } = await s.auth.signInWithPassword({ email, password });
     return error ? "Unable to sign in with those credentials." : null;
+  };
+
+  const signInWithEmailOtp = async (email: string) => {
+    const s = getSupabaseClient();
+    if (!s) {
+      return "Email OTP is unavailable in demo mode — sign in with a password instead.";
+    }
+    const { error } = await s.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: { shouldCreateUser: true },
+    });
+    return error ? error.message : null;
+  };
+
+  const verifyEmailOtp = async (email: string, token: string) => {
+    const s = getSupabaseClient();
+    if (!s) {
+      return "Email OTP is unavailable in demo mode — sign in with a password instead.";
+    }
+    const { error } = await s.auth.verifyOtp({
+      email: email.trim().toLowerCase(),
+      token: token.trim(),
+      type: "email",
+    });
+    return error ? error.message : null;
   };
 
   const signUpApplicant = async (email: string, password: string, profile: Profile) => {
@@ -192,6 +219,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isLoading,
         signIn,
+        signInWithEmailOtp,
+        verifyEmailOtp,
         signUpApplicant,
         updateProfile,
         loginWithDigiLocker,
