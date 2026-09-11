@@ -2,7 +2,7 @@
 <!-- 🌐 LIVE DEPLOYMENT URL (Add your deployed production link below)     -->
 <!-- Example: # 👉 Live link: https://your-deployment-url.vercel.app/      -->
 <!-- ===================================================================== -->
-# 👉 Live link: `[ADD_DEPLOYMENT_URL_HERE]`
+# 👉 Live link: `https://aarambh-industrial-portal.vercel.app/`
 
 <!-- ===================================================================== -->
 <!-- 🎥 DEMO VIDEO / WALKTHROUGH (Add your video presentation link below)  -->
