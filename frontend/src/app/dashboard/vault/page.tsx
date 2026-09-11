@@ -28,6 +28,7 @@ import {
   UploadedDocument,
   DigiLockerDocItem,
 } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import { useLanguage } from "@/context/LanguageContext";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
@@ -229,6 +230,14 @@ export default function DocumentVaultPage() {
     setDigiLockerNotice(
       "DigiLocker Connected: 3 verified statutory certificates loaded successfully."
     );
+
+    useNotificationStore.getState().addNotification({
+      type: "vault",
+      title: "DigiLocker Connected 🔒",
+      message: "Successfully synchronized 3 cryptographically signed statutory certificates with CBDT and MSME Udyam.",
+      severity: "success",
+      target: "/dashboard/vault",
+    });
   };
 
   // 2. Process Single Document with Backend API
@@ -272,9 +281,7 @@ export default function DocumentVaultPage() {
       }
 
       // Backend served file URL if available
-      const backendFileUrl = data.document?.file_url
-        ? `${BACKEND_API_URL.replace("/api", "")}${data.document.file_url}`
-        : undefined;
+      const backendFileUrl = data.file_url ? `${BACKEND_API_URL.replace('/api', '')}${data.file_url}` : undefined;
 
       updateUploadedDocument(docId, {
         status: data.status === "partial_success" ? "ready" : "extracted",
@@ -290,6 +297,15 @@ export default function DocumentVaultPage() {
       if (data.extraction_method && data.extraction_method !== "None") {
         setExtractionMethod(data.extraction_method);
       }
+
+      // Add Notification on verified extraction
+      useNotificationStore.getState().addNotification({
+        type: "vault",
+        title: "Document Verified & Extracted 📁",
+        message: `Extracted statutory parameters from "${file.name}". Auto-fill ready for Common Application Form.`,
+        severity: "info",
+        target: "/dashboard/vault",
+      });
     } catch (err: any) {
       updateUploadedDocument(docId, {
         status: "error",

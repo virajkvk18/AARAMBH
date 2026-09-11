@@ -40,6 +40,7 @@ import {
   SectorType,
   ClearanceItem,
 } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   evaluatePolicyIncentives,
@@ -376,6 +377,15 @@ export default function KYAWizardPage() {
 
     setAssessmentResult(riskTrack, storeClearances, incentiveSummaryList, incentivesResult);
     setShowResult(true);
+
+    // Trigger KYA Assessment Generated Notification
+    useNotificationStore.getState().addNotification({
+      type: "kya",
+      title: "KYA Assessment Completed 📋",
+      message: `Identified ${storeClearances.length} statutory clearances for ${sectorDisplay} in ${selectedDistrict}. Eligible for Category '${incentivesResult.category}' subsidies.`,
+      severity: "success",
+      target: "/dashboard/caf",
+    });
   };
 
   const handleReset = () => {

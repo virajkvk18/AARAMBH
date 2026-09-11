@@ -4,6 +4,7 @@ import TopUtilityBar from "@/components/layout/TopUtilityBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AskAarambhChatbot from "@/components/chat/AskAarambhChatbot";
+import NotificationToast from "@/components/layout/NotificationToast";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           <AuthProvider>
             <TopUtilityBar />
             <Header />
+            <NotificationToast />
             <main className="flex-1 w-full min-h-0 flex flex-col">{children}</main>
             <Footer />
             <AskAarambhChatbot />

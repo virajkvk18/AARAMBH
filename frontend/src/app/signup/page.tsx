@@ -24,6 +24,7 @@ import { useAuth } from "@/context/AuthContext";
 import { isBrowserSupabaseConfigured } from "@/lib/supabase";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -250,6 +251,16 @@ function SignupForm() {
       entity_name: { value: businessName, confidenceScore: 1.0, hasConflict: false },
       pan: { value: panNumber.toUpperCase(), confidenceScore: 1.0, hasConflict: false },
     }, "Onboarding Registration Dossier");
+
+    // Welcoming Notification for new investor
+    useNotificationStore.getState().addNotification({
+      type: "welcome",
+      title: `Welcome to AARAMBH, ${applicantName || "Investor"}! 🎉`,
+      message: `Enterprise profile for "${businessName || "Your Enterprise"}" in ${district || "Maharashtra"} has been initialized. Next, use KYA to discover your statutory clearances.`,
+      severity: "welcome",
+      target: "/dashboard/kya",
+    });
+
     router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard");
   };
 

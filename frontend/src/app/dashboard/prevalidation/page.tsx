@@ -21,6 +21,7 @@ import {
   Scale,
 } from "lucide-react";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 
 interface CrossDocField {
   fieldName: string;
@@ -115,6 +116,15 @@ export default function PreValidationPage() {
     const ref = applicationRef || `MH-CAF-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     submitApplication(ref);
     setSubmissionSuccess(true);
+
+    // Fire notification on successful pre-validation submission
+    useNotificationStore.getState().addNotification({
+      type: "prevalidation",
+      title: "Pre-Validation Check Passed ✅",
+      message: `Cross-document verification complete. MPCB Consent application (${ref}) submitted for regulatory review.`,
+      severity: "success",
+      target: "/dashboard/prevalidation",
+    });
   };
 
   return (

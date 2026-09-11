@@ -33,6 +33,7 @@ import {
   DepartmentDeltas,
   CAFSubmissionResponse,
 } from "@/store/enterpriseStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import { useLanguage } from "@/context/LanguageContext";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
@@ -230,6 +231,15 @@ export default function UnifiedCAFPage() {
       setActiveStep("gateway_dispatch");
     } finally {
       setIsSubmitting(false);
+
+      // Trigger CAF submission notification
+      useNotificationStore.getState().addNotification({
+        type: "caf",
+        title: "CAF Parallel Submission Dispatched 🚀",
+        message: `Common Application Form submitted across ${selectedDepts.length} department portals (MIDC, MPCB, MahaFire, DISH). State-wide tracking active.`,
+        severity: "success",
+        target: "/dashboard/dag",
+      });
     }
   };
 
