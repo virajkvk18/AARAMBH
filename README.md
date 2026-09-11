@@ -1,15 +1,18 @@
-<!-- ===================================================================== -->
-<!-- 🌐 LIVE DEPLOYMENT URL (Add your deployed production link below)     -->
-<!-- Example: # 👉 Live link: https://your-deployment-url.vercel.app/      -->
-<!-- ===================================================================== -->
-# 👉 Live link: `https://aarambh-industrial-portal.vercel.app/`
+<div align="center">
 
-<!-- ===================================================================== -->
-<!-- 🎥 DEMO VIDEO / WALKTHROUGH (Add your video presentation link below)  -->
-<!-- Example: # 📺 Video Demo: https://youtu.be/your_video_id              -->
-<!-- ===================================================================== -->
-> **📺 Demo Video Walkthrough**: `[ADD_DEMO_VIDEO_LINK_HERE]`
+# AARAMBH
+### AI-Powered Smart Single Window Industrial Clearance Engine
 
+**A single window that actually thinks — not just files paperwork.**
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-aarambh--industrial--portal.vercel.app-4F46E5?style=for-the-badge)](https://aarambh-industrial-portal.vercel.app/)
+[![Demo Video](https://img.shields.io/badge/📺_Demo_Video-Watch_Walkthrough-0F172A?style=for-the-badge)](ADD_DEMO_VIDEO_LINK_HERE)
+
+Built for **Smart India Hackathon 2026** · Problem Statement 26130 · Government of Maharashtra
+
+</div>
+
+---
 ---
 
 # 🚀 AARAMBH – AI-Powered Smart Single Window Industrial Clearance Engine
