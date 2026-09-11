@@ -12,9 +12,8 @@ interface AuthContextType {
   signInWithEmailOtp: (email: string) => Promise<string | null>;
   verifyEmailOtp: (email: string, token: string) => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
+  completeSignup: (email: string, password: string, profile: Profile) => Promise<string | null>;
   updateProfile: (profile: Partial<Profile>) => Promise<string | null>;
-  loginWithDigiLocker: () => Promise<string>;
-  loginWithGoogle: () => Promise<string>;
   logout: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -147,6 +146,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error?.message ?? null, needsConfirmation: !error && !data.session };
   };
 
+  const completeSignup = async (email: string, password: string, profile: Profile) => {
+    const s = getSupabaseClient();
+    if (!s) {
+      const demoUser: User = {
+        email,
+        role: "APPLICANT",
+        ...profile,
+        name: profile.name || "Authorized Signatory",
+      };
+      setUser(demoUser);
+      localStorage.setItem("aarambh_user", JSON.stringify(demoUser));
+      return null;
+    }
+    const { error: pwdErr } = await s.auth.updateUser({ password });
+    if (pwdErr) return pwdErr.message;
+    const { error: dataErr } = await s.auth.updateUser({
+      data: { ...profile, role: "APPLICANT" },
+    });
+    return dataErr ? dataErr.message : null;
+  };
+
   const updateProfile = async (profile: Partial<Profile>) => {
     const s = getSupabaseClient();
     if (!s) {
@@ -159,50 +179,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const { error } = await s.auth.updateUser({ data: profile });
     return error?.message ?? null;
-  };
-
-  const loginWithDigiLocker = async () => {
-    const demoUser: User = {
-      name: "Sanjay Deshmukh",
-      email: "sanjay.deshmukh@smartelectronics.in",
-      role: "APPLICANT",
-      enterpriseId: "MH-ENT-2026-0881",
-      enterpriseName: "Smart Electronics",
-      isDigiLockerVerified: true,
-      phone: "9823012345",
-      panNumber: "AAECS8891M",
-      entityType: "proprietor",
-      addressLine1: "Plot No. A-42, Sector 10",
-      addressLine2: "MIDC Chakan Phase-II",
-      pinCode: "410501",
-      district: "Pune",
-      state: "Maharashtra",
-    };
-    setUser(demoUser);
-    localStorage.setItem("aarambh_user", JSON.stringify(demoUser));
-    return "";
-  };
-
-  const loginWithGoogle = async () => {
-    const demoUser: User = {
-      name: "Sanjay Deshmukh",
-      email: "sanjay.deshmukh@gmail.com",
-      role: "APPLICANT",
-      enterpriseId: "MH-ENT-2026-0881",
-      enterpriseName: "Smart Electronics",
-      isDigiLockerVerified: false,
-      phone: "9823012345",
-      panNumber: "AAECS8891M",
-      entityType: "proprietor",
-      addressLine1: "Plot No. A-42, Sector 10",
-      addressLine2: "MIDC Chakan Phase-II",
-      pinCode: "410501",
-      district: "Pune",
-      state: "Maharashtra",
-    };
-    setUser(demoUser);
-    localStorage.setItem("aarambh_user", JSON.stringify(demoUser));
-    return "";
   };
 
   const logout = async () => {
@@ -222,9 +198,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithEmailOtp,
         verifyEmailOtp,
         signUpApplicant,
+        completeSignup,
         updateProfile,
-        loginWithDigiLocker,
-        loginWithGoogle,
         logout,
       }}
     >

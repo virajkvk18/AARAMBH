@@ -21,6 +21,7 @@ import {
   CalendarCheck,
   FileSpreadsheet,
   TrendingDown,
+  Landmark,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -39,18 +40,19 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const pageTitles: Record<string, string> = {
-    "/dashboard": "Dashboard | AARAMBH",
+    "/dashboard": "Overview | AARAMBH",
     "/dashboard/kya": "Know Your Approvals | AARAMBH",
-    "/dashboard/caf": "Unified CAF | AARAMBH",
+    "/dashboard/caf": "Application Form | AARAMBH",
     "/dashboard/vault": "Document Vault | AARAMBH",
-    "/dashboard/prevalidation": "Pre-Validation | AARAMBH",
-    "/dashboard/dag": "Track Approvals | AARAMBH",
-    "/dashboard/sla": "Application Status | AARAMBH",
+    "/dashboard/prevalidation": "Check My Application | AARAMBH",
+    "/dashboard/dag": "Approval Tracker | AARAMBH",
+    "/dashboard/sla": "Timeline & Alerts | AARAMBH",
     "/dashboard/analytics": "Delay Analytics | AARAMBH",
-    "/dashboard/inspections": "Joint Inspections | AARAMBH",
-    "/dashboard/grievances": "Grievance Desk | AARAMBH",
-    "/dashboard/profile": "Enterprise Profile | AARAMBH",
-    "/dashboard/officer-workspace": "Officer Workspace | AARAMBH",
+    "/dashboard/inspections": "Inspections | AARAMBH",
+    "/dashboard/grievances": "Help & Grievances | AARAMBH",
+    "/dashboard/profile": "My Business Profile | AARAMBH",
+    "/dashboard/officer-workspace": "Officer Review | AARAMBH",
+    "/dashboard/department-approvals": "Department View | AARAMBH",
   };
   const currentTitle = pageTitles[pathname] || "Dashboard | AARAMBH";
   usePageTitle(currentTitle);
@@ -92,13 +94,13 @@ export default function DashboardLayout({
   const businessSections: NavSection[] = [
     {
       heading: "Overview",
-      items: [{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard }],
+      items: [{ label: "Overview", href: "/dashboard", icon: LayoutDashboard }],
     },
     {
       heading: "Application",
       items: [
         { label: "Know Your Approvals", href: "/dashboard/kya", icon: Compass },
-        { label: "Unified CAF", href: "/dashboard/caf", icon: FileSpreadsheet },
+        { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
       ],
     },
     {
@@ -108,18 +110,18 @@ export default function DashboardLayout({
     {
       heading: "Tracking",
       items: [
-        { label: "Pre-Validation", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-        { label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-        { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+        { label: "Approval Tracker", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
         { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
-        { label: "Joint Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
+        { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
     {
       heading: "Support & Account",
       items: [
-        { label: "Grievance Desk", href: "/dashboard/grievances", icon: MessageSquareWarning },
-        { label: "Enterprise Profile", href: "/dashboard/profile", icon: User },
+        { label: "Help & Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { label: "My Business Profile", href: "/dashboard/profile", icon: User },
       ],
     },
   ];
@@ -127,41 +129,42 @@ export default function DashboardLayout({
   const ministrySections: NavSection[] = [
     {
       heading: "Work Queue",
-      items: [{ label: "Pending Reviews", href: "/dashboard/officer-workspace", icon: ShieldAlert }],
+      items: [{ label: "Officer Review", href: "/dashboard/officer-workspace", icon: ShieldAlert }],
     },
     {
       heading: "Applications",
       items: [
-        { label: "All Applications", href: "/dashboard", icon: LayoutDashboard },
-        { label: "Master CAF Dossiers", href: "/dashboard/caf", icon: FileSpreadsheet },
+        { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+        { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
       ],
     },
     {
       heading: "Verification",
       items: [
-        { label: "Document Verification", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
-        { label: "Application Review", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-        { label: "Joint Site Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
+        { label: "Document Vault", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
+        { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
+        { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
       ],
     },
     {
       heading: "Approvals",
       items: [
-        { id: "track-approvals", label: "Track Approvals", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { id: "track-approvals", label: "Approval Tracker", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { label: "Department View", href: "/dashboard/department-approvals", icon: Landmark },
       ],
     },
     {
       heading: "Monitoring",
       items: [
-        { label: "Application Status", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
         { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
       ],
     },
     {
       heading: "Support",
       items: [
-        { id: "grievances", label: "Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
-        { label: "Department Profile", href: "/dashboard/profile", icon: User },
+        { id: "grievances", label: "Help & Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+        { label: "My Business Profile", href: "/dashboard/profile", icon: User },
       ],
     },
   ];
@@ -255,7 +258,7 @@ export default function DashboardLayout({
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         title={collapsed ? item.label : undefined}
-                        className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+                        className={`flex items-center justify-between px-2.5 py-2.5 lg:py-2 rounded-lg text-xs font-medium transition-colors ${
                           isActive
                             ? "bg-[#FE7251] text-white"
                             : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"

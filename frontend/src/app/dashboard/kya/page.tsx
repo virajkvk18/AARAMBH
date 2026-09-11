@@ -400,7 +400,7 @@ export default function KYAWizardPage() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight mt-1">
-            Dynamic Clearances & Policy Incentives Assessment
+            Know Your Approvals
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-3xl">
             Calculates mandatory statutory approvals, RTS Act deemed approval SLA countdowns, and financial subsidies tailored to your business.

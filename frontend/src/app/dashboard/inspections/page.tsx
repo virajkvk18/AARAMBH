@@ -161,7 +161,7 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">Demo</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Joint Departmental Inspection Scheduler
+            Inspections
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             In accordance with the <strong>Maharashtra Right to Public Services Act</strong>, multiple physical visits are consolidated into a <strong>single synchronized inspection</strong> conducted simultaneously by MPCB, Fire Services, and DISH officers.

@@ -155,10 +155,10 @@ export default function OfficerWorkspacePage() {
               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">Demo</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-              Officer Review Queue • {user?.department || "MIDC Industrial Clearances"}
+              Officer Review
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
-              Review incoming Common Application Forms (CAF), verify OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.
+              {user?.department || "MIDC Industrial Clearances"} — Review incoming Common Application Forms (CAF), verify OCR field extractions, conduct inspection reports, raise formal queries, or issue digital approval certificates.
             </p>
           </div>
 

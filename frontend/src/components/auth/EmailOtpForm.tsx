@@ -9,14 +9,15 @@ import { Label } from "@/components/ui/label";
 interface EmailOtpFormProps {
   onSuccess: () => void;
   showSignupHint?: boolean;
+  initialEmail?: string;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function EmailOtpForm({ onSuccess, showSignupHint = false }: EmailOtpFormProps) {
+export default function EmailOtpForm({ onSuccess, showSignupHint = false, initialEmail = "" }: EmailOtpFormProps) {
   const { signInWithEmailOtp, verifyEmailOtp } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
   const [codeSent, setCodeSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -44,7 +45,17 @@ export default function EmailOtpForm({ onSuccess, showSignupHint = false }: Emai
     const err = await signInWithEmailOtp(email);
     setSending(false);
     if (err) {
-      setError(err);
+      const normalized = err.toLowerCase();
+      const isDeliveryFailure =
+        normalized.includes("magic link") ||
+        normalized.includes("sending") ||
+        normalized.includes("smtp") ||
+        normalized.includes("unable to send");
+      setError(
+        isDeliveryFailure
+          ? "The verification email could not be sent (mail delivery is not configured on the server). Use 'Sign in with Password' instead, or try again later."
+          : err
+      );
       return;
     }
     setCodeSent(true);
@@ -134,6 +145,7 @@ export default function EmailOtpForm({ onSuccess, showSignupHint = false }: Emai
               id="otp-code"
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               maxLength={6}
               value={code}
               onChange={(e) => {

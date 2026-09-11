@@ -127,7 +127,7 @@ export default function PreValidationPage() {
             <span>Automated Scrutiny & Cross-Verification Gate</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Pre-Validation & Document Comparison
+            Check My Application
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Automated cross-check engine verifying consistency across multi-document statutory filings before submission.

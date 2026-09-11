@@ -138,7 +138,7 @@ export default function DelayAnalyticsPage() {
             <span>Bottleneck Intelligence &amp; Delay Analytics</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Why Is My Clearance Stuck?
+            Delay Analytics
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Live SLA health of every statutory approval, automated delay diagnosis, and HoD escalation triggers under RTS Act 2015.

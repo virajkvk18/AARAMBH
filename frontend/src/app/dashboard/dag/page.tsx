@@ -338,7 +338,7 @@ export default function DAGWorkflowPage() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Directed Acyclic Graph (DAG) Workflow
+            Approval Tracker
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             Live interactive dependency graph orchestrating multi-department industrial clearances. State is persisted via REST endpoints and broadcast across sessions in real-time.

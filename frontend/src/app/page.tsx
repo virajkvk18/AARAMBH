@@ -272,7 +272,7 @@ export default function HomePage() {
             </form>
 
             {/* Primary CTA (Personalized Approval Discovery) */}
-            <div className="mt-8 flex flex-col items-center justify-center gap-2.5">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href={authHref("/dashboard/kya")}
                 className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
@@ -281,10 +281,18 @@ export default function HomePage() {
                 <span>{t('hero.cta_find_requirements')}</span>
                 <ArrowRight className="w-4 h-4 text-orange-100" />
               </Link>
-              <span className="text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
-                {t("landing.hero_cta_sub", "Get a customized list of clearances relevant to your business.")}
-              </span>
+              <Link
+                href="/track"
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
+              >
+                <Search className="w-4 h-4 text-white" />
+                <span>{t("landing.hero_cta_track", "Track Existing Application")}</span>
+                <ArrowRight className="w-4 h-4 text-orange-100" />
+              </Link>
             </div>
+            <span className="mt-3 text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
+              {t("landing.hero_cta_sub", "Get a customized list of clearances relevant to your business.")}
+            </span>
 
             {/* Popular Clearance Chips */}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-xs text-white">

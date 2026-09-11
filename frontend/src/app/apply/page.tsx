@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { allApprovalsList } from "@/data/approvalsRegistry";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +22,13 @@ import { Button } from "@/components/ui/button";
 
 export default function ApprovalsDirectoryPage() {
   const { t } = useLanguage();
-  usePageTitle("Approvals Directory | AARAMBH");
+  const { user } = useAuth();
+  usePageTitle("Know Your Approvals | AARAMBH");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"All" | "Pre-Establishment" | "Pre-Operation">("All");
+
+  const authHref = (target: string) =>
+    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
 
   const filteredApprovals = allApprovalsList.filter((item) => {
     const matchesSearch =
@@ -68,10 +73,10 @@ export default function ApprovalsDirectoryPage() {
             </span>
 
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Statutory Industrial Approvals Directory
+              Know Your Approvals
             </h1>
             <p className="text-sm text-slate-300 mt-2 leading-relaxed">
-              Apply online for state departmental clearances, land allotments, pollution control consents, and industrial licenses with statutory SLA guarantees under the Maharashtra Right to Services Act, 2015.
+              Search every industrial approval and statutory clearance in Maharashtra — find what your project requires, then start the application in one click.
             </p>
           </div>
 
@@ -196,10 +201,10 @@ export default function ApprovalsDirectoryPage() {
                 </span>
 
                 <Link
-                  href={`/apply/${approval.meta.slug}`}
+                  href={authHref(`/apply/${approval.meta.slug}`)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors"
                 >
-                  <span>Apply Online</span>
+                  <span>Start This Application</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

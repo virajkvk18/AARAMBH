@@ -104,10 +104,10 @@ export default function ProfilePage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-[#16060E]">
-                {signatoryName}
+                My Business Profile
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                {companyName} • {user?.email || "investor@maharashtra-solvents.com"}
+                {signatoryName ? `${signatoryName} • ` : ""}{companyName} • {user?.email || "investor@maharashtra-solvents.com"}
               </p>
               <div className="mt-2.5 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">

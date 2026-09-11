@@ -55,7 +55,7 @@ export default function GrievancesPage() {
               <span>{t("grievances_title") || "Grievance & Dispute Redressal"}</span>
             </div>
             <h1 className="text-2xl font-black text-[#16060E] tracking-tight">
-              Dispute Redressal & Officer Query Desk
+              Help & Grievances
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Time-bound statutory resolution for delays, inspection queries, or payment reconciliations under Maharashtra RTS Act 2015.

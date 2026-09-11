@@ -506,7 +506,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
             <span>DigiLocker & Verified Repository</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Document Vault & Extraction
+            Document Vault
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Store, auto-validate, and sync statutory clearance documents with actual file verification and structured OCR extraction.
@@ -1066,7 +1066,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
                           </td>
                           <td className="px-6 py-3.5 text-center">
                             {item.hasConflict ? (
-                              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                                 <AlertTriangle className="w-3 h-3 text-amber-600" />
                                 <span>Conflict Detected</span>
                               </span>

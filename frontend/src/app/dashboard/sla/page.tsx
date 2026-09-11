@@ -222,7 +222,7 @@ Timestamp: ${new Date().toISOString()}
             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">Demo</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            SLA Tracker & Deemed Approval Simulator
+            Timeline & Alerts
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             Maharashtra Right to Public Services Act guarantees time-bound clearances. When the SLA timer hits 100%, applications transition automatically into <strong>Deemed Approvals</strong>.

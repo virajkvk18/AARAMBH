@@ -243,7 +243,7 @@ export default function UnifiedCAFPage() {
             <span>Single Window System Integration Architecture (CAF 2.0)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Master Common Application Form (CAF)
+            Application Form
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             Fill core enterprise parameters once. AARAMBH auto-maps 70–90% of data into MPCB, Fire, MIDC, DISH, and Central DPIIT forms with parallel dispatch.

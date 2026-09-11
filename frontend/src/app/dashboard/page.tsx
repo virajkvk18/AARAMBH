@@ -35,6 +35,19 @@ export default function DashboardHomePage() {
 
   const [activeTab, setActiveTab] = useState<"approvals" | "renewals" | "incentives">("approvals");
   const [renewalNotice, setRenewalNotice] = useState<string | null>(null);
+  const name = user?.name || "Investor";
+  const [toastDismissed, setToastDismissed] = useState(false);
+  const [welcomeSeen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const seen = sessionStorage.getItem("aarambh_welcome_seen");
+    sessionStorage.setItem("aarambh_welcome_seen", "1");
+    return !!seen;
+  });
+  const welcomeToast = welcomeSeen || toastDismissed
+    ? null
+    : !isAssessed
+      ? `Welcome to AARAMBH, ${name}. Let's set up your business profile to unlock your personalised approval roadmap.`
+      : `Welcome back, ${name}.`;
 
   const getBadgeInfo = (days: number) => {
     if (days <= 30) return { label: `${days} Days – Critical`, variant: "destructive" as const };
@@ -84,6 +97,7 @@ export default function DashboardHomePage() {
       suffix: " Approvals",
       change: isAssessed ? `${sector} Sector` : t("dash.kpi_active_sub", "Statutory MH Clearances"),
       icon: Layers,
+      href: "/dashboard/dag",
     },
     {
       title: t("dash.kpi_parallel", "Parallel Lead Time"),
@@ -91,6 +105,7 @@ export default function DashboardHomePage() {
       suffix: " Days",
       change: t("dash.kpi_parallel_sub", "vs 120+ sequential days"),
       icon: GitFork,
+      href: "/dashboard/dag",
     },
     {
       title: t("dash.kpi_sla", "SLA Compliance"),
@@ -98,6 +113,7 @@ export default function DashboardHomePage() {
       suffix: "",
       change: t("dash.kpi_sla_sub", "Under Maharashtra RTS Act"),
       icon: Clock,
+      href: "/dashboard/sla",
     },
     {
       title: t("dash.kpi_deemed", "Deemed Approvals"),
@@ -105,6 +121,7 @@ export default function DashboardHomePage() {
       suffix: " Issued",
       change: t("dash.kpi_deemed_sub", "Auto-issued on statutory timeout"),
       icon: Award,
+      href: "/dashboard/sla",
     },
   ];
 
@@ -416,7 +433,7 @@ export default function DashboardHomePage() {
             <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button onClick={() => router.push("/dashboard/kya")} className="w-full sm:w-auto">
                 <Compass className="w-4 h-4" />
-                <span>Start Business Onboarding</span>
+                <span>Complete Your KYA Wizard</span>
               </Button>
             </div>
 
@@ -456,9 +473,10 @@ export default function DashboardHomePage() {
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Welcome back, {userName}
+            Overview
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
+            Welcome back, {userName} —{" "}
             {isOfficer
               ? `Department Console: ${user?.department || "Maharashtra State Clearances Wing"}`
               : `Enterprise: ${user?.enterpriseName || "Smart Electronics"} (ID: ${
@@ -477,35 +495,59 @@ export default function DashboardHomePage() {
         </div>
       </Card>
 
+      {/* 1.5 WELCOME TOAST (first-time per session) */}
+      {welcomeToast && (
+        <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-[#FFF2DF] border border-[#FED17A]/70 text-[#6B2A3B]">
+          <p className="text-xs leading-relaxed">
+            <strong>{welcomeToast}</strong>
+          </p>
+          <button
+            type="button"
+            onClick={() => setToastDismissed(true)}
+            className="text-[#9B2A48] hover:text-[#82213B] font-bold text-xs cursor-pointer"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* 2. STATS OVERVIEW CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiData.map((kpi, idx) => {
           const IconComp = kpi.icon;
           return (
-            <Card key={idx} className="p-4 flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                    {kpi.title}
-                  </p>
-                  <div className="flex items-baseline mt-1.5">
-                    <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                      {kpi.value}
-                    </span>
-                    <span className="text-xs text-slate-500 ml-1">
-                      {kpi.suffix}
-                    </span>
+            <Link
+              key={idx}
+              href={kpi.href}
+              className="block group"
+              aria-label={kpi.title}
+            >
+              <Card className="p-4 flex flex-col justify-between h-full transition-colors group-hover:border-slate-300">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                      {kpi.title}
+                    </p>
+                    <div className="flex items-baseline mt-1.5">
+                      <span className="text-2xl font-bold text-slate-900 tracking-tight">
+                        {kpi.value}
+                      </span>
+                      <span className="text-xs text-slate-500 ml-1">
+                        {kpi.suffix}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                    <IconComp className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                  <IconComp className="w-4 h-4" />
-                </div>
-              </div>
 
-              <div className="mt-3 pt-2.5 border-t border-slate-100 text-xs text-slate-500">
-                <span>{kpi.change}</span>
-              </div>
-            </Card>
+                <div className="mt-3 pt-2.5 border-t border-slate-100 text-xs text-slate-500">
+                  <span>{kpi.change}</span>
+                </div>
+              </Card>
+            </Link>
           );
         })}
       </div>
