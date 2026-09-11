@@ -65,7 +65,7 @@ export default function TrackApplicationPage() {
                   <p className="text-xs leading-relaxed">
                     <strong>Status lookup is not yet available without signing in.</strong> Submit an online
                     application or{" "}
-                    <Link href="/signin" className="font-semibold text-[#9B2A48] hover:underline">
+                    <Link href="/login" className="font-semibold text-[#9B2A48] hover:underline">
                       sign in
                     </Link>{" "}
                     to track clearances in real time from your dashboard. Having trouble? Contact the Single
@@ -76,7 +76,7 @@ export default function TrackApplicationPage() {
 
               <div className="text-center">
                 <Link
-                  href="/signin"
+                  href="/login"
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9B2A48] hover:underline"
                 >
                   <span>Sign In to Track in Dashboard</span>

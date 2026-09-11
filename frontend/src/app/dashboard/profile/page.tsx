@@ -40,19 +40,32 @@ export default function ProfilePage() {
   } = useEnterpriseStore();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(user?.name || masterCAF.companyDetails.signatoryName || "Sanjay Deshmukh");
-  const [editEmail, setEditEmail] = useState(user?.email || masterCAF.companyDetails.signatoryEmail || "investor@maharashtra-solvents.com");
-  const [editPhone, setEditPhone] = useState(user?.phone || masterCAF.companyDetails.signatoryMobile || "+91 98220 12345");
-  const [editCompanyName, setEditCompanyName] = useState(user?.enterpriseName || masterCAF.companyDetails.companyName || "Maharashtra Solvents & Chemicals Pvt Ltd");
-  const [editPan, setEditPan] = useState(user?.panNumber || masterCAF.companyDetails.pan || "AAECS8891M");
-  const [editGstin, setEditGstin] = useState(extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "27AAECS8891M1Z2");
-  const [editAddress, setEditAddress] = useState(user?.addressLine1 || masterCAF.locationDetails.address || "Plot No. A-42, MIDC Chakan Phase-II Industrial Area");
-  const [editDistrict, setEditDistrict] = useState(user?.district || storedDistrict || masterCAF.locationDetails.district || "Pune");
+  const [editName, setEditName] = useState(user?.name || masterCAF.companyDetails.signatoryName || "");
+  const [editEmail, setEditEmail] = useState(user?.email || masterCAF.companyDetails.signatoryEmail || "");
+  const [editPhone, setEditPhone] = useState(user?.phone || masterCAF.companyDetails.signatoryMobile || "");
+  const [editCompanyName, setEditCompanyName] = useState(user?.enterpriseName || masterCAF.companyDetails.companyName || "");
+  const [editPan, setEditPan] = useState(user?.panNumber || masterCAF.companyDetails.pan || "");
+  const [editGstin, setEditGstin] = useState(extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "");
+  const [editAddress, setEditAddress] = useState(user?.addressLine1 || masterCAF.locationDetails.address || "");
+  const [editDistrict, setEditDistrict] = useState(user?.district || storedDistrict || masterCAF.locationDetails.district || "");
 
-  const pan = user?.panNumber || masterCAF.companyDetails.pan || extractedFields.pan?.value || "AAECS8891M";
-  const gstin = extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "27AAECS8891M1Z2";
-  const companyName = user?.enterpriseName || masterCAF.companyDetails.companyName || "Maharashtra Solvents & Chemicals Pvt Ltd";
-  const signatoryName = user?.name || masterCAF.companyDetails.signatoryName || "Sanjay Deshmukh";
+  // Synchronize edit form whenever user or masterCAF updates
+  React.useEffect(() => {
+    if (user) {
+      if (user.name) setEditName(user.name);
+      if (user.email) setEditEmail(user.email);
+      if (user.phone) setEditPhone(user.phone);
+      if (user.enterpriseName) setEditCompanyName(user.enterpriseName);
+      if (user.panNumber) setEditPan(user.panNumber);
+      if (user.addressLine1) setEditAddress(user.addressLine1);
+      if (user.district) setEditDistrict(user.district);
+    }
+  }, [user]);
+
+  const pan = user?.panNumber || masterCAF.companyDetails.pan || extractedFields.pan?.value || "Not Provided";
+  const gstin = extractedFields.gstin?.value || masterCAF.companyDetails.gstin || "Not Provided";
+  const companyName = user?.enterpriseName || masterCAF.companyDetails.companyName || "Your Enterprise";
+  const signatoryName = user?.name || masterCAF.companyDetails.signatoryName || "Authorized Signatory";
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +120,7 @@ export default function ProfilePage() {
                 My Business Profile
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                {signatoryName ? `${signatoryName} • ` : ""}{companyName} • {user?.email || "investor@maharashtra-solvents.com"}
+                {signatoryName ? `${signatoryName} • ` : ""}{companyName} • {user?.email || "No email"}
               </p>
               <div className="mt-2.5 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFF2DF] text-[#9B2A48] border border-[#FED17A] flex items-center space-x-1">
@@ -147,7 +160,7 @@ export default function ProfilePage() {
               <span>Enterprise ID</span>
             </span>
             <p className="font-mono font-bold text-[#9B2A48] text-sm">
-              {user?.enterpriseId || "ENT-MH-2026-8891"}
+              {user?.enterpriseId || (user?.id ? `ENT-MH-${user.id.slice(0, 8).toUpperCase()}` : "Not Assigned")}
             </p>
           </div>
 
@@ -182,7 +195,7 @@ export default function ProfilePage() {
               <Layers className="w-3 h-3 text-[#FE7251]" />
               <span>Industry Sector</span>
             </span>
-            <p className="font-bold text-[#16060E]">{sector || "Electric Vehicle & Clean Mobility"}</p>
+            <p className="font-bold text-[#16060E]">{sector || "Not Specified"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
@@ -190,7 +203,7 @@ export default function ProfilePage() {
               <MapPin className="w-3 h-3 text-[#FE7251]" />
               <span>Registered Address / Location</span>
             </span>
-            <p className="font-bold text-[#16060E]">{user?.addressLine1 || locationZone || "Plot A-42, MIDC Chakan, Pune"}</p>
+            <p className="font-bold text-[#16060E]">{user?.addressLine1 || masterCAF.locationDetails.address || locationZone || "Not Provided"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
@@ -198,7 +211,7 @@ export default function ProfilePage() {
               <Phone className="w-3 h-3 text-[#FE7251]" />
               <span>Contact Phone</span>
             </span>
-            <p className="font-bold text-[#16060E]">{user?.phone || "+91 98220 12345"}</p>
+            <p className="font-bold text-[#16060E]">{user?.phone || masterCAF.companyDetails.signatoryMobile || "Not Provided"}</p>
           </div>
 
           <div className="p-4 bg-[#FFF9F5] rounded-xl border border-[#F0E5E0] space-y-1">
@@ -207,7 +220,7 @@ export default function ProfilePage() {
               <span>Sanctioned Power Load & Capex</span>
             </span>
             <p className="font-bold text-[#16060E]">
-              {powerLoadKva || 250} kVA • ₹{capexCr || 35} Crores
+              {powerLoadKva ? `${powerLoadKva} kVA` : "Pending Assessment"} • {capexCr ? `₹${capexCr} Crores` : "Pending Assessment"}
             </p>
           </div>
         </div>

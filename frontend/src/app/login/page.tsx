@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -22,6 +22,7 @@ import EmailOtpForm from "@/components/auth/EmailOtpForm";
 function LoginForm() {
   const { signIn } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLanguage();
   usePageTitle("Sign In | AARAMBH");
 
@@ -34,6 +35,22 @@ function LoginForm() {
   const [resetNotice, setResetNotice] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
 
+  const redirectParam = searchParams.get("redirect");
+
+  useEffect(() => {
+    const err = searchParams.get("error");
+    if (err === "verification_failed") {
+      setAuthError("Email verification link was invalid or has expired. Please sign in or request a new code.");
+    }
+  }, [searchParams]);
+
+  const getRedirectDestination = () => {
+    if (redirectParam && redirectParam.startsWith("/")) {
+      return redirectParam;
+    }
+    return activeRole === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -43,14 +60,15 @@ function LoginForm() {
       setAuthError(error);
       return;
     }
-    router.replace("/dashboard");
+    router.replace(getRedirectDestination());
   };
 
   const handleForgotPassword = () => {
-    setResetNotice(`Password reset is currently handled by the administrator. Please contact admin@aarambh.gov.in to request a password reset.`);
-    setTimeout(() => {
-      setResetNotice(null);
-    }, 8000);
+    if (email.trim()) {
+      router.push(`/reset-password?email=${encodeURIComponent(email.trim())}`);
+    } else {
+      router.push("/reset-password");
+    }
   };
 
   return (
@@ -218,7 +236,7 @@ function LoginForm() {
           ) : (
             <div className="pt-2">
               <EmailOtpForm
-                onSuccess={() => router.replace("/dashboard")}
+                onSuccess={() => router.replace(getRedirectDestination())}
               />
             </div>
           )}

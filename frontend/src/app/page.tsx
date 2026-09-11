@@ -134,7 +134,7 @@ export default function HomePage() {
   usePageTitle("AARAMBH | Single Window Industrial Clearance Portal - Govt. of Maharashtra");
 
   const authHref = (target: string) =>
-    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
+    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
 
   // Hero Search and Category State
   const [heroSearch, setHeroSearch] = useState("");

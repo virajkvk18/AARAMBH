@@ -28,7 +28,7 @@ export default function ApprovalsDirectoryPage() {
   const [selectedCategory, setSelectedCategory] = useState<"All" | "Pre-Establishment" | "Pre-Operation">("All");
 
   const authHref = (target: string) =>
-    user ? target : `/signin?redirect=${encodeURIComponent(target)}`;
+    user ? target : `/login?redirect=${encodeURIComponent(target)}`;
 
   const filteredApprovals = allApprovalsList.filter((item) => {
     const matchesSearch =

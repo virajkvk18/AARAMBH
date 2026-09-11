@@ -10,11 +10,17 @@ interface EmailOtpFormProps {
   onSuccess: () => void;
   showSignupHint?: boolean;
   initialEmail?: string;
+  onSendCode?: (email: string) => Promise<string | null>;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function EmailOtpForm({ onSuccess, showSignupHint = false, initialEmail = "" }: EmailOtpFormProps) {
+export default function EmailOtpForm({
+  onSuccess,
+  showSignupHint = false,
+  initialEmail = "",
+  onSendCode,
+}: EmailOtpFormProps) {
   const { signInWithEmailOtp, verifyEmailOtp } = useAuth();
 
   const [email, setEmail] = useState(initialEmail);
@@ -42,20 +48,10 @@ export default function EmailOtpForm({ onSuccess, showSignupHint = false, initia
       return;
     }
     setSending(true);
-    const err = await signInWithEmailOtp(email);
+    const err = onSendCode ? await onSendCode(email) : await signInWithEmailOtp(email);
     setSending(false);
     if (err) {
-      const normalized = err.toLowerCase();
-      const isDeliveryFailure =
-        normalized.includes("magic link") ||
-        normalized.includes("sending") ||
-        normalized.includes("smtp") ||
-        normalized.includes("unable to send");
-      setError(
-        isDeliveryFailure
-          ? "The verification email could not be sent (mail delivery is not configured on the server). Use 'Sign in with Password' instead, or try again later."
-          : err
-      );
+      setError(err);
       return;
     }
     setCodeSent(true);

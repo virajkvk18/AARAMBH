@@ -303,6 +303,8 @@ export interface EnterpriseState {
   initiateRenewal: (id: string) => void;
   resetAssessment: () => void;
   reset: () => void;
+  syncWithAuthUser: (authUser: any) => void;
+  loadSampleProfile: () => void;
 }
 
 /**
@@ -496,7 +498,7 @@ const initialInspections: JointInspection[] = [
   },
 ];
 
-const initialState = {
+export const SAMPLE_ENTERPRISE_STATE = {
   sector: "Food Processing" as SectorType,
   locationZone: "Chakan MIDC (Pune)",
   capexCr: 25,
@@ -640,6 +642,88 @@ const initialState = {
   cafSubmissionReceipt: null as CAFSubmissionResponse | null,
 };
 
+const initialState = {
+  sector: "Food Processing" as SectorType,
+  locationZone: "",
+  district: "",
+  taluka: "",
+  capexCr: 0,
+  powerLoadKva: 0,
+  waterDemandKld: 0,
+  workforceSize: 0,
+  riskTrack: null as RiskTrack | null,
+  clearances: [] as ClearanceItem[],
+  renewals: [] as RenewalItem[],
+  applicableIncentives: [] as string[],
+  policyIncentiveDetails: null as any,
+  isAssessed: false,
+
+  applicationStatus: "draft" as ApplicationStatus,
+  applicationRef: "",
+  submittedAt: null as string | null,
+
+  uploadedDocuments: [] as UploadedDocument[],
+  extractedFields: {} as Record<string, ExtractedFieldItem>,
+  fieldConflicts: [] as FieldConflict[],
+  digiLockerDocs: [] as DigiLockerDocItem[],
+  uploadedDocumentName: null as string | null,
+
+  dagNodeStatuses: {
+    "node-root": "active" as const,
+    "node-mpcb": "locked" as const,
+    "node-fire": "locked" as const,
+    "node-water": "locked" as const,
+    "node-dish": "locked" as const,
+  },
+
+  grievanceTickets: [] as GrievanceTicket[],
+  jointInspections: [] as JointInspection[],
+
+  masterCAF: {
+    companyDetails: {
+      companyName: "",
+      pan: "",
+      gstin: "",
+      cin: "",
+      entityType: "Pvt Ltd" as const,
+      signatoryName: "",
+      signatoryEmail: "",
+      signatoryMobile: "",
+    },
+    locationDetails: {
+      state: "Maharashtra",
+      district: "",
+      taluka: "",
+      address: "",
+      pincode: "",
+      plotAreaSqMeters: 0,
+      midcZoneName: "",
+      midcPlotNo: "",
+    },
+    projectSpecs: {
+      industryType: "",
+      sector: "",
+      capitalInvestmentInr: 0,
+      powerRequirementKw: 0,
+      waterRequirementKlpd: 0,
+      hazardCategory: "Green" as const,
+      maxBuildingHeightMeters: 0,
+      totalOccupants: 0,
+      expectedCommissioningDate: "",
+    },
+    documentVault: {
+      panCardUrl: "",
+      gstCertUrl: "",
+      landDeedUrl: "",
+      sitePlanUrl: "",
+      udyamCertUrl: "",
+    },
+  } as MasterCAFPayload,
+
+  departmentDeltas: {} as DepartmentDeltas,
+  cafSubmissionReceipt: null as CAFSubmissionResponse | null,
+};
+
 export const useEnterpriseStore = create<EnterpriseState>()(
   persist(
     (set) => ({
@@ -710,7 +794,7 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           clearances: clearances.length > 0 ? clearances : INITIAL_DEFAULT_CLEARANCES,
           applicableIncentives: incentives,
           policyIncentiveDetails: policyDetails || state.policyIncentiveDetails,
-isAssessed: false,
+          isAssessed: true,
         })),
 
       submitApplication: (ref = "MH-CAF-2026-00412") =>
@@ -934,6 +1018,96 @@ isAssessed: false,
         set((state) => ({
           ...state,
           isAssessed: false,
+        })),
+
+      syncWithAuthUser: (authUser) =>
+        set((state) => {
+          if (!authUser) return state;
+          const companyName =
+            authUser.enterprise?.name ||
+            authUser.enterpriseName ||
+            authUser.profile?.enterpriseName ||
+            state.masterCAF.companyDetails.companyName;
+          const pan =
+            authUser.enterprise?.pan ||
+            authUser.panNumber ||
+            authUser.profile?.panNumber ||
+            state.masterCAF.companyDetails.pan;
+          const gstin =
+            authUser.enterprise?.gstin ||
+            state.masterCAF.companyDetails.gstin;
+          const cin =
+            authUser.enterprise?.cin ||
+            state.masterCAF.companyDetails.cin;
+          const entityType =
+            authUser.enterprise?.entityType ||
+            authUser.entityType ||
+            authUser.profile?.entityType ||
+            state.masterCAF.companyDetails.entityType;
+          const signatoryName =
+            authUser.profile?.name ||
+            authUser.name ||
+            state.masterCAF.companyDetails.signatoryName;
+          const signatoryEmail =
+            authUser.email ||
+            state.masterCAF.companyDetails.signatoryEmail;
+          const signatoryMobile =
+            authUser.profile?.phone ||
+            authUser.phone ||
+            state.masterCAF.companyDetails.signatoryMobile;
+
+          const address =
+            authUser.enterprise?.address ||
+            authUser.addressLine1 ||
+            authUser.profile?.addressLine1 ||
+            state.masterCAF.locationDetails.address;
+          const district =
+            authUser.enterprise?.district ||
+            authUser.district ||
+            authUser.profile?.district ||
+            state.masterCAF.locationDetails.district;
+          const stateName =
+            authUser.enterprise?.state ||
+            authUser.state ||
+            authUser.profile?.state ||
+            "Maharashtra";
+          const pincode =
+            authUser.enterprise?.pincode ||
+            authUser.pinCode ||
+            authUser.profile?.pinCode ||
+            state.masterCAF.locationDetails.pincode;
+
+          return {
+            ...state,
+            district: district || state.district,
+            masterCAF: {
+              ...state.masterCAF,
+              companyDetails: {
+                ...state.masterCAF.companyDetails,
+                companyName: companyName || "",
+                pan: pan || "",
+                gstin: gstin || "",
+                cin: cin || "",
+                entityType: entityType || "Pvt Ltd",
+                signatoryName: signatoryName || "",
+                signatoryEmail: signatoryEmail || "",
+                signatoryMobile: signatoryMobile || "",
+              },
+              locationDetails: {
+                ...state.masterCAF.locationDetails,
+                address: address || "",
+                district: district || "",
+                state: stateName || "Maharashtra",
+                pincode: pincode || "",
+              },
+            },
+          };
+        }),
+
+      loadSampleProfile: () =>
+        set((state) => ({
+          ...state,
+          ...SAMPLE_ENTERPRISE_STATE,
         })),
 
       reset: () => set(() => ({ ...initialState })),

@@ -37,7 +37,13 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
-  const { signUpApplicant, signInWithEmailOtp, completeSignup, updateProfile } = useAuth();
+  const {
+    signUpApplicant,
+    signUpWithEmailOtp,
+    verifyEmailOtp,
+    completeSignup,
+    updateProfile,
+  } = useAuth();
   const router = useRouter();
   const { t } = useLanguage();
   usePageTitle("Register Enterprise | AARAMBH");
@@ -166,20 +172,16 @@ function SignupForm() {
     setCurrentStep(targetStep);
   };
 
-  // Verify PAN handler
+  // Verify PAN handler (Statutory format validation)
   const handleVerifyPan = () => {
     const panClean = panNumber.trim().toUpperCase();
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
     if (!panRegex.test(panClean)) {
-      setStepError("Please enter a valid 10-character PAN format before verifying.");
+      setStepError("Please enter a valid 10-character PAN format (e.g. ABCDE1234F).");
       return;
     }
     setStepError(null);
-    setPanLoading(true);
-    setTimeout(() => {
-      setPanLoading(false);
-      setPanVerified(true);
-    }, 600);
+    setPanVerified(true);
   };
 
   // Build the profile object once registration is being finalized
@@ -188,13 +190,13 @@ function SignupForm() {
     enterpriseName: businessName,
     phone: mobile,
     panNumber: panNumber.toUpperCase(),
-    entityType: legalEntity,
+    entityType: legalEntity === "company" ? "Private Limited" : legalEntity === "llp" ? "LLP" : legalEntity === "proprietor" ? "Proprietorship" : "Partnership",
     addressLine1,
     addressLine2,
     pinCode,
     district,
     state: stateName,
-    enterpriseId: `ENT-MH-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+    sector: SIGNUP_SECTORS.find((s) => s.value === primarySector)?.label || "General Manufacturing",
   });
 
   // Sync the Enterprise Store & Master CAF, then send the user to the dashboard
@@ -214,8 +216,8 @@ function SignupForm() {
       companyDetails: {
         companyName: businessName,
         pan: panNumber.toUpperCase(),
-        gstin: `27${panNumber.toUpperCase()}1Z5`,
-        cin: legalEntity === "company" ? `U72200MH${new Date().getFullYear()}PTC${Math.floor(100000 + Math.random() * 900000)}` : "",
+        gstin: "",
+        cin: "",
         entityType: legalEntity === "company" ? "Pvt Ltd" : legalEntity === "llp" ? "LLP" : legalEntity === "proprietor" ? "Proprietorship" : "Partnership",
         signatoryName: applicantName,
         signatoryEmail: email,
@@ -224,7 +226,7 @@ function SignupForm() {
       locationDetails: {
         state: stateName,
         district,
-        address: `${addressLine1}, ${addressLine2}`,
+        address: `${addressLine1}${addressLine2 ? `, ${addressLine2}` : ""}`,
         pincode: pinCode,
         plotAreaSqMeters: 0,
         midcZoneName: `${district} Industrial & Commercial Zone`,
@@ -249,64 +251,27 @@ function SignupForm() {
     router.replace(redirectTo.startsWith("/dashboard") ? redirectTo : "/dashboard");
   };
 
-  // Complete Registration (Step 4) — branch by selected signup method
+  // Complete Registration (Step 4)
   const handleCompleteRegistration = async () => {
     if (!validateStep4()) return;
-
-    // OTP first: email already verified during Step 1, so just persist the profile.
-    if (signupMethod === "otp") {
-      setStepError(null);
-      const profileErr = await updateProfile(buildProfile());
-      if (profileErr) {
-        setStepError(profileErr);
-        return;
-      }
-      syncStoreAndRedirect();
-      return;
-    }
-
-    if (!isBrowserSupabaseConfigured) {
-      // Demo mode fallback — no Supabase means no OTP; register with password only.
-      const registration = await signUpApplicant(email, password, buildProfile());
-      if (registration.error) {
-        setStepError(registration.error);
-        return;
-      }
-      if (registration.needsConfirmation) {
-        setStepError("Please confirm your email address before signing in.");
-        return;
-      }
-      syncStoreAndRedirect();
-      return;
-    }
-
-    // Real Supabase mode: send OTP first, then verify on Step 5.
-    // If Supabase's email delivery isn't configured (no SMTP), the OTP send
-    // fails with a 500 — fall back to the password signup path instead.
     setStepError(null);
-    const otpErr = await signInWithEmailOtp(email);
-    if (otpErr) {
-      const isDeliveryFailure =
-        otpErr.toLowerCase().includes("magic link") ||
-        otpErr.toLowerCase().includes("sending") ||
-        otpErr.toLowerCase().includes("smtp") ||
-        otpErr.toLowerCase().includes("unable to send");
-      if (isDeliveryFailure) {
-        setEmailOptNotice(
-          "OTP email could not be sent (no SMTP configured). Your account will be created with the password you set."
-        );
-        const registration = await signUpApplicant(email, password, buildProfile());
-        if (registration.error) {
-          setStepError(registration.error);
-          return;
-        }
-        syncStoreAndRedirect();
-        return;
-      }
-      setStepError(otpErr);
+    setPanLoading(true);
+
+    const profilePayload = buildProfile();
+    const result = await signUpApplicant(email, password, profilePayload);
+    setPanLoading(false);
+
+    if (result.error) {
+      setStepError(result.error);
       return;
     }
-    setCurrentStep(5);
+
+    if (result.needsConfirmation) {
+      setEmailOptNotice("Account created! Please check your email to confirm your account before logging in.");
+      return;
+    }
+
+    syncStoreAndRedirect();
   };
 
   // Finalize registration after the email OTP has been verified (Step 5)
@@ -529,10 +494,11 @@ function SignupForm() {
               ) : (
                 <div className="space-y-4 max-w-lg">
                   <h3 className="text-base font-semibold text-slate-900">
-                    Email Sign-In
+                    Sign up with Email Code
                   </h3>
                   <EmailOtpForm
                     showSignupHint
+                    onSendCode={signUpWithEmailOtp}
                     onSuccess={() => {
                       // Email verified — continue the flow to the business profile wizard.
                       setSignupMethod("otp");
@@ -779,14 +745,14 @@ function SignupForm() {
                   {panVerified && (
                     <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
                         <div>
-                          <p className="font-semibold">{t("auth.pan_success", "PAN Validated Successfully")}</p>
-                          <p className="text-[11px] text-emerald-700">{t("auth.pan_success_sub", "Matched with Income Tax Department records")}</p>
+                          <p className="font-semibold text-slate-800">Statutory Format Validated</p>
+                          <p className="text-[11px] text-slate-600">Valid 10-character PAN structure (Self-Declared)</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
-                        {t("auth.verified", "Verified")}
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                        Pending Verification
                       </span>
                     </div>
                   )}
@@ -985,6 +951,7 @@ function SignupForm() {
                 <div className="mt-6">
                   <EmailOtpForm
                     initialEmail={email}
+                    onSendCode={signUpWithEmailOtp}
                     onSuccess={() => void finalizeRegistration()}
                   />
                 </div>
