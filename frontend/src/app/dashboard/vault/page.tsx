@@ -497,7 +497,7 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
   const hasExtractedData = Object.keys(extractedFields).length > 0;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-16">
+    <div className="max-w-6xl mx-auto space-y-8 pb-28">
       {/* Top Identity Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

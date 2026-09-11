@@ -323,7 +323,7 @@ export default function DAGWorkflowPage() {
   const grandchildNode = INITIAL_NODES.find((n) => n.id === "node-dish")!;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16">
+    <div className="max-w-7xl mx-auto space-y-8 pb-28">
       {/* 1. Header Banner */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#F0E5E0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>

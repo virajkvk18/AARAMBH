@@ -820,23 +820,23 @@ export default function AskAarambhChatbot() {
     <>
       {/* 1. Floating Trigger Pill (Bottom Right) */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 animate-in fade-in duration-200">
+        <div className="fixed bottom-5 right-5 z-40 flex items-center space-x-2 animate-in fade-in duration-200">
           <button
             onClick={() => {
               setIsOpen(true);
               setIsMinimized(false);
             }}
             aria-label="Open AARAMBH AI assistant"
-            className="group flex items-center space-x-2.5 px-4 py-3 rounded-full bg-[#FE7251] hover:bg-[#E85E3E] text-white shadow-lg transition-colors cursor-pointer"
+            className="group flex items-center space-x-2.5 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-[#FE7251] to-[#E85E3E] hover:from-[#E85E3E] hover:to-[#D94F2F] text-white shadow-xl hover:shadow-2xl ring-2 ring-white/30 hover:scale-[1.03] active:scale-[0.97] transition-all cursor-pointer"
           >
             {/* Logo Container */}
-            <div className="relative flex items-center justify-center">
-              <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-7 h-7 object-contain" />
+            <div className="relative flex items-center justify-center w-7 h-7 rounded-full bg-white/20 p-0.5">
+              <img src="/aarambh-logo-new.png" alt="AARAMBH Logo" className="w-5 h-5 object-contain" />
             </div>
 
             <div className="flex flex-col text-left pr-1">
-              <span className="text-xs font-bold tracking-wide text-white uppercase">Ask AARAMBH</span>
-              <span className="text-[10px] text-orange-100 font-medium leading-none">Single Window Assistant</span>
+              <span className="text-xs font-black tracking-wide text-white uppercase leading-tight">Ask AARAMBH</span>
+              <span className="text-[10px] text-orange-100 font-semibold leading-none">AI Assistant</span>
             </div>
           </button>
         </div>

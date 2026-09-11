@@ -387,7 +387,7 @@ export default function KYAWizardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -720,36 +720,39 @@ export default function KYAWizardPage() {
           </div>
 
           {/* Wizard Footer Navigation */}
-          <div className="bg-[#FFF9F5] border-t border-[#F0E5E0] px-6 py-4 flex items-center justify-between">
+          <div className="bg-[#FFF9F5] border-t border-[#F0E5E0] px-6 sm:px-8 py-4 flex items-center justify-between gap-4">
             <button
               type="button"
               onClick={handleBack}
               disabled={currentStep === 1}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#16060E] disabled:opacity-30 hover:bg-[#FFF2DF] transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 disabled:opacity-30 disabled:pointer-events-none hover:bg-slate-100 transition-all shadow-xs cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Previous</span>
             </button>
 
-            {currentStep < 4 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
-              >
-                <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleRunAssessment}
-                className="inline-flex items-center space-x-2 px-7 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Evaluate & Generate Clearances</span>
-              </button>
-            )}
+            {/* Shift right CTA container to the left with right padding on larger screens to guarantee zero overlap with floating assistant */}
+            <div className="flex items-center space-x-3 pr-0 sm:pr-36">
+              {currentStep < 4 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#FE7251] to-[#E85E3E] hover:from-[#E85E3E] hover:to-[#D94F2F] text-white text-sm font-black shadow-md hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  <span>Continue</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleRunAssessment}
+                  className="inline-flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#FE7251] to-[#E85E3E] hover:from-[#E85E3E] hover:to-[#D94F2F] text-white text-sm font-black shadow-md hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Evaluate & Generate Clearances</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       ) : (

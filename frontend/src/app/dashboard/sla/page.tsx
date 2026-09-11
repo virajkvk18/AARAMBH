@@ -212,7 +212,7 @@ Timestamp: ${new Date().toISOString()}
   const currentGlobalStatus = getThresholdStatus(sliderValue);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-16">
+    <div className="max-w-6xl mx-auto space-y-8 pb-28">
       {/* 1. Top Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
