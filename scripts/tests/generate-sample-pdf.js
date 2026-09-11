@@ -1,7 +1,7 @@
-// Simple script to generate a valid PDF with statutory text
+// scripts/tests/generate-sample-pdf.js — Simple generator for valid statutory test PDF
 const fs = require('fs');
+const path = require('path');
 
-// Minimal valid PDF generator
 function createTextPDF(text) {
   const content = `BT /F1 12 Tf 50 750 Td (${text.replace(/[\(\)\\]/g, '\\$&').replace(/\n/g, ') Tj T* (')}) Tj ET`;
   const streamLength = Buffer.byteLength(content);
@@ -54,6 +54,7 @@ Sanctioned Power Load: 250 kVA
 Capital Expenditure (Capex): INR 35.00 Crores
 Project Scope: Solvent recovery and green petrochemical refining.`;
 
+const targetPath = path.join(__dirname, 'sample-dossier.pdf');
 const pdfBuffer = createTextPDF(sampleText);
-fs.writeFileSync('sample-dossier.pdf', pdfBuffer);
-console.log('Sample PDF created successfully: sample-dossier.pdf (' + pdfBuffer.length + ' bytes)');
+fs.writeFileSync(targetPath, pdfBuffer);
+console.log('Sample PDF created successfully: ' + targetPath + ' (' + pdfBuffer.length + ' bytes)');

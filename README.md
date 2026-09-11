@@ -115,7 +115,13 @@ AARAMBH/
 │
 │── scripts/
 │   ├── start-all.ps1                  # Windows one-command startup script
-│   └── start-all.sh                   # Unix/Linux one-command startup script
+│   ├── start-all.sh                   # Unix/Linux one-command startup script
+│   └── tests/                         # Integration test scripts & demo sample PDF
+│       ├── test-email-otp.js          # Supabase Email OTP integration test
+│       ├── test-persistence-endpoints.js # Backend REST & DAG cascade test
+│       ├── test-vault-extract.js      # OCR & AI extraction test
+│       ├── generate-sample-pdf.js     # Statutory test PDF generator
+│       └── sample-dossier.pdf         # Demo statutory PDF file
 │
 │── docs/                              # PRD, technical spec, and architectural briefs
 │── .env.example                       # Reference environment configuration
