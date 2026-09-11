@@ -64,7 +64,7 @@ export default function OfficerWorkspacePage() {
   const [approvedRefs, setApprovedRefs] = useState<string[]>([]);
   const [selectedRisk, setSelectedRisk] = useState<'ALL' | 'RED' | 'ORANGE' | 'GREEN'>('ALL');
 
-  if (user?.role !== "officer") {
+  if (user?.role !== "OFFICER") {
     return (
       <div className="bg-white rounded-2xl p-8 border border-[#FED17A] text-center max-w-lg mx-auto shadow-xs">
         <ShieldCheck className="w-12 h-12 text-[#9B2A48] mx-auto mb-3" />

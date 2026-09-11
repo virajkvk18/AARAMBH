@@ -72,7 +72,7 @@ export default function DashboardLayout({
     );
   }
 
-  const isOfficer = user?.role === "officer";
+  const isOfficer = user?.role === "OFFICER";
 
   interface NavItem {
     label: string;
@@ -202,7 +202,7 @@ export default function DashboardLayout({
               </div>
               <div className="truncate">
                 <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
-                  {user?.role === "officer" ? "Officer Console" : "Investor Workspace"}
+                  {user?.role === "OFFICER" ? "Officer Console" : "Investor Workspace"}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate">Maharashtra Single Window</p>
               </div>
@@ -319,7 +319,7 @@ export default function DashboardLayout({
           </button>
 
           <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
-            {user.role === "officer" ? "Officer View" : "Investor View"}
+            {user.role === "OFFICER" ? "Officer View" : "Investor View"}
           </span>
         </div>
 

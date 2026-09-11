@@ -58,7 +58,7 @@ export default function DashboardHomePage() {
   };
 
   const userName = user?.name || "Investor";
-  const isOfficer = user?.role === "officer";
+  const isOfficer = user?.role === "OFFICER";
 
   // Dynamic KPI Calculations
   const activeClearancesCount = clearances.length;

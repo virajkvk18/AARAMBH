@@ -157,7 +157,7 @@ export default function ProfilePage() {
               <span>Role / Access Tier</span>
             </span>
             <p className="font-bold text-[#16060E] capitalize text-sm">
-              {user?.role === "officer" ? `Nodal Scrutiny Officer (${user.department || "MIDC"})` : "Authorized Industrial Signatory"}
+              {user?.role === "OFFICER" ? `Nodal Scrutiny Officer (${user.department || "MIDC"})` : "Authorized Industrial Signatory"}
             </p>
           </div>
 

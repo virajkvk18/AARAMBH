@@ -27,7 +27,7 @@ function LoginForm() {
   const { t } = useLanguage();
   usePageTitle("Sign In | AARAMBH");
 
-  const [activeRole, setActiveRole] = useState<"applicant" | "officer">("applicant");
+  const [activeRole, setActiveRole] = useState<"APPLICANT" | "OFFICER">("APPLICANT");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +39,7 @@ function LoginForm() {
     e.preventDefault();
     if (!email) return;
 
-    const error = await signIn(email, password, activeRole, activeRole === "officer" ? officerDept : undefined);
+    const error = await signIn(email, password, activeRole, activeRole === "OFFICER" ? officerDept : undefined);
     if (error) {
       setAuthError(error);
       return;
@@ -108,9 +108,9 @@ function LoginForm() {
             <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
               <button
                 type="button"
-                onClick={() => setActiveRole("applicant")}
+                onClick={() => setActiveRole("APPLICANT")}
                 className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                  activeRole === "applicant"
+                  activeRole === "APPLICANT"
                     ? "bg-[#FE7251] text-white"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
@@ -119,9 +119,9 @@ function LoginForm() {
               </button>
               <button
                 type="button"
-                onClick={() => setActiveRole("officer")}
+                onClick={() => setActiveRole("OFFICER")}
                 className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                  activeRole === "officer"
+                  activeRole === "OFFICER"
                     ? "bg-[#FE7251] text-white"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
@@ -134,7 +134,7 @@ function LoginForm() {
 
         <CardContent className="space-y-4">
           {/* Officer Dept Selector */}
-          {activeRole === "officer" && (
+          {activeRole === "OFFICER" && (
             <div className="p-3 rounded-lg bg-orange-50/50 border border-orange-200 space-y-1">
               <Label className="text-slate-700">Department Authority</Label>
               <select
@@ -209,7 +209,7 @@ function LoginForm() {
           </form>
 
           {/* Single Sign-On Options */}
-          {activeRole === "applicant" && (
+          {activeRole === "APPLICANT" && (
             <div className="pt-3 border-t border-slate-100 space-y-2">
               <div className="relative flex py-1 items-center">
                 <div className="grow border-t border-slate-200"></div>

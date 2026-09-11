@@ -83,7 +83,7 @@ export default function Header() {
             <NotificationBell />
             {user ? (
               <Link
-                href={user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard"}
+                href={user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard"}
                 className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
                 title="Go to your business control center"
               >
@@ -138,7 +138,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="sm:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3 shadow-md">
           <Link
-            href={user ? (user.role === "officer" ? "/dashboard/officer-workspace" : "/dashboard") : "/login?redirect=%2Fdashboard"}
+            href={user ? (user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard") : "/login?redirect=%2Fdashboard"}
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-semibold text-slate-800 hover:text-[#FE7251]"
           >

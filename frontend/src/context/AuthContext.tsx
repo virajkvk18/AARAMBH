@@ -3,12 +3,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { getSupabaseClient, isBrowserSupabaseConfigured } from "@/lib/supabase";
-export interface User { name: string; email: string; role: "applicant" | "officer"; enterpriseId?: string; enterpriseName?: string; department?: string; isDigiLockerVerified?: boolean; phone?: string; panNumber?: string; entityType?: string; addressLine1?: string; addressLine2?: string; pinCode?: string; district?: string; state?: string; }
+export interface User { name: string; email: string; role: "APPLICANT" | "OFFICER" | "ADMIN"; enterpriseId?: string; enterpriseName?: string; department?: string; isDigiLockerVerified?: boolean; phone?: string; panNumber?: string; entityType?: string; addressLine1?: string; addressLine2?: string; pinCode?: string; district?: string; state?: string; }
 type Profile = Omit<User, "email" | "role">;
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, password: string, role?: "applicant" | "officer", department?: string) => Promise<string | null>;
+  signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   updateProfile: (profile: Partial<Profile>) => Promise<string | null>;
   loginWithDigiLocker: () => Promise<string>;
@@ -21,7 +21,7 @@ const mapUser = (u: SupabaseUser): User => {
   return {
     name: m.name || m.full_name || u.email?.split("@")[0] || "AARAMBH User",
     email: u.email || "",
-    role: m.role === "officer" ? "officer" : "applicant",
+    role: (m.role === "OFFICER" || m.role === "officer") ? "OFFICER" : "APPLICANT",
     enterpriseId: m.enterpriseId || u.id,
     enterpriseName: m.enterpriseName,
     department: m.department,
@@ -75,15 +75,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string, role?: "applicant" | "officer", department?: string) => {
+  const signIn = async (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => {
     const s = getSupabaseClient();
     if (!s) {
       if (email && password) {
-        const isOfficer = role === "officer" || email.toLowerCase().includes("officer");
+        const isOfficer = role === "OFFICER" || email.toLowerCase().includes("officer");
         const demoUser: User = {
           name: isOfficer ? "Verification Officer (MIDC)" : "Authorized Signatory",
           email,
-          role: isOfficer ? "officer" : "applicant",
+          role: isOfficer ? "OFFICER" : "APPLICANT",
           enterpriseId: "MH-ENT-2026-0881",
           enterpriseName: "Smart Electronics",
           department: isOfficer ? (department || "MIDC Industrial Clearances") : undefined,
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!s) {
       const demoUser: User = {
         email,
-        role: "applicant",
+        role: "APPLICANT",
         ...profile,
         name: profile.name || "Authorized Signatory",
       };
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await s.auth.signUp({
       email,
       password,
-      options: { data: { ...profile, role: "applicant" } },
+      options: { data: { ...profile, role: "APPLICANT" } },
     });
     return { error: error?.message ?? null, needsConfirmation: !error && !data.session };
   };
@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const demoUser: User = {
       name: "Sanjay Deshmukh",
       email: "sanjay.deshmukh@smartelectronics.in",
-      role: "applicant",
+      role: "APPLICANT",
       enterpriseId: "MH-ENT-2026-0881",
       enterpriseName: "Smart Electronics",
       isDigiLockerVerified: true,
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const demoUser: User = {
       name: "Sanjay Deshmukh",
       email: "sanjay.deshmukh@gmail.com",
-      role: "applicant",
+      role: "APPLICANT",
       enterpriseId: "MH-ENT-2026-0881",
       enterpriseName: "Smart Electronics",
       isDigiLockerVerified: false,
