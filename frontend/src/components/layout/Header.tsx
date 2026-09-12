@@ -79,34 +79,34 @@ export default function Header() {
             </Link>
           </nav>
 
-          <div className="hidden sm:flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-3 shrink-0">
             <NotificationBell />
             {user ? (
               <Link
                 href={user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard"}
-                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer whitespace-nowrap"
                 title="Go to your business control center"
               >
-                <Briefcase className="w-4 h-4 text-white" />
+                <Briefcase className="w-4 h-4 text-white shrink-0" />
                 <span>{t("my_business", "MY BUSINESS")}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse ml-1" />
               </Link>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 shrink-0">
                 <Link
                   href="/login"
-                  className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                  className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap"
                   title="Sign In to your business control center"
                 >
-                  <Briefcase className="w-4 h-4 text-[#FE7251]" />
+                  <Briefcase className="w-4 h-4 text-[#FE7251] shrink-0" />
                   <span>{t("sign_in", "Sign In")}</span>
                 </Link>
 
                 <Link
                   href="/signup"
-                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-medium text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer whitespace-nowrap"
                 >
-                  <UserPlus className="w-3.5 h-3.5 text-white" />
+                  <UserPlus className="w-3.5 h-3.5 text-white shrink-0" />
                   <span>{t("register", "Register")}</span>
                 </Link>
               </div>
@@ -114,15 +114,18 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Controls */}
-          <div className="flex sm:hidden items-center space-x-2">
+          <div className="flex sm:hidden items-center space-x-2 shrink-0">
             <NotificationBell />
-            <Link
-              href={authHref("/dashboard")}
-              className="px-3 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5"
-            >
-              <Briefcase className="w-3.5 h-3.5" />
-              <span>{t("my_business", "MY BUSINESS")}</span>
-            </Link>
+            {user && (
+              <Link
+                href={user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard"}
+                className="px-3 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap"
+                title="Go to your business control center"
+              >
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>{t("my_business", "MY BUSINESS")}</span>
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -138,13 +141,15 @@ export default function Header() {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div className="sm:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3 shadow-md">
-          <Link
-            href={user ? (user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard") : "/login?redirect=%2Fdashboard"}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-semibold text-slate-800 hover:text-[#FE7251]"
-          >
-            {t("header.my_business_portal", "My Business Portal")}
-          </Link>
+          {user && (
+            <Link
+              href={user.role === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard"}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-xs font-semibold text-slate-800 hover:text-[#FE7251]"
+            >
+              {t("header.my_business_portal", "My Business Portal")}
+            </Link>
+          )}
           <Link
             href={authHref("/dashboard/caf")}
             onClick={() => setMobileMenuOpen(false)}
