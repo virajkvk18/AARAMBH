@@ -9,6 +9,7 @@ import {
   EyeOff,
   CheckCircle2,
   Search,
+  Info,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -34,6 +35,7 @@ function LoginForm() {
   const [officerDept, setOfficerDept] = useState("MIDC Industrial Clearances");
   const [resetNotice, setResetNotice] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [duplicateNotice, setDuplicateNotice] = useState<string | null>(null);
 
   const redirectParam = searchParams.get("redirect");
 
@@ -41,6 +43,12 @@ function LoginForm() {
     const err = searchParams.get("error");
     if (err === "verification_failed") {
       setAuthError("Email verification link was invalid or has expired. Please sign in or request a new code.");
+    }
+    const reason = searchParams.get("reason");
+    if (reason === "existing_user") {
+      setDuplicateNotice(
+        "You already have an account with this email. Please sign in to continue."
+      );
     }
     const emailParam = searchParams.get("email");
     if (emailParam) {
@@ -134,6 +142,14 @@ function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {/* Existing Account Notice (forwarded from sign-up duplicate detection) */}
+          {duplicateNotice && (
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center space-x-2">
+              <Info className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{duplicateNotice}</span>
+            </div>
+          )}
+
           {/* Login Method Toggle */}
           <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
             <button
@@ -241,6 +257,7 @@ function LoginForm() {
             <div className="pt-2">
               <EmailOtpForm
                 otpType="email"
+                initialEmail={email}
                 verifyButtonText="Verify & Sign In"
                 onSuccess={() => router.replace(getRedirectDestination())}
               />

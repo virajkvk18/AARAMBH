@@ -23,6 +23,7 @@ import {
   TrendingDown,
   Landmark,
   RotateCcw,
+  BadgePercent,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -50,7 +51,8 @@ export default function DashboardLayout({
     "/dashboard/sla": "Timeline & Alerts | AARAMBH",
     "/dashboard/analytics": "Delay Analytics | AARAMBH",
     "/dashboard/inspections": "Inspections | AARAMBH",
-    "/dashboard/renewals": "Statutory Renewals | AARAMBH",
+    "/dashboard/renewals": "Compliance & Renewals | AARAMBH",
+    "/dashboard/incentives": "Incentives & Schemes | AARAMBH",
     "/dashboard/grievances": "Help & Grievances | AARAMBH",
     "/dashboard/profile": "My Business Profile | AARAMBH",
     "/dashboard/officer-workspace": "Officer Review | AARAMBH",
@@ -103,6 +105,7 @@ export default function DashboardLayout({
       items: [
         { label: "Know Your Approvals", href: "/dashboard/kya", icon: Compass },
         { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
+        { label: "Incentives & Schemes", href: "/dashboard/incentives", icon: BadgePercent },
       ],
     },
     {
@@ -117,7 +120,7 @@ export default function DashboardLayout({
         { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
         { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
         { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
-        { label: "Statutory Renewals", href: "/dashboard/renewals", icon: RotateCcw },
+        { label: "Compliance & Renewals", href: "/dashboard/renewals", icon: RotateCcw },
       ],
     },
     {

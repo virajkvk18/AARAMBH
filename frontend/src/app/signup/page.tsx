@@ -415,7 +415,7 @@ function SignupForm() {
             <div className="flex items-center space-x-2 shrink-0">
               {stepError.includes("Account found") && (
                 <Link
-                  href={`/login?email=${encodeURIComponent(email.trim().toLowerCase())}`}
+                  href={`/login?email=${encodeURIComponent(email.trim().toLowerCase())}&reason=existing_user&redirect=${encodeURIComponent(redirectTo)}`}
                   className="px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs transition-colors shadow-2xs cursor-pointer"
                 >
                   Sign In

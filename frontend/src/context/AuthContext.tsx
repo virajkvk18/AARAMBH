@@ -287,6 +287,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const s = getBrowserSupabaseClient();
     if (s) {
+      // Primary: probe Supabase Auth directly. An OTP with shouldCreateUser=false
+      // only succeeds when a real auth account already exists for this email.
+      try {
+        const probe = await s.auth.signInWithOtp({
+          email: normalizedEmail,
+          options: { shouldCreateUser: false },
+        });
+        if (!probe.error) return true;
+        // A "signups not allowed for otp" / user-not-found error is the authoritative
+        // "no account exists" signal from GoTrue — we do NOT treat it as a match.
+      } catch (e) {
+        console.warn("Could not probe email existence via Supabase Auth:", e);
+      }
+
+      // Secondary: profiles table (belt & suspenders when Auth probe is unavailable)
       try {
         const { data } = await s
           .from("profiles")
@@ -299,6 +314,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    // Local demo state (used when Supabase is not configured)
     if (typeof window !== "undefined") {
       try {
         const storedUser = localStorage.getItem("aarambh_user");
