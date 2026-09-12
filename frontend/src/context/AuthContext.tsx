@@ -210,7 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (
     email: string,
     password: string,
-    expectedRole?: "APPLICANT" | "OFFICER",
+    _expectedRole?: "APPLICANT" | "OFFICER",
     _department?: string
   ): Promise<string | null> => {
     const s = getBrowserSupabaseClient();
@@ -227,30 +227,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return error.message;
     }
 
-    // Demo Officer Fast-Track for Evaluation / PS 26130 Review
-    if (expectedRole === "OFFICER" && (email.toLowerCase().includes("officer") || email.toLowerCase().includes("midc") || email.toLowerCase().includes("mpcb") || email.toLowerCase().includes("demo") || email.toLowerCase().includes("admin"))) {
-      const demoOfficerUser: User = {
-        id: "demo-officer-maha",
-        name: "Er. Sunil Deshmukh (Scrutiny Officer)",
-        email: email.trim().toLowerCase(),
-        role: "OFFICER",
-        department: _department || "MIDC Industrial Clearances",
-        isDigiLockerVerified: true,
-      };
-      setUser(demoOfficerUser);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("aarambh_active_role", "OFFICER");
-      }
-      return null;
-    }
-
     if (authData.user) {
       const appUser = await fetchUserData(authData.user);
-      if (expectedRole === "OFFICER" && appUser.role !== "OFFICER" && appUser.role !== "ADMIN") {
-        // For demonstration purposes, elevate user session to Officer when explicitly logging in via the Officer portal
-        appUser.role = "OFFICER";
-        appUser.department = _department || "MIDC Industrial Clearances";
-      }
       setUser(appUser);
       useEnterpriseStore.getState().syncWithAuthUser(appUser);
     } else {
@@ -280,28 +258,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? error.message : null;
   };
 
-  // Check if an email address is already registered in Supabase auth / profiles or local state
+  // Check if an email address is already registered in Supabase auth / profiles
   const checkEmailExists = useCallback(async (rawEmail: string): Promise<boolean> => {
     const normalizedEmail = rawEmail.trim().toLowerCase();
     if (!normalizedEmail) return false;
 
     const s = getBrowserSupabaseClient();
     if (s) {
-      // Primary: probe Supabase Auth directly. An OTP with shouldCreateUser=false
-      // only succeeds when a real auth account already exists for this email.
-      try {
-        const probe = await s.auth.signInWithOtp({
-          email: normalizedEmail,
-          options: { shouldCreateUser: false },
-        });
-        if (!probe.error) return true;
-        // A "signups not allowed for otp" / user-not-found error is the authoritative
-        // "no account exists" signal from GoTrue — we do NOT treat it as a match.
-      } catch (e) {
-        console.warn("Could not probe email existence via Supabase Auth:", e);
-      }
-
-      // Secondary: profiles table (belt & suspenders when Auth probe is unavailable)
+      // Primary: profiles table (no side effects — does not trigger any email)
       try {
         const { data } = await s
           .from("profiles")
@@ -312,20 +276,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         console.warn("Could not check email in profiles:", e);
       }
-    }
 
-    // Local demo state (used when Supabase is not configured)
-    if (typeof window !== "undefined") {
+      // Secondary: authoritative Supabase Auth probe. An OTP with
+      // shouldCreateUser=false only succeeds when a real auth account exists.
       try {
-        const storedUser = localStorage.getItem("aarambh_user");
-        if (storedUser) {
-          const parsed = JSON.parse(storedUser);
-          if (parsed?.email && parsed.email.trim().toLowerCase() === normalizedEmail) {
-            return true;
-          }
-        }
+        const probe = await s.auth.signInWithOtp({
+          email: normalizedEmail,
+          options: { shouldCreateUser: false },
+        });
+        if (!probe.error) return true;
+        // A "signups not allowed for otp" / user-not-found error is the authoritative
+        // "no account exists" signal from GoTrue — we do NOT treat it as a match.
       } catch (e) {
-        // ignore JSON parse error
+        console.warn("Could not probe email existence via Supabase Auth:", e);
       }
     }
 
