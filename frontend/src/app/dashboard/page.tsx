@@ -439,7 +439,7 @@ export default function DashboardHomePage() {
               </Button>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-slate-500">
               <span>
                 Already assessed?{" "}
                 <button
