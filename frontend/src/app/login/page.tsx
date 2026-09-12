@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import EmailOtpForm from "@/components/auth/EmailOtpForm";
 
 function LoginForm() {
-  const { signIn } = useAuth();
+  const { signIn, switchRole } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
@@ -244,13 +244,44 @@ function LoginForm() {
           )}
         </CardContent>
 
-        <CardFooter className="pt-2 border-t border-slate-100 justify-center">
-          <span className="text-xs text-slate-600">
-            {t("auth.no_account", "Don't have an account?")}{" "}
-            <Link href="/signup" className="font-semibold text-[#FE7251] hover:underline ml-1">
-              {t("auth.signup_now", "Register Enterprise")}
-            </Link>
-          </span>
+        <CardFooter className="pt-3 pb-3 border-t border-slate-100 flex flex-col space-y-2">
+          {/* Quick Demo Fast-Track Personas */}
+          <div className="w-full p-2.5 rounded-xl bg-orange-50/70 border border-orange-200">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B2A48] text-center mb-1.5">
+              Jury & Evaluation One-Click Access
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  switchRole("APPLICANT");
+                  router.replace(redirectParam || "/dashboard");
+                }}
+                className="w-full py-1.5 px-2 rounded-lg bg-white border border-slate-300 hover:border-[#FE7251] text-slate-800 text-[11px] font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer text-center"
+              >
+                🏢 Demo Investor
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  switchRole("OFFICER", officerDept);
+                  router.replace("/dashboard/officer-workspace");
+                }}
+                className="w-full py-1.5 px-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-[11px] font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer text-center"
+              >
+                🛡️ Demo Officer
+              </button>
+            </div>
+          </div>
+
+          <div className="text-center pt-1">
+            <span className="text-xs text-slate-600">
+              {t("auth.no_account", "Don't have an account?")}{" "}
+              <Link href="/signup" className="font-semibold text-[#FE7251] hover:underline ml-1">
+                {t("auth.signup_now", "Register Enterprise")}
+              </Link>
+            </span>
+          </div>
         </CardFooter>
       </Card>
 

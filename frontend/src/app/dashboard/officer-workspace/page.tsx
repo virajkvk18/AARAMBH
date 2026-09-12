@@ -107,15 +107,6 @@ export default function OfficerWorkspacePage() {
       status: approvedRefs.includes("MH-CAF-2026-00385") ? "approved" : "pending",
       riskTrack: "GREEN",
     },
-    {
-      ref: "MH-CAF-2026-00385",
-      enterpriseName: "Western Mega Logistics Park LLP",
-      clearanceName: "Provisional Fire Safety NOC",
-      dept: "Directorate of Fire Services",
-      slaDaysLeft: "2 Working Days",
-      nodeId: "node-fire",
-      status: approvedRefs.includes("MH-CAF-2026-00385") ? "approved" : "pending",
-    },
   ];
 
   const handleApprove = (item: typeof reviewQueue[0]) => {

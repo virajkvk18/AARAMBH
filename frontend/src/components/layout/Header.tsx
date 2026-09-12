@@ -115,6 +115,7 @@ export default function Header() {
 
           {/* Mobile Menu Controls */}
           <div className="flex sm:hidden items-center space-x-2">
+            <NotificationBell />
             <Link
               href={authHref("/dashboard")}
               className="px-3 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5"

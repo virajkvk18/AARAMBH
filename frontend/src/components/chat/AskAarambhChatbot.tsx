@@ -31,6 +31,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useEnterpriseStore } from "@/store/enterpriseStore";
 
 interface Message {
   id: string;
@@ -661,6 +662,23 @@ export default function AskAarambhChatbot() {
           content: m.content,
         }));
 
+      const entState = useEnterpriseStore.getState();
+      const enterpriseContext = entState.isAssessed || entState.masterCAF?.companyDetails?.companyName
+        ? {
+            enterpriseName: entState.masterCAF?.companyDetails?.companyName || entState.extractedFields?.entity_name?.value || "Maharashtra Industrial Applicant",
+            sector: entState.sector || entState.masterCAF?.projectSpecs?.sector || "Industrial Manufacturing",
+            district: entState.district || entState.masterCAF?.locationDetails?.district || "Maharashtra",
+            locationZone: entState.locationZone || entState.masterCAF?.locationDetails?.midcZoneName || "MIDC Zone",
+            capexCr: entState.capexCr || (entState.masterCAF?.projectSpecs?.capitalInvestmentInr ? entState.masterCAF.projectSpecs.capitalInvestmentInr / 10000000 : 25),
+            applicationRef: entState.applicationRef || "MH-CAF-2026-00412",
+            applicationStatus: entState.applicationStatus,
+            clearancesCount: entState.clearances?.length || 0,
+            clearancesSummary: entState.clearances?.map((c) => `${c.name} (${c.department}) - SLA ${c.slaDays}d - Status: ${c.status || "pending"}`).join("; "),
+            dagNodeStatuses: entState.dagNodeStatuses,
+            riskTrack: entState.riskTrack,
+          }
+        : null;
+
       const savedKey = typeof window !== "undefined" ? localStorage.getItem("aarambh_groq_api_key") : null;
 
       const res = await fetch("/api/chat", {
@@ -670,6 +688,7 @@ export default function AskAarambhChatbot() {
           messages: history,
           userApiKey: savedKey || undefined,
           language: detectedLang,
+          enterpriseContext,
         }),
       });
 

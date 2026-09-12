@@ -210,7 +210,7 @@ async function getAvailableGroqModels(apiKey: string): Promise<string[]> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { messages, userApiKey, language } = body;
+    const { messages, userApiKey, language, enterpriseContext } = body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -245,12 +245,20 @@ export async function POST(req: NextRequest) {
         ? "\n[IMPORTANT: User has selected Hindi (हिंदी). Respond completely and fluently in authentic Hindi, using standard Government administrative terms.]"
         : "";
 
+    const contextInstruction = enterpriseContext
+      ? `\n\nACTIVE INDUSTRIAL DOSSIER CONTEXT (GROUND YOUR ANSWERS SPECIFICALLY TO THIS APPLICANT):\n${
+          typeof enterpriseContext === "string"
+            ? enterpriseContext
+            : JSON.stringify(enterpriseContext, null, 2)
+        }\nWhen answering, acknowledge their registered entity, sector, capex, and current status of clearances when relevant.`
+      : "";
+
     for (const model of candidateModels) {
       try {
         const groqPayload = {
           model,
           messages: [
-            { role: "system", content: `${SYSTEM_PROMPT}${langInstruction}` },
+            { role: "system", content: `${SYSTEM_PROMPT}${contextInstruction}${langInstruction}` },
             ...messages.map((m: { role: string; content: string }) => ({
               role: m.role,
               content: m.content,

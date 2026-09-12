@@ -32,7 +32,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading, logout, switchRole } = useAuth();
   const { t } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
@@ -199,15 +199,17 @@ export default function DashboardLayout({
         {/* Top Header in Sidebar */}
         <div className="flex flex-col min-h-0 flex-1">
           <div className="p-3.5 border-b border-slate-100 flex items-center justify-between shrink-0">
-            <div className={`flex items-center space-x-2.5 overflow-hidden ${collapsed ? "lg:hidden" : "block"}`}>
-              <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
-                {isOfficer ? "GOV" : "ENT"}
-              </div>
-              <div className="truncate">
-                <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
-                  {user?.role === "OFFICER" ? "Officer Console" : "Investor Workspace"}
-                </p>
-                <p className="text-[10px] text-slate-500 truncate">Maharashtra Single Window</p>
+            <div className={`flex items-center justify-between w-full overflow-hidden ${collapsed ? "lg:hidden" : "flex"}`}>
+              <div className="flex items-center space-x-2.5 overflow-hidden">
+                <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
+                  {isOfficer ? "GOV" : "ENT"}
+                </div>
+                <div className="truncate">
+                  <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
+                    {user?.role === "OFFICER" ? "Officer Console" : "Investor Workspace"}
+                  </p>
+                  <p className="text-[10px] text-slate-500 truncate">Maharashtra Single Window</p>
+                </div>
               </div>
             </div>
 
@@ -238,6 +240,42 @@ export default function DashboardLayout({
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* DEMO / EVALUATION ROLE TOGGLE */}
+          {!collapsed && (
+            <div className="px-3 pt-2.5 pb-1">
+              <div className="flex items-center justify-between p-1 bg-slate-100 rounded-lg border border-slate-200 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole("APPLICANT");
+                    router.push("/dashboard");
+                  }}
+                  className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
+                    !isOfficer
+                      ? "bg-[#FE7251] text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Investor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole("OFFICER");
+                    router.push("/dashboard/officer-workspace");
+                  }}
+                  className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
+                    isOfficer
+                      ? "bg-[#FE7251] text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Officer
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Navigation Links with grouped sections */}
           <nav className="p-2.5 space-y-3 overflow-y-auto flex-1 min-h-0">
@@ -321,9 +359,21 @@ export default function DashboardLayout({
             <span className="text-xs font-semibold text-slate-900">Menu</span>
           </button>
 
-          <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
-            {user.role === "OFFICER" ? "Officer View" : "Investor View"}
-          </span>
+          <div className="flex items-center space-x-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                const target = isOfficer ? "APPLICANT" : "OFFICER";
+                switchRole(target);
+                router.push(target === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard");
+              }}
+              className="text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-full border border-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
+              title="Click to toggle perspective"
+            >
+              <span className={`w-2 h-2 rounded-full ${isOfficer ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <span>{isOfficer ? "Officer View (Switch)" : "Investor View (Switch)"}</span>
+            </button>
+          </div>
         </div>
 
         {/* Page Content */}

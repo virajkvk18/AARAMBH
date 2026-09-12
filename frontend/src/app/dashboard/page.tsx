@@ -18,6 +18,8 @@ import {
   SlidersHorizontal,
   Sparkles,
   Zap,
+  AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -459,8 +461,42 @@ export default function DashboardHomePage() {
     );
   }
 
+  const notifications = useNotificationStore((s) => s.notifications);
+  const criticalNotifications = notifications.filter(
+    (n) => !n.read && (n.severity === "critical" || n.type === "sla")
+  );
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* CRITICAL SLA & STATUTORY ALERT BANNER */}
+      {criticalNotifications.length > 0 && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+          <div className="flex items-start space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-rose-900 flex items-center gap-1.5">
+                <span>{criticalNotifications[0].title}</span>
+                <span className="text-[10px] uppercase font-black px-1.5 py-0.5 rounded-full bg-rose-200 text-rose-800">
+                  RTS SLA Alert
+                </span>
+              </p>
+              <p className="text-[11px] text-rose-700 mt-0.5 leading-relaxed max-w-2xl">
+                {criticalNotifications[0].message}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={criticalNotifications[0].target || "/dashboard/sla"}
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0 cursor-pointer"
+          >
+            <span>View SLA Tracker</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+
       {/* 1. WELCOME GREETING HEADER */}
       <Card className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
