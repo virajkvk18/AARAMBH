@@ -211,16 +211,12 @@ export default function HomePage() {
             {/* Government Badging */}
             <div className="inline-flex items-center space-x-2.5 px-5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse" />
-              <span>{t("landing.hero_gov_badge", "AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA")}</span>
+              <span>{t("landing.hero_gov_badge", "GOVERNMENT OF MAHARASHTRA · SINGLE WINDOW PORTAL")}</span>
             </div>
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-md">
-              {t('hero.headline_start')}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
-                {t('hero.headline_highlight')}
-              </span>{" "}
-              {t('hero.headline_end')}
+              Single Window Clearances for Maharashtra's Industries
             </h1>
 
             {/* Supporting Content */}
@@ -291,7 +287,7 @@ export default function HomePage() {
               </Link>
             </div>
             <span className="mt-3 text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
-              {t("landing.hero_cta_sub", "Get a customized list of clearances relevant to your business.")}
+              {t("landing.hero_cta_sub", "See which licences and registrations your business needs.")}
             </span>
 
             {/* Popular Clearance Chips */}
