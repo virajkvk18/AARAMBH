@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { CheckCircle2, Loader2, Mail, MailCheck, Send, Edit2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
+import { CheckCircle2, Loader2, Mail, MailCheck, Send, Edit2, UserPlus } from "lucide-react";
+import { useAuth, NO_ACCOUNT_FOUND_MESSAGE } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -274,9 +275,22 @@ export default function EmailOtpForm({
         </div>
       )}
 
-      {error && (
+      {error && error !== NO_ACCOUNT_FOUND_MESSAGE && (
         <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
           <span>{error}</span>
+        </div>
+      )}
+
+      {error === NO_ACCOUNT_FOUND_MESSAGE && (
+        <div className="p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between gap-3">
+          <span className="font-semibold flex-1">{NO_ACCOUNT_FOUND_MESSAGE}</span>
+          <Link
+            href="/signup"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs shadow-xs transition-colors shrink-0"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>Register</span>
+          </Link>
         </div>
       )}
     </div>

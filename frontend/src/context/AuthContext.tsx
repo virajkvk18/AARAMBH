@@ -48,6 +48,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export const NO_ACCOUNT_FOUND_MESSAGE = "No account found with this email. Please register first.";
+export const GENERIC_OTP_SEND_MESSAGE = "Unable to send the verification code. Please try again.";
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -248,14 +251,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return "Supabase client is not configured.";
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const { error } = await s.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
       options: {
         shouldCreateUser: false,
       },
     });
 
-    return error ? error.message : null;
+    if (!error) return null;
+
+    // Map the "no such account" condition (an internal GoTrue error surfaced
+    // when shouldCreateUser=false and the address has never been registered)
+    // to a clear, user-facing message. Never surface raw internal errors.
+    const errMsg = error.message.toLowerCase();
+    const isNotFound =
+      error.code === "otp_disabled" ||
+      error.code === "signup_disabled" ||
+      error.code === "user_not_found" ||
+      errMsg.includes("signups not allowed") ||
+      errMsg.includes("user not found") ||
+      errMsg.includes("no account") ||
+      errMsg.includes("not registered") ||
+      errMsg.includes("does not exist");
+
+    if (isNotFound) {
+      return NO_ACCOUNT_FOUND_MESSAGE;
+    }
+
+    return GENERIC_OTP_SEND_MESSAGE;
   };
 
   // Check if an email address is already registered in Supabase auth / profiles
