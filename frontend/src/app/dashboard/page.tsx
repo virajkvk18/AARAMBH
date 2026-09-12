@@ -515,8 +515,8 @@ export default function DashboardHomePage() {
             Welcome back, {userName} —{" "}
             {isOfficer
               ? `Department Console: ${user?.department || "Maharashtra State Clearances Wing"}`
-              : `Enterprise: ${user?.enterpriseName || "Smart Electronics"} (ID: ${
-                  user?.enterpriseId || "ENT-MH-2026-8891"
+              : `Enterprise: ${user?.enterpriseName || "Your Enterprise"} (ID: ${
+                  user?.enterpriseId || "Not Assigned"
                 })`}
           </p>
         </div>

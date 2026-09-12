@@ -35,6 +35,8 @@ import {
 } from "@/store/enterpriseStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
+
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -107,6 +109,8 @@ const DEPARTMENTS: DepartmentTabInfo[] = [
 
 export default function UnifiedCAFPage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const enterpriseId = user?.enterpriseId;
   const {
     masterCAF,
     departmentDeltas,
@@ -177,6 +181,12 @@ export default function UnifiedCAFPage() {
 
   // 3. Parallel Dispatch Submission Handler
   const handleSubmitAllApplications = async () => {
+    if (!user || !enterpriseId) {
+      alert(
+        "⚠️ Authentication required: Sign in with an enterprise-linked account before submitting the Common Application Form. No enterprise is linked to the current session."
+      );
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await fetch(`${BACKEND_API_URL}/caf/submit`, {
@@ -186,7 +196,7 @@ export default function UnifiedCAFPage() {
           caf: masterCAF,
           deltas: departmentDeltas,
           departments: selectedDepts,
-          enterprise_id: "ENT-MH-2026-8891",
+          enterprise_id: enterpriseId,
         }),
       });
 

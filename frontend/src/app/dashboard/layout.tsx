@@ -22,6 +22,7 @@ import {
   FileSpreadsheet,
   TrendingDown,
   Landmark,
+  RotateCcw,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -49,6 +50,7 @@ export default function DashboardLayout({
     "/dashboard/sla": "Timeline & Alerts | AARAMBH",
     "/dashboard/analytics": "Delay Analytics | AARAMBH",
     "/dashboard/inspections": "Inspections | AARAMBH",
+    "/dashboard/renewals": "Statutory Renewals | AARAMBH",
     "/dashboard/grievances": "Help & Grievances | AARAMBH",
     "/dashboard/profile": "My Business Profile | AARAMBH",
     "/dashboard/officer-workspace": "Officer Review | AARAMBH",
@@ -108,13 +110,14 @@ export default function DashboardLayout({
       items: [{ label: "Document Vault", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] }],
     },
     {
-      heading: "Tracking",
+      heading: "Tracking & Compliance",
       items: [
         { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
         { label: "Approval Tracker", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
         { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
         { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
         { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
+        { label: "Statutory Renewals", href: "/dashboard/renewals", icon: RotateCcw },
       ],
     },
     {

@@ -35,6 +35,9 @@ interface CrossDocField {
 
 import { compareFieldValues } from "@/lib/fieldComparison";
 
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+
 export default function PreValidationPage() {
   const {
     extractedFields,
@@ -110,12 +113,32 @@ export default function PreValidationPage() {
     setDocBValue(chosenValue);
   };
 
-  const handleSubmitApplication = (e: React.FormEvent) => {
+  const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isMismatch) return;
     const ref = applicationRef || `MH-CAF-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     submitApplication(ref);
     setSubmissionSuccess(true);
+
+    // Persist the pre-validation filing to backend (non-blocking)
+    fetch(`${BACKEND_API_URL}/filings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        approval_id: ref,
+        form: {
+          entityName: formData.entityName,
+          pan: formData.pan,
+          gstin: formData.gstin,
+          sector: formData.sector,
+          locationZone: formData.locationZone,
+          powerLoadKva: formData.powerLoadKva,
+          capexCr: formData.capexCr,
+          resolvedPlotArea: formData.resolvedPlotArea,
+        },
+        status: "submitted",
+      }),
+    }).catch(() => {/* non-blocking */});
 
     // Fire notification on successful pre-validation submission
     useNotificationStore.getState().addNotification({
@@ -126,6 +149,7 @@ export default function PreValidationPage() {
       target: "/dashboard/prevalidation",
     });
   };
+
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-28">

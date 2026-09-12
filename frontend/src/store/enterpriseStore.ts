@@ -767,13 +767,31 @@ export const useEnterpriseStore = create<EnterpriseState>()(
         })),
 
       setCAFSubmissionReceipt: (receipt) =>
-        set((state) => ({
-          ...state,
-          cafSubmissionReceipt: receipt,
-          applicationStatus: "submitted",
-          applicationRef: receipt?.masterApplicationRef || state.applicationRef,
-          submittedAt: receipt?.timestamp || new Date().toISOString(),
-        })),
+        set((state) => {
+          const clearances =
+            receipt && receipt.status !== "ERROR"
+              ? state.clearances.map((c) =>
+                  c.status === "pending" || !c.status
+                    ? { ...c, status: "submitted" as const }
+                    : c
+                )
+              : state.clearances;
+          return {
+            ...state,
+            clearances,
+            cafSubmissionReceipt: receipt,
+            applicationStatus: "submitted",
+            applicationRef: receipt?.masterApplicationRef || state.applicationRef,
+            submittedAt: receipt?.timestamp || new Date().toISOString(),
+            dagNodeStatuses: {
+              "node-root": "approved",
+              "node-mpcb": "active",
+              "node-fire": "active",
+              "node-water": "active",
+              "node-dish": "locked",
+            },
+          };
+        }),
 
       setPolicyIncentiveDetails: (details) =>
         set((state) => ({
@@ -795,6 +813,13 @@ export const useEnterpriseStore = create<EnterpriseState>()(
           applicableIncentives: incentives,
           policyIncentiveDetails: policyDetails || state.policyIncentiveDetails,
           isAssessed: true,
+          dagNodeStatuses: {
+            "node-root": "active",
+            "node-mpcb": "locked",
+            "node-fire": "locked",
+            "node-water": "locked",
+            "node-dish": "locked",
+          },
         })),
 
       submitApplication: (ref = "MH-CAF-2026-00412") =>
@@ -946,8 +971,9 @@ export const useEnterpriseStore = create<EnterpriseState>()(
       addGrievanceTicket: (ticketInput) =>
         set((state) => {
           const now = new Date();
+          const year = now.getFullYear();
           const newTicket: GrievanceTicket = {
-            id: `GRV-2026-${Math.floor(100 + Math.random() * 900)}`,
+            id: `GRV-${year}-${Math.floor(100 + Math.random() * 900)}`,
             subject: ticketInput.subject,
             department: ticketInput.department || ticketInput.category || "General Clearance",
             category: ticketInput.category || ticketInput.department || "General Clearance",
@@ -974,9 +1000,10 @@ export const useEnterpriseStore = create<EnterpriseState>()(
 
       scheduleJointInspection: (inspection) =>
         set((state) => {
+          const year = new Date().getFullYear();
           const newInspection: JointInspection = {
             ...inspection,
-            id: `JINSP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+            id: `JINSP-${year}-${Math.floor(1000 + Math.random() * 9000)}`,
           };
           return {
             ...state,

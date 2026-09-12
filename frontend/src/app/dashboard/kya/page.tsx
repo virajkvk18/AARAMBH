@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Compass,
@@ -52,6 +52,8 @@ import {
   generateClearanceWorkflow,
   GeneratedWorkflowDAG,
 } from "@/data/workflowRuleEngine";
+
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 // --- Official Sector Options based on Government Resolutions ---
 const sectorOptions = [
@@ -239,15 +241,28 @@ export default function KYAWizardPage() {
     }
   };
 
-  // When district changes, update taluka to first taluka of that district
-  const handleDistrictChange = (newDistrict: string) => {
+  // When district changes, fetch talukas from backend with local fallback
+  const handleDistrictChange = useCallback(async (newDistrict: string) => {
     setSelectedDistrict(newDistrict);
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/rules/talukas/${encodeURIComponent(newDistrict)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.talukas && data.talukas.length > 0) {
+          setSelectedTaluka(data.talukas[0].name);
+          setLocationZone(`${data.talukas[0].name} Zone (${newDistrict})`);
+          return;
+        }
+      }
+    } catch {
+      // fallback to local data
+    }
     const distObj = MAHARASHTRA_DISTRICT_TALUKAS.find((d) => d.district.toLowerCase() === newDistrict.toLowerCase());
     if (distObj && distObj.talukas.length > 0) {
       setSelectedTaluka(distObj.talukas[0].name);
       setLocationZone(`${distObj.talukas[0].name} Zone (${distObj.district})`);
     }
-  };
+  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -261,19 +276,11 @@ export default function KYAWizardPage() {
     }
   };
 
-  const handleRunAssessment = () => {
-    // 1. Evaluate policy rules & financial incentives
-    const incentivesResult = evaluatePolicyIncentives({
-      sector: selectedSectorKey,
-      district: selectedDistrict,
-      taluka: selectedTaluka,
-      capexCr,
-      workforceSize,
-      powerLoadKw: powerLoadKva,
-      isExpansion,
-    });
+  const handleRunAssessment = async () => {
+    let incentivesResult: CalculatedIncentives;
+    let dagResult: GeneratedWorkflowDAG;
 
-    // 2. Determine hazard category for statutory workflow
+    // Determine hazard category for statutory workflow
     let hazardCategory: "Red" | "Orange" | "Green" | "White" = "Green";
     if (selectedSectorKey === "general_manufacturing") {
       hazardCategory = capexCr > 50 ? "Red" : "Orange";
@@ -283,22 +290,74 @@ export default function KYAWizardPage() {
       hazardCategory = "Orange";
     } else if (selectedSectorKey === "fintech" || selectedSectorKey === "industry_4_0_ai") {
       hazardCategory = "White";
-    } else if (selectedSectorKey === "agro_food_processing" || selectedSectorKey === "services_retail" || selectedSectorKey === "ev_manufacturing" || selectedSectorKey === "logistics_warehousing") {
-      hazardCategory = "Green";
     }
 
-    // 3. Generate dynamic sector-specific DAG workflow
-    const dagResult = generateClearanceWorkflow({
-      sector: selectedSectorKey,
-      hazardCategory,
-      powerLoadKw: powerLoadKva,
-      buildingHeightMeters,
-      occupantsCount: workforceSize,
-      boilerInstalled,
-      isMidcLand: true,
-    });
+    // 1. Try backend /api/rules/evaluate first, fall back to local engine
+    try {
+      const [evaluateRes, workflowRes] = await Promise.all([
+        fetch(`${BACKEND_API_URL}/rules/evaluate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sector: selectedSectorKey,
+            district: selectedDistrict,
+            taluka: selectedTaluka,
+            capexCr,
+            workforceSize,
+            powerLoadKw: powerLoadKva,
+            isExpansion,
+          }),
+        }),
+        fetch(`${BACKEND_API_URL}/rules/workflow`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sector: selectedSectorKey,
+            hazardCategory,
+            powerLoadKw: powerLoadKva,
+            buildingHeightMeters,
+            occupantsCount: workforceSize,
+            boilerInstalled,
+            isMidcLand: true,
+          }),
+        }),
+      ]);
 
-    // 4. Map clearances to enterprise store items with direct approvalSlug
+      if (evaluateRes.ok && workflowRes.ok) {
+        const evalData = await evaluateRes.json();
+        const wfData = await workflowRes.json();
+        if (evalData.success && wfData.success) {
+          incentivesResult = evalData.data as CalculatedIncentives;
+          dagResult = wfData.data as GeneratedWorkflowDAG;
+        } else {
+          throw new Error("Backend returned non-success status");
+        }
+      } else {
+        throw new Error("Backend rules endpoints returned error");
+      }
+    } catch {
+      // Fallback to local rules engines
+      incentivesResult = evaluatePolicyIncentives({
+        sector: selectedSectorKey,
+        district: selectedDistrict,
+        taluka: selectedTaluka,
+        capexCr,
+        workforceSize,
+        powerLoadKw: powerLoadKva,
+        isExpansion,
+      });
+      dagResult = generateClearanceWorkflow({
+        sector: selectedSectorKey,
+        hazardCategory,
+        powerLoadKw: powerLoadKva,
+        buildingHeightMeters,
+        occupantsCount: workforceSize,
+        boilerInstalled,
+        isMidcLand: true,
+      });
+    }
+
+
     const storeClearances: ClearanceItem[] = dagResult.clearances.map((c) => ({
       id: c.id,
       name: c.name,
@@ -378,6 +437,22 @@ export default function KYAWizardPage() {
     setAssessmentResult(riskTrack, storeClearances, incentiveSummaryList, incentivesResult);
     setShowResult(true);
 
+    // Persist assessed enterprise profile to backend (non-blocking)
+    fetch(`${BACKEND_API_URL}/enterprise`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sector: selectedSectorKey,
+        location_zone: locationZone,
+        capex_cr: capexCr,
+        power_load_kva: powerLoadKva,
+        water_demand_kld: waterDemandKld,
+        workforce_size: workforceSize,
+        risk_track: riskTrack,
+        is_assessed: true,
+      }),
+    }).catch(() => {/* non-blocking */});
+
     // Trigger KYA Assessment Generated Notification
     useNotificationStore.getState().addNotification({
       type: "kya",
@@ -387,6 +462,7 @@ export default function KYAWizardPage() {
       target: "/dashboard/caf",
     });
   };
+
 
   const handleReset = () => {
     resetAssessment();

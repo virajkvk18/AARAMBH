@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import {
   FolderLock,
@@ -192,6 +193,9 @@ const formatFileSize = (bytes: number): string => {
 };
 
 export default function DocumentVaultPage() {
+  const { user } = useAuth();
+  const enterpriseId = user?.enterpriseId;
+
   const {
     uploadedDocuments,
     extractedFields,
@@ -224,6 +228,48 @@ export default function DocumentVaultPage() {
   // Ephemeral in-memory file objects for the active browser session (no large base64 in persistent state)
   const fileObjectsRef = useRef<Map<string, File>>(new Map());
 
+  // Load persisted documents from backend on mount (restores vault after page refresh)
+  useEffect(() => {
+    const loadPersistedDocs = async () => {
+      if (!enterpriseId) return;
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/documents?enterprise_id=${encodeURIComponent(enterpriseId)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === "success" && Array.isArray(data.documents) && data.documents.length > 0) {
+          // Map backend documents to UploadedDocument shape (only add docs not already in store)
+          const storeIds = new Set(uploadedDocuments.map((d) => d.id));
+          const backendDocs: UploadedDocument[] = data.documents
+            .filter((d: any) => !storeIds.has(d.id))
+            .map((d: any) => ({
+              id: d.id,
+              name: d.file_name || "Document",
+              size: 0,
+              type: d.file_type || "application/pdf",
+              fileUrl: d.file_url
+                ? d.file_url.startsWith("http")
+                  ? d.file_url
+                  : `${BACKEND_API_URL.replace("/api", "")}${d.file_url}`
+                : undefined,
+              uploadedAt: d.created_at || new Date().toISOString(),
+              status: d.verification_status === "AI_EXTRACTED" ? ("extracted" as const) : ("ready" as const),
+              extractedFields: {},
+              rawTextSnippet: d.raw_text_snippet || null,
+              errorMessage: null,
+            }));
+          if (backendDocs.length > 0) {
+            addUploadedDocuments(backendDocs);
+          }
+        }
+      } catch {
+        // Non-blocking — vault works offline
+      }
+    };
+    loadPersistedDocs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enterpriseId]);
+
+
   // 1. Connect DigiLocker Handler (restores mock data for SIH prototype demo, isolated from uploaded docs)
   const handleConnectDigiLocker = () => {
     setDigiLockerDocs(mockDigiLockerPushedDocs);
@@ -247,6 +293,9 @@ export default function DocumentVaultPage() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      if (enterpriseId) {
+        formData.append("enterprise_id", enterpriseId);
+      }
 
       const res = await fetch(`${BACKEND_API_URL}/vault/extract`, {
         method: "POST",

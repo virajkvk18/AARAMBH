@@ -70,6 +70,13 @@ export default function ProfilePage() {
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!user?.enterpriseId) {
+      alert(
+        "⚠️ Authentication required: No enterprise is linked to this account. Create or link an enterprise before saving profile details."
+      );
+      return;
+    }
+
     const profileError = await updateProfile({
       name: editName,
       enterpriseName: editCompanyName,
@@ -77,7 +84,7 @@ export default function ProfilePage() {
       panNumber: editPan.toUpperCase(),
       addressLine1: editAddress,
       district: editDistrict,
-      enterpriseId: user?.enterpriseId || "ENT-MH-2026-8891",
+      enterpriseId: user.enterpriseId,
     });
     if (profileError) return;
 
@@ -103,6 +110,18 @@ export default function ProfilePage() {
       district: editDistrict,
       locationZone: `${editDistrict} Industrial Zone`,
     });
+
+    // Persist enterprise profile to backend (non-blocking)
+    const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    fetch(`${BACKEND_API_URL}/enterprise`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: user.enterpriseId,
+        name: editCompanyName,
+        location_zone: `${editDistrict} Industrial Zone`,
+      }),
+    }).catch(() => {/* non-blocking */});
 
     setIsEditing(false);
   };

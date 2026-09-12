@@ -21,6 +21,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
+import type { NodeStatus } from "@/app/dashboard/dag/page";
 
 // Risk configuration for badges and actions
 const riskConfig = {
@@ -54,6 +55,7 @@ export default function OfficerWorkspacePage() {
     uploadedDocuments,
     dagNodeStatuses,
     updateDAGNodeStatus,
+    setDAGNodeStatuses,
     addGrievanceTicket,
   } = useEnterpriseStore();
 
@@ -109,12 +111,46 @@ export default function OfficerWorkspacePage() {
     },
   ];
 
-  const handleApprove = (item: typeof reviewQueue[0]) => {
+  const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+  const handleApprove = async (item: typeof reviewQueue[0]) => {
     setApprovedRefs((prev) => [...prev, item.ref]);
     if (item.nodeId) {
+      // Optimistic local bump keeps UI instant...
       updateDAGNodeStatus(item.nodeId, "approved");
+      // ...but backend is authoritative: persist with the authenticated enterprise,
+      // then reconcile the store from the nodes returned in the PATCH response.
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/dag/${item.nodeId}/approve`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enterprise_id: user?.enterpriseId }),
+        });
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          throw new Error(data?.error || data?.message || `Approval failed (HTTP ${res.status})`);
+        }
+
+        // Backend returned nodes are the source of truth — reconcile the store.
+        if (data?.nodes && Array.isArray(data.nodes)) {
+          const authoritative: Record<string, NodeStatus> = {};
+          data.nodes.forEach((n: any) => {
+            if (n?.id && n?.status) authoritative[n.id] = n.status as NodeStatus;
+          });
+          if (Object.keys(authoritative).length > 0) {
+            setDAGNodeStatuses(authoritative);
+          }
+        }
+      } catch (err: any) {
+        console.error("Failed to persist DAG approval:", err);
+        alert(
+          `⚠️ Approval could not be persisted to the backend.\n\n${err?.message || "Unknown error"}\n\nThe optimistic local state was set, but it may not survive a refresh.`
+        );
+      }
     }
   };
+
 
   const handleDispatchQuery = (e: React.FormEvent) => {
     e.preventDefault();

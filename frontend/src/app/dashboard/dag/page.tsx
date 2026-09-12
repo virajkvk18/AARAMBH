@@ -104,7 +104,7 @@ const INITIAL_NODES: DAGNode[] = [
 export default function DAGWorkflowPage() {
   const { user } = useAuth();
   const { dagNodeStatuses: storeDagStatuses, updateDAGNodeStatus, resetDAGStatuses } = useEnterpriseStore();
-  const enterpriseId = user?.enterpriseId || "ENT-MH-2026-8891";
+  const enterpriseId = user?.enterpriseId;
 
   const [nodeStatuses, setNodeStatuses] = useState<Record<string, NodeStatus>>({
     "node-root": (storeDagStatuses?.["node-root"] as NodeStatus) || "active",
@@ -136,6 +136,7 @@ export default function DAGWorkflowPage() {
 
   // Load persisted DAG nodes from Backend / Supabase REST API
   const fetchPersistedNodes = useCallback(async () => {
+    if (!enterpriseId) { setHistoryLog((prev) => [`Authentication required: no enterprise linked to the signed-in account.`, ...prev]); return; }
     try {
       setIsLoading(true);
       const res = await fetch(`${BACKEND_API_URL}/dag/${enterpriseId}`);
@@ -164,9 +165,9 @@ export default function DAGWorkflowPage() {
   useEffect(() => {
     fetchPersistedNodes();
   }, [fetchPersistedNodes]);
-
-  // Set up Supabase Realtime / Cross-Tab Broadcast Channel Subscription
   useEffect(() => {
+  // Set up Supabase Realtime / Cross-Tab Broadcast Channel Subscription
+    if (!enterpriseId) return;
     // 1. Supabase Realtime Postgres Changes
     let channel: any = null;
     if (supabaseClient) {

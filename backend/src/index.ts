@@ -474,12 +474,12 @@ async function persistVaultExtraction(
   extraction: AiExtractionResponse,
   docId: string,
   fileUrl: string,
+  enterpriseId: string,
   file?: { buffer: Buffer; mimetype: string; filename: string }
 ): Promise<{
   document: DbDocument;
   extracted_fields: DbExtractedField[];
 }> {
-  const enterpriseId = "ENT-MH-2026-8891";
 
   // Persist the binary to Supabase Storage when available (fallback: local buffer cache)
   let uploadedUrl: string | null = null;
@@ -546,6 +546,9 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
     }
 
     const docId = `DOC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const enterpriseId = typeof req.body?.enterprise_id === "string" && req.body.enterprise_id.trim() !== ""
+      ? req.body.enterprise_id
+      : undefined;
     localFileStore.set(docId, {
       buffer,
       mimetype,
@@ -582,6 +585,7 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
         extraction,
         docId,
         fileUrl,
+        enterpriseId || "ENT-MH-2026-8891",
         { buffer, mimetype, filename: originalname }
       );
       res.status(200).json({ ...extraction, document: persisted.document });
@@ -591,7 +595,7 @@ app.post("/api/vault/extract", upload.single("file"), async (req: Request, res: 
       // Store document in localDb so it remains viewable and manageable even if AI service is offline
       const fallbackDoc: DbDocument = {
         id: docId,
-        enterprise_id: "ENT-MH-2026-8891",
+        enterprise_id: enterpriseId || "ENT-MH-2026-8891",
         file_name: originalname,
         file_type: mimetype,
         source: "UPLOAD",
