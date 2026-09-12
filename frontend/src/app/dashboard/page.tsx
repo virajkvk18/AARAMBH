@@ -372,8 +372,7 @@ export default function DashboardHomePage() {
               Complete your business profile<br />to unlock AARAMBH
             </h1>
             <p className="text-sm text-white/70 mt-2 leading-relaxed">
-              AARAMBH generates a <strong className="text-white">customised approval checklist, incentives and SLA map</strong>{" "}
-              that is unique to your sector, location and project size — not a generic list.
+              Answer a few questions about your business to identify the approvals and clearances you may need.
             </p>
           </div>
 
@@ -435,7 +434,7 @@ export default function DashboardHomePage() {
             <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button onClick={() => router.push("/dashboard/kya")} className="w-full sm:w-auto">
                 <Compass className="w-4 h-4" />
-                <span>Complete Your KYA Wizard</span>
+                <span>Find Your Required Approvals</span>
               </Button>
             </div>
 
