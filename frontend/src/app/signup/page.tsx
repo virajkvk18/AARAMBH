@@ -42,6 +42,7 @@ function SignupForm() {
     user,
     signUpApplicant,
     signUpWithEmailOtp,
+    checkEmailExists,
     resendSignupOtp,
     verifyEmailOtp,
     completeSignup,
@@ -103,8 +104,9 @@ function SignupForm() {
       setStepError("Please enter the full legal name of the authorized signatory.");
       return false;
     }
+    const emailClean = email.trim().toLowerCase();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!emailRegex.test(emailClean)) {
       setStepError("Please enter a valid business email address.");
       return false;
     }
@@ -161,14 +163,24 @@ function SignupForm() {
     return true;
   };
 
-  const goToStep = (targetStep: number) => {
+  const goToStep = async (targetStep: number) => {
     if (targetStep < currentStep) {
       setStepError(null);
       setCurrentStep(targetStep);
       return;
     }
     if (targetStep === 5) return; // step 5 is only reached after OTP is sent
-    if (currentStep === 1 && !validateStep1()) return;
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+      const cleanEmail = email.trim().toLowerCase();
+      setPanLoading(true);
+      const isExisting = await checkEmailExists(cleanEmail);
+      setPanLoading(false);
+      if (isExisting) {
+        setStepError("Account found. Please sign in instead.");
+        return;
+      }
+    }
     if (currentStep === 2 && !validateStep2()) return;
     if (currentStep === 3 && !validateStep3()) return;
     setStepError(null);
@@ -384,14 +396,35 @@ function SignupForm() {
 
         {/* Validation Error Banner */}
         {stepError && (
-          <div className="mx-6 sm:mx-8 mt-4 p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-between text-rose-800 text-xs">
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-              <span className="font-medium">{stepError}</span>
+          <div className={`mx-6 sm:mx-8 mt-4 p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xs ${
+            stepError.includes("Account found")
+              ? "bg-amber-50 border-amber-300 text-amber-900"
+              : "bg-rose-50 border-rose-200 text-rose-800"
+          }`}>
+            <div className="flex items-center space-x-2.5">
+              <AlertCircle className={`w-5 h-5 shrink-0 ${stepError.includes("Account found") ? "text-amber-600" : "text-rose-600"}`} />
+              <div>
+                <span className="font-bold block text-sm">{stepError}</span>
+                {stepError.includes("Account found") && (
+                  <span className="text-slate-600 text-xs mt-0.5 block">
+                    An account registered with <strong className="font-mono">{email.trim().toLowerCase()}</strong> already exists. Please sign in to access your enterprise dashboard.
+                  </span>
+                )}
+              </div>
             </div>
-            <button type="button" onClick={() => setStepError(null)} className="text-rose-500 hover:text-rose-700">
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center space-x-2 shrink-0">
+              {stepError.includes("Account found") && (
+                <Link
+                  href={`/login?email=${encodeURIComponent(email.trim().toLowerCase())}`}
+                  className="px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs transition-colors shadow-2xs cursor-pointer"
+                >
+                  Sign In
+                </Link>
+              )}
+              <button type="button" onClick={() => setStepError(null)} className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
 

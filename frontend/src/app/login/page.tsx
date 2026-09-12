@@ -42,6 +42,10 @@ function LoginForm() {
     if (err === "verification_failed") {
       setAuthError("Email verification link was invalid or has expired. Please sign in or request a new code.");
     }
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      setEmail(emailParam.trim());
+    }
   }, [searchParams]);
 
   const getRedirectDestination = () => {

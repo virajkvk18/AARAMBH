@@ -33,6 +33,7 @@ interface AuthContextType {
   signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<string | null>;
   signInWithEmailOtp: (email: string) => Promise<string | null>;
   signUpWithEmailOtp: (email: string) => Promise<string | null>;
+  checkEmailExists: (email: string) => Promise<boolean>;
   resendSignupOtp: (email: string) => Promise<string | null>;
   verifyEmailOtp: (email: string, token: string, type?: "email" | "signup") => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
@@ -279,20 +280,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? error.message : null;
   };
 
+  // Check if an email address is already registered in Supabase auth / profiles or local state
+  const checkEmailExists = useCallback(async (rawEmail: string): Promise<boolean> => {
+    const normalizedEmail = rawEmail.trim().toLowerCase();
+    if (!normalizedEmail) return false;
+
+    const s = getBrowserSupabaseClient();
+    if (s) {
+      try {
+        const { data } = await s
+          .from("profiles")
+          .select("id")
+          .ilike("email", normalizedEmail)
+          .maybeSingle();
+        if (data) return true;
+      } catch (e) {
+        console.warn("Could not check email in profiles:", e);
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      try {
+        const storedUser = localStorage.getItem("aarambh_user");
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          if (parsed?.email && parsed.email.trim().toLowerCase() === normalizedEmail) {
+            return true;
+          }
+        }
+      } catch (e) {
+        // ignore JSON parse error
+      }
+    }
+
+    return false;
+  }, []);
+
   // Sign up with Email OTP (New User Registration)
   const signUpWithEmailOtp = async (
     email: string
   ): Promise<string | null> => {
-    const s = getBrowserSupabaseClient();
-
-    if (!s) {
-      return "Supabase client is not configured.";
-    }
-
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail) {
       return "Please enter your email address.";
+    }
+
+    const alreadyRegistered = await checkEmailExists(normalizedEmail);
+    if (alreadyRegistered) {
+      return "Account found. Please sign in instead.";
+    }
+
+    const s = getBrowserSupabaseClient();
+
+    if (!s) {
+      return "Supabase client is not configured.";
     }
 
     const emailRedirectTo =
@@ -308,7 +350,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     });
 
-    return error ? error.message : null;
+    if (error) {
+      const errMsg = error.message.toLowerCase();
+      if (
+        errMsg.includes("already registered") ||
+        errMsg.includes("already exists") ||
+        errMsg.includes("user_already_exists") ||
+        errMsg.includes("account with this email")
+      ) {
+        return "Account found. Please sign in instead.";
+      }
+      return error.message;
+    }
+
+    return null;
   };
 
   // Resend 6-digit signup confirmation OTP
@@ -378,6 +433,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     profile: Profile
   ): Promise<{ error: string | null; needsConfirmation: boolean }> => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if email already exists before attempting signup
+    const alreadyRegistered = await checkEmailExists(normalizedEmail);
+    if (alreadyRegistered) {
+      return {
+        error: "Account found. Please sign in instead.",
+        needsConfirmation: false,
+      };
+    }
+
     const s = getBrowserSupabaseClient();
     if (!s) {
       return { error: "Supabase client is not configured.", needsConfirmation: false };
@@ -390,7 +456,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : undefined;
 
       const { data, error } = await s.auth.signUp({
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
         password,
         options: {
           emailRedirectTo,
@@ -410,7 +476,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        const errMsg = error.message.toLowerCase();
+        if (
+          errMsg.includes("already registered") ||
+          errMsg.includes("already exists") ||
+          errMsg.includes("user_already_exists") ||
+          errMsg.includes("account with this email")
+        ) {
+          return { error: "Account found. Please sign in instead.", needsConfirmation: false };
+        }
         return { error: error.message, needsConfirmation: false };
+      }
+
+      // In Supabase Auth v2, existing user registration with confirmation on returns user with empty identities []
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        return { error: "Account found. Please sign in instead.", needsConfirmation: false };
       }
 
       if (data.session) {
@@ -592,6 +672,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           signIn,
           signInWithEmailOtp,
           signUpWithEmailOtp,
+          checkEmailExists,
           resendSignupOtp,
           verifyEmailOtp,
           signUpApplicant,
