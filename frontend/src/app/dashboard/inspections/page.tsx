@@ -158,7 +158,6 @@ Timestamp of Digital Endorsement: ${new Date().toISOString()}
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <CalendarCheck className="w-3.5 h-3.5 text-[#FE7251]" />
             <span>Synchronized Site Clearance System</span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">Demo</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
             Inspections

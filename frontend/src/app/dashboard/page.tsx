@@ -504,9 +504,6 @@ export default function DashboardHomePage() {
             <span className="text-[11px] font-semibold text-[#FE7251] uppercase tracking-wider">
               Single Window Control Center
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">
-              Demo
-            </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Overview

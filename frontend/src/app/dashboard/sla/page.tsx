@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   Clock,
@@ -12,9 +12,7 @@ import {
   Factory,
   Droplets,
   Building2,
-  Play,
-  Pause,
-  RotateCcw,
+  Activity,
   ArrowRight,
   ShieldCheck,
   FileCheck2,
@@ -28,7 +26,7 @@ interface ClearanceSLABar {
   department: string;
   totalSlaDays: number;
   icon: React.ComponentType<{ className?: string }>;
-  weightOffset?: number;
+  status?: "pending" | "submitted" | "in_review" | "approved" | "deemed_approved";
 }
 
 const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
@@ -38,7 +36,6 @@ const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
     department: "Maharashtra Pollution Control Board",
     totalSlaDays: 21,
     icon: Factory,
-    weightOffset: 0,
   },
   {
     id: "fire-noc",
@@ -46,7 +43,6 @@ const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
     department: "State Directorate of Fire & Emergency Services",
     totalSlaDays: 14,
     icon: Flame,
-    weightOffset: 2,
   },
   {
     id: "water-allocation",
@@ -54,7 +50,6 @@ const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
     department: "MIDC / Water Resources Department",
     totalSlaDays: 7,
     icon: Droplets,
-    weightOffset: -2,
   },
   {
     id: "midc-plan",
@@ -62,16 +57,15 @@ const DEFAULT_APPLICATIONS: ClearanceSLABar[] = [
     department: "Maharashtra Industrial Development Corporation",
     totalSlaDays: 15,
     icon: Building2,
-    weightOffset: 1,
   },
 ];
 
 export default function SLATrackerPage() {
-  const { clearances } = useEnterpriseStore();
+  const { clearances, submittedAt } = useEnterpriseStore();
 
   const activeApplications: ClearanceSLABar[] =
     clearances && clearances.length > 0
-      ? clearances.map((c, idx) => {
+      ? clearances.map((c) => {
           let IconComp = Building2;
           const dept = (c.department || "").toLowerCase();
           const name = (c.name || "").toLowerCase();
@@ -93,14 +87,12 @@ export default function SLATrackerPage() {
             department: c.department,
             totalSlaDays: c.slaDays || 15,
             icon: IconComp,
-            weightOffset: (idx % 3) - 1,
+            status: c.status,
           };
         })
       : DEFAULT_APPLICATIONS;
 
-  // Real React state for Acceleration Simulator (0 - 100)
-  const [sliderValue, setSliderValue] = useState<number>(45);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  // Real-time statutory SLA progression based on the CAF submission timestamp.
   const [downloadedCertName, setDownloadedCertName] = useState<string | null>(null);
 
   const handleDownloadDeemedCertificate = (app: ClearanceSLABar) => {
@@ -139,25 +131,6 @@ Timestamp: ${new Date().toISOString()}
     setDownloadedCertName(app.name);
     setTimeout(() => setDownloadedCertName(null), 4000);
   };
-
-  // Auto-play timer for presentation simulation
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setSliderValue((prev) => {
-          if (prev >= 100) {
-            setIsPlaying(false);
-            return 100;
-          }
-          return prev + 1;
-        });
-      }, 90);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isPlaying]);
 
   // Helper to determine status color and badge based on exact threshold
   const getThresholdStatus = (percent: number) => {
@@ -209,7 +182,28 @@ Timestamp: ${new Date().toISOString()}
     };
   };
 
-  const currentGlobalStatus = getThresholdStatus(sliderValue);
+  // Real-time statutory SLA position computed from the CAF submission timestamp
+  const now = new Date().getTime();
+  const start = submittedAt ? new Date(submittedAt).getTime() : now;
+  const elapsedDays = Math.max(0, (now - start) / 86400000);
+
+  const itemPercentFor = (app: ClearanceSLABar) => {
+    const done = app.status === "approved" || app.status === "deemed_approved";
+    const notStarted = app.status === "pending";
+    if (done) return 100;
+    if (notStarted) return 0;
+    return Math.min(100, (elapsedDays / app.totalSlaDays) * 100);
+  };
+
+  const overallPct =
+    activeApplications.length > 0
+      ? Math.round(
+          activeApplications.reduce((sum, app) => sum + itemPercentFor(app), 0) /
+            activeApplications.length
+        )
+      : 0;
+
+  const currentGlobalStatus = getThresholdStatus(overallPct);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-28">
@@ -219,7 +213,6 @@ Timestamp: ${new Date().toISOString()}
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <Clock className="w-3.5 h-3.5 text-[#FE7251]" />
             <span>Statutory Timeline Enforcement</span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 uppercase tracking-wider">Demo</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Timeline & Alerts
@@ -240,96 +233,49 @@ Timestamp: ${new Date().toISOString()}
         </div>
       </div>
 
-      {/* 2. ACCELERATION SIMULATOR SLIDER CARD */}
-      <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white border border-slate-800 shadow-sm relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      {/* 2. STATUTORY SLA MONITORING PANEL */}
+      <div className="bg-[#16060E] rounded-2xl p-6 sm:p-8 text-white border border-slate-800 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <div className="flex items-center space-x-2 text-[#FE7251] text-xs font-bold uppercase tracking-wider">
-              <Zap className="w-4 h-4" />
-              <span>Interactive Time-Lapse Simulator</span>
+              <Activity className="w-4 h-4" />
+              <span>Statutory Timeline Monitoring</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
-              Acceleration Simulator: {sliderValue}% Elapsed
+              Statutory SLA Position: {overallPct}% Elapsed
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Drag the slider to test live color thresholds and deemed approval triggers across all active departments.
+            <p className="text-xs text-slate-400 mt-0.5 max-w-2xl">
+              Live statutory timeline position across all active clearances, computed from the CAF submission date under the Maharashtra Right to Public Services Act, 2015.
             </p>
           </div>
 
-          {/* Controls: Play / Pause / Reset */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? "Pause" : "Play Timeline"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsPlaying(false);
-                setSliderValue(0);
-              }}
-              className="p-2 rounded-xl bg-[#2D1222] hover:bg-[#3D1420] text-[#FFCA7C] border border-[#FED17A]/30 transition-colors"
-              title="Reset Timeline to 0%"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Real Reactive Range Slider */}
-        <div className="space-y-4">
-          <div className="relative flex items-center">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={sliderValue}
-              onChange={(e) => {
-                setIsPlaying(false);
-                setSliderValue(Number(e.target.value));
-              }}
-              className="w-full h-3 bg-[#2D1222] rounded-lg appearance-none cursor-pointer accent-[#FE7251] focus:outline-hidden"
-            />
-          </div>
-
-          {/* Preset Buttons for Quick Jumps */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
-            <span className="text-xs text-[#C4A89C] font-semibold">Jump to Threshold:</span>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { val: 25, label: "25% (Normal Scrutiny)", color: "bg-[#2D1222] text-[#FFCA7C] border-[#FED17A]/40" },
-                { val: 80, label: "80% (Warning Threshold)", color: "bg-slate-800 text-[#FE7251] border-[#FE7251]/40" },
-                { val: 95, label: "95% (Critical Escalation)", color: "bg-rose-950 text-rose-300 border-rose-600/40" },
-                { val: 100, label: "100% (Deemed Approval)", color: "bg-emerald-600 text-white border-emerald-500" },
-              ].map((preset) => (
-                <button
-                  key={preset.val}
-                  type="button"
-                  onClick={() => {
-                    setIsPlaying(false);
-                    setSliderValue(preset.val);
-                  }}
-                  className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all cursor-pointer ${preset.color} ${
-                    sliderValue === preset.val ? "ring-2 ring-white" : "hover:brightness-125"
-                  }`}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Threshold Banner Callout */}
-        <div className={`mt-6 p-4 rounded-2xl border flex items-center justify-between ${currentGlobalStatus.lightBg}`}>
-          <div className="flex items-center space-x-3 text-xs">
+          {/* Overall SLA Status Badge */}
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${currentGlobalStatus.lightBg}`}>
             <span className={`px-2.5 py-1 rounded-full font-black text-[11px] uppercase ${currentGlobalStatus.colorClass}`}>
-              {sliderValue}% ELAPSED
+              {currentGlobalStatus.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Portal-wide progress bar */}
+        <div className="space-y-2 mt-7">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-400">Portal SLA Progress</span>
+            <span className="font-black font-mono text-base text-white">{overallPct}%</span>
+          </div>
+          <div className="w-full bg-[#2D1222] rounded-full h-3.5 overflow-hidden p-0.5 border border-[#3D1420]">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${currentGlobalStatus.barColor}`}
+              style={{ width: `${overallPct}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Threshold Status Callout */}
+        <div className={`mt-6 p-4 rounded-2xl border flex items-start justify-between gap-3 ${currentGlobalStatus.lightBg}`}>
+          <div className="flex items-start space-x-3 text-xs">
+            <span className={`px-2.5 py-1 rounded-full font-black text-[11px] uppercase ${currentGlobalStatus.colorClass}`}>
+              {overallPct}% ELAPSED
             </span>
             <div>
               <p className="font-extrabold text-sm">{currentGlobalStatus.label}</p>
@@ -337,8 +283,8 @@ Timestamp: ${new Date().toISOString()}
             </div>
           </div>
 
-          {sliderValue >= 100 && (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-600 text-white shadow-xs">
+          {overallPct >= 100 && (
+            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-600 text-white shadow-xs shrink-0">
               ⚡ Deemed Clearance Granted
             </span>
           )}
@@ -353,11 +299,11 @@ Timestamp: ${new Date().toISOString()}
               Active Statutory Clearances Breakdown
             </h2>
             <p className="text-xs text-slate-500">
-              Live tracking calculated directly from the Acceleration Simulator state
+              Live statutory tracking of every active clearance, driven by elapsed working days against each departmental SLA.
             </p>
           </div>
           <span className="text-xs font-mono font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-3 py-1 rounded-lg">
-            4 Active Departments
+            {activeApplications.length} Active Clearances
           </span>
         </div>
 
@@ -365,11 +311,8 @@ Timestamp: ${new Date().toISOString()}
           {activeApplications.map((app) => {
             const IconComp = app.icon;
 
-            // Calculate exact percentage for this item (clamped 0-100)
-            const itemPercent = Math.min(
-              100,
-              Math.max(0, sliderValue + (app.weightOffset || 0))
-            );
+            // Real percentage from the CAF submission timestamp (clamped 0-100)
+            const itemPercent = Math.round(itemPercentFor(app));
             const status = getThresholdStatus(itemPercent);
 
             // Compute days
