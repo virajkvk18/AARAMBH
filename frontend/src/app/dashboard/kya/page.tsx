@@ -477,7 +477,7 @@ export default function KYAWizardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <div className="flex items-center space-x-2">
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#9B2A48]/10 text-[#9B2A48] border border-[#9B2A48]/20">
               Statutory Rules Engine
             </span>
@@ -509,8 +509,8 @@ export default function KYAWizardPage() {
       {!showResult ? (
         <div className="bg-white rounded-2xl border border-[#F0E5E0] shadow-xs overflow-hidden">
           {/* Wizard Step Progress Bar */}
-          <div className="border-b border-[#F0E5E0] bg-[#FFFDFC] px-4 sm:px-6 py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div className="border-b border-[#F0E5E0] bg-[#FFFDFC] px-6 py-4">
+            <div className="grid grid-cols-4 gap-2 text-center text-xs">
               {[
                 { step: 1, label: "1. Line of Business", sub: "Industry Sector" },
                 { step: 2, label: "2. Location & Zonal", sub: "Taluka Category" },
@@ -532,13 +532,13 @@ export default function KYAWizardPage() {
                     {currentStep > s.step && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
                     <span>{s.label}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 hidden md:block">{s.sub}</div>
+                  <div className="text-[10px] text-slate-400 hidden sm:block">{s.sub}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="p-4 sm:p-8">
+          <div className="p-6 sm:p-8">
             {/* STEP 1: LINE OF BUSINESS */}
             {currentStep === 1 && (
               <div className="space-y-6">

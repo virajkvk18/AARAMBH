@@ -209,14 +209,18 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
             {/* Government Badging */}
-            <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-2.5 gap-y-1 px-4 sm:px-5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
+            <div className="inline-flex items-center space-x-2.5 px-5 py-1.5 rounded-full bg-[#16060E]/85 backdrop-blur-md border border-[#FED17A]/60 text-[#FFCA7C] text-xs font-black uppercase tracking-wider mb-6 shadow-xl shadow-black/50">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse" />
-              <span>{t("landing.hero_gov_badge", "GOVERNMENT OF MAHARASHTRA · SINGLE WINDOW PORTAL")}</span>
+              <span>{t("landing.hero_gov_badge", "AARAMBH • महाराष्ट्र शासन • GOVERNMENT OF MAHARASHTRA")}</span>
             </div>
 
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight text-white leading-[1.15] drop-shadow-md">
-              Single Window Clearances for Maharashtra's Industries
+              {t('hero.headline_start')}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF5E6] via-[#FFCA7C] to-[#FE7251]">
+                {t('hero.headline_highlight')}
+              </span>{" "}
+              {t('hero.headline_end')}
             </h1>
 
             {/* Supporting Content */}
@@ -268,10 +272,10 @@ export default function HomePage() {
             </form>
 
             {/* Primary CTA (Personalized Approval Discovery) */}
-            <div className="mt-8 flex w-full flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href={authHref("/dashboard/kya")}
-                className="inline-flex w-full sm:w-auto items-center justify-center space-x-2.5 px-5 sm:px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-white" />
                 <span>{t('hero.cta_find_requirements')}</span>
@@ -279,7 +283,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/track"
-                className="inline-flex w-full sm:w-auto items-center justify-center space-x-2.5 px-5 sm:px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
+                className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-colors cursor-pointer"
               >
                 <Search className="w-4 h-4 text-white" />
                 <span>{t("landing.hero_cta_track", "Track Existing Application")}</span>
@@ -287,7 +291,7 @@ export default function HomePage() {
               </Link>
             </div>
             <span className="mt-3 text-xs sm:text-sm text-slate-100 font-medium drop-shadow-xs">
-              {t("landing.hero_cta_sub", "See which licences and registrations your business needs.")}
+              {t("landing.hero_cta_sub", "Get a customized list of clearances relevant to your business.")}
             </span>
 
             {/* Popular Clearance Chips */}

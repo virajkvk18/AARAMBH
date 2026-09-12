@@ -24,22 +24,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full shrink-0 bg-white text-slate-900 border-b border-slate-200 shadow-xs">
       {/* Main Navigation Bar */}
-      <div className="w-full px-3 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center justify-between h-16 sm:h-18">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Left Brand Identity: Logo + AARAMBH + Single Window System */}
-          <Link href="/" className="flex min-w-0 items-center space-x-2 sm:space-x-3 group focus:outline-hidden">
-            <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0" />
+          <Link href="/" className="flex items-center space-x-3 group focus:outline-hidden">
+            <Image src="/aarambh-logo-new.png" alt="AARAMBH Logo" width={40} height={40} className="w-10 h-10 object-contain" />
 
-            <div className="flex min-w-0 flex-col">
-              <div className="flex min-w-0 items-center space-x-2">
-                <span className="truncate text-lg sm:text-xl font-bold tracking-tight text-slate-900 font-sans">
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
                   AARAMBH
                 </span>
-                <span className="hidden sm:inline text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-[#FE7251] border border-orange-200 uppercase tracking-wider">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-[#FE7251] border border-orange-200 uppercase tracking-wider">
                   {t("header.sw_badge", "Single Window")}
                 </span>
               </div>
-              <span className="hidden sm:block text-[11px] font-medium text-slate-500 tracking-normal">
+              <span className="text-[11px] font-medium text-slate-500 tracking-normal">
                 {t("header.sub_tagline", "Industrial Facilitation • Govt. of Maharashtra")}
               </span>
             </div>
@@ -114,20 +114,19 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Controls */}
-          <div className="flex shrink-0 sm:hidden items-center space-x-1">
+          <div className="flex sm:hidden items-center space-x-2">
             <NotificationBell />
             <Link
               href={authHref("/dashboard")}
-              className="min-h-10 px-2.5 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5"
-              title={t("my_business", "MY BUSINESS")}
+              className="px-3 py-1.5 rounded-lg bg-[#FE7251] text-white text-xs font-semibold flex items-center gap-1.5"
             >
               <Briefcase className="w-3.5 h-3.5" />
-              <span className="hidden min-[375px]:inline">{t("my_business", "MY BUSINESS")}</span>
+              <span>{t("my_business", "MY BUSINESS")}</span>
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="min-h-10 min-w-10 p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-slate-700" />}
