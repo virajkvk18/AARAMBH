@@ -19,6 +19,7 @@ import {
   Eye,
   EyeOff,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { isBrowserSupabaseConfigured } from "@/lib/supabase";
@@ -41,6 +42,7 @@ function SignupForm() {
   const {
     user,
     signUpApplicant,
+    signUpOfficer,
     signUpWithEmailOtp,
     checkEmailExists,
     resendSignupOtp,
@@ -58,6 +60,9 @@ function SignupForm() {
   const [stepError, setStepError] = useState<string | null>(null);
   const [emailOptNotice, setEmailOptNotice] = useState<string | null>(null);
   const [signupMethod, setSignupMethod] = useState<"password" | "otp">("otp");
+  const [selectedRole, setSelectedRole] = useState<"APPLICANT" | "OFFICER">(
+    searchParams.get("role") === "OFFICER" ? "OFFICER" : "APPLICANT"
+  );
 
   // Form State
   const [applicantName, setApplicantName] = useState("");
@@ -88,6 +93,22 @@ function SignupForm() {
   const [panVerified, setPanVerified] = useState(false);
   const [panLoading, setPanLoading] = useState(false);
   const [panModalOpen, setPanModalOpen] = useState(false);
+
+  // Officer Registration State
+  const [officerName, setOfficerName] = useState("");
+  const [officerEmail, setOfficerEmail] = useState("");
+  const [officerMobile, setOfficerMobile] = useState("");
+  const [officerPassword, setOfficerPassword] = useState("");
+  const [officerDept, setOfficerDept] = useState("MIDC Industrial Clearances");
+  const [officerSubmitting, setOfficerSubmitting] = useState(false);
+  const [officerStatus, setOfficerStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const OFFICER_DEPARTMENTS = [
+    { value: "MIDC Industrial Clearances", label: "MIDC (Land & Building Plan)" },
+    { value: "MPCB Environmental Cell", label: "MPCB (Pollution Control Board)" },
+    { value: "Maharashtra Fire Directorate", label: "State Fire Services" },
+    { value: "Directorate of Industrial Safety (DISH)", label: "DISH (Factory Licensing)" },
+  ];
 
   // Step 4 State
   const [addressLine1, setAddressLine1] = useState("");
@@ -322,6 +343,55 @@ function SignupForm() {
     syncStoreAndRedirect();
   };
 
+  // Register a Government Officer account (single-step form, no enterprise wizard)
+  const handleOfficerRegistration = async () => {
+    setOfficerStatus(null);
+
+    if (officerName.trim().length < 3) {
+      setOfficerStatus({ type: "error", message: "Please enter the officer's full name." });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(officerEmail.trim().toLowerCase())) {
+      setOfficerStatus({ type: "error", message: "Please enter a valid official email address." });
+      return;
+    }
+    if (officerMobile.replace(/\D/g, "").length < 10) {
+      setOfficerStatus({ type: "error", message: "Please enter a valid 10-digit mobile number." });
+      return;
+    }
+    if (officerPassword.length < 6) {
+      setOfficerStatus({ type: "error", message: "Password must be at least 6 characters." });
+      return;
+    }
+
+    setOfficerSubmitting(true);
+    const result = await signUpOfficer(officerEmail, officerPassword, {
+      name: officerName,
+      phone: officerMobile,
+      department: officerDept,
+    });
+    setOfficerSubmitting(false);
+
+    if (result.error) {
+      setOfficerStatus({
+        type: "error",
+        message:
+          result.error === "Account found. Please sign in instead."
+            ? "An account with this email already exists. Please sign in as an Officer."
+            : result.error,
+      });
+      return;
+    }
+
+    setOfficerStatus({
+      type: "success",
+      message: result.needsConfirmation
+        ? "Officer account created successfully. A confirmation link was sent to your email. After confirming, sign in as an Officer."
+        : "Officer account created successfully. Please sign in as an Officer.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
       {/* Top Header Brand & Sign In link */}
@@ -339,7 +409,7 @@ function SignupForm() {
         </Link>
 
         <Link
-          href="/login"
+          href={selectedRole === "OFFICER" ? "/login?role=OFFICER" : "/login"}
           className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-medium transition-colors"
         >
           {t("auth.sign_in_instead", "Sign In Instead")}
@@ -354,30 +424,62 @@ function SignupForm() {
             <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
               {t("auth.signup_title", "Setup your profile")}
             </span>
-            <span className="text-xs text-slate-500">
-              • {t("auth.step", "Step")} {currentStep} {t("auth.of", "of")} 5
-            </span>
+            {selectedRole === "APPLICANT" && (
+              <span className="text-xs text-slate-500">
+                • {t("auth.step", "Step")} {currentStep} {t("auth.of", "of")} 5
+              </span>
+            )}
           </div>
 
-          {/* Progress Pills */}
-          <div className="flex items-center space-x-2">
-            {[1, 2, 3, 4, 5].map((stepNum) => (
-              <button
-                key={stepNum}
-                type="button"
-                onClick={() => goToStep(stepNum)}
-                className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer ${
-                  currentStep === stepNum
-                    ? "bg-[#FE7251] text-white shadow-xs"
-                    : currentStep > stepNum
-                    ? "bg-slate-200 text-slate-800"
-                    : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                }`}
-                title={`Go to Step ${stepNum}`}
-              >
-                {currentStep > stepNum ? "✓" : stepNum}
-              </button>
-            ))}
+          {/* Progress Pills (Investor flow) */}
+          {selectedRole === "APPLICANT" && (
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4, 5].map((stepNum) => (
+                <button
+                  key={stepNum}
+                  type="button"
+                  onClick={() => goToStep(stepNum)}
+                  className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer ${
+                    currentStep === stepNum
+                      ? "bg-[#FE7251] text-white shadow-xs"
+                      : currentStep > stepNum
+                      ? "bg-slate-200 text-slate-800"
+                      : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                  }`}
+                  title={`Go to Step ${stepNum}`}
+                >
+                  {currentStep > stepNum ? "✓" : stepNum}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Role Toggle */}
+        <div className="px-6 sm:px-8 mt-4">
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs w-fit">
+            <button
+              type="button"
+              onClick={() => setSelectedRole("APPLICANT")}
+              className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                selectedRole === "APPLICANT"
+                  ? "bg-[#FE7251] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Investor / Entrepreneur
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedRole("OFFICER")}
+              className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                selectedRole === "OFFICER"
+                  ? "bg-[#FE7251] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Government Officer
+            </button>
           </div>
         </div>
 
@@ -428,6 +530,9 @@ function SignupForm() {
           </div>
         )}
 
+        {/* Investor Flow: STEP 1-5 */}
+        {selectedRole === "APPLICANT" && (
+          <>
         {/* STEP 1: BASIC CREDENTIALS */}
         {currentStep === 1 && (
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
@@ -1027,6 +1132,146 @@ function SignupForm() {
                   ◀ {t("auth.back", "Go Back")}
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+          </>
+        )}
+
+        {/* Officer Registration Flow */}
+        {selectedRole === "OFFICER" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px]">
+            {/* Left Info Panel */}
+            <div className="lg:col-span-5 bg-slate-50/60 p-6 sm:p-8 border-r border-slate-200 flex flex-col justify-between">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FE7251] uppercase tracking-wider block mb-1">
+                  <ShieldCheck className="w-4 h-4" /> Government Officer Registration
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                  Create Officer Account
+                </h2>
+                <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                  Register with your official department email to access the Officer Review Console for scrutiny, inspections, and SLA tracking.
+                </p>
+              </div>
+
+              <div className="text-[11px] text-slate-500 mt-6">
+                Already a verified officer?{" "}
+                <Link href="/login?role=OFFICER" className="text-[#FE7251] font-semibold hover:underline">
+                  Sign In as Officer
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Form Panel */}
+            <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+              <div className="space-y-4 max-w-lg">
+                <h3 className="text-base font-semibold text-slate-900">
+                  Officer Contact Information
+                </h3>
+
+                {officerStatus && officerStatus.type === "success" && (
+                  <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="font-medium">{officerStatus.message}</span>
+                  </div>
+                )}
+                {officerStatus && officerStatus.type === "error" && (
+                  <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    <span className="font-medium">{officerStatus.message}</span>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <Label htmlFor="officer-name">Full Name *</Label>
+                  <Input
+                    id="officer-name"
+                    type="text"
+                    value={officerName}
+                    onChange={(e) => setOfficerName(e.target.value)}
+                    placeholder="e.g. Sunil Deshmukh"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="officer-email">Official Email *</Label>
+                    <Input
+                      id="officer-email"
+                      type="email"
+                      value={officerEmail}
+                      onChange={(e) => setOfficerEmail(e.target.value)}
+                      placeholder="officer@maharashtra.gov.in"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="officer-mobile">Mobile Number *</Label>
+                    <Input
+                      id="officer-mobile"
+                      type="tel"
+                      value={officerMobile}
+                      onChange={(e) => setOfficerMobile(e.target.value)}
+                      placeholder="9823012345"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="officer-dept">Department Authority *</Label>
+                  <select
+                    id="officer-dept"
+                    value={officerDept}
+                    onChange={(e) => setOfficerDept(e.target.value)}
+                    className="w-full bg-white text-xs font-medium text-slate-800 p-2 rounded-md border border-slate-300 focus:outline-hidden focus:border-[#FE7251]"
+                  >
+                    {OFFICER_DEPARTMENTS.map((d) => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="officer-password">Set Portal Password *</Label>
+                  <div className="relative">
+                    <Input
+                      id="officer-password"
+                      type={showPassword ? "text" : "password"}
+                      value={officerPassword}
+                      onChange={(e) => setOfficerPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      tabIndex={-1}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {officerStatus && officerStatus.type === "success" && (
+                  <Link
+                    href="/login?role=OFFICER"
+                    className="inline-flex items-center w-full justify-center px-4 py-2.5 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white font-bold text-xs transition-colors shadow-2xs cursor-pointer"
+                  >
+                    Continue to Sign In as Officer
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                )}
+              </div>
+
+              {(!officerStatus || officerStatus.type !== "success") && (
+                <div className="pt-6 flex justify-end border-t border-slate-100 mt-6">
+                  <Button onClick={handleOfficerRegistration} disabled={officerSubmitting} size="lg">
+                    {officerSubmitting ? "Creating Officer Account..." : "Create Officer Account"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

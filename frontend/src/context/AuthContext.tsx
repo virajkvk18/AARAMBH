@@ -30,13 +30,14 @@ export type Profile = Omit<User, "id" | "email" | "role">;
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<string | null>;
+  signIn: (email: string, password: string, role?: "APPLICANT" | "OFFICER", department?: string) => Promise<{ error: string | null; role: User["role"] | null }>;
   signInWithEmailOtp: (email: string) => Promise<string | null>;
   signUpWithEmailOtp: (email: string) => Promise<string | null>;
   checkEmailExists: (email: string) => Promise<boolean>;
   resendSignupOtp: (email: string) => Promise<string | null>;
   verifyEmailOtp: (email: string, token: string, type?: "email" | "signup") => Promise<string | null>;
   signUpApplicant: (email: string, password: string, profile: Profile) => Promise<{ error: string | null; needsConfirmation: boolean }>;
+  signUpOfficer: (email: string, password: string, profile: { name: string; phone?: string; department?: string }) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   completeSignup: (email: string, password: string, profile: Profile) => Promise<string | null>;
   resetPassword: (email: string) => Promise<string | null>;
   updatePassword: (password: string) => Promise<string | null>;
@@ -209,16 +210,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchUserData, refreshProfile]);
 
-  // Sign In with email & password
+  // Sign In with email & password (returns the authenticated user's role)
   const signIn = async (
     email: string,
     password: string,
     _expectedRole?: "APPLICANT" | "OFFICER",
     _department?: string
-  ): Promise<string | null> => {
+  ): Promise<{ error: string | null; role: User["role"] | null }> => {
     const s = getBrowserSupabaseClient();
     if (!s) {
-      return "Supabase client is not configured. Check environment configuration.";
+      return { error: "Supabase client is not configured. Check environment configuration.", role: null };
     }
 
     const { data: authData, error } = await s.auth.signInWithPassword({
@@ -227,18 +228,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
-      return error.message;
+      return { error: error.message, role: null };
     }
 
     if (authData.user) {
       const appUser = await fetchUserData(authData.user);
       setUser(appUser);
       useEnterpriseStore.getState().syncWithAuthUser(appUser);
-    } else {
-      await refreshProfile();
+      return { error: null, role: appUser.role };
     }
 
-    return null;
+    await refreshProfile();
+    return { error: null, role: null };
   };
 
   // Sign in with Email OTP (Existing User Login)
@@ -515,6 +516,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Sign up new officer using purely Supabase Auth
+  const signUpOfficer = async (
+    email: string,
+    password: string,
+    profile: { name: string; phone?: string; department?: string }
+  ): Promise<{ error: string | null; needsConfirmation: boolean }> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const department = profile.department || "MIDC Industrial Clearances";
+
+    // Check if email already exists before attempting signup
+    const alreadyRegistered = await checkEmailExists(normalizedEmail);
+    if (alreadyRegistered) {
+      return { error: "Account found. Please sign in instead.", needsConfirmation: false };
+    }
+
+    const s = getBrowserSupabaseClient();
+    if (!s) {
+      return { error: "Supabase client is not configured.", needsConfirmation: false };
+    }
+
+    try {
+      const emailRedirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback`
+          : undefined;
+
+      const { data, error } = await s.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          emailRedirectTo,
+          data: {
+            full_name: profile.name,
+            name: profile.name,
+            role: "OFFICER",
+            phone: profile.phone || null,
+            department,
+          },
+        },
+      });
+
+      if (error) {
+        const errMsg = error.message.toLowerCase();
+        if (
+          errMsg.includes("already registered") ||
+          errMsg.includes("already exists") ||
+          errMsg.includes("user_already_exists") ||
+          errMsg.includes("account with this email")
+        ) {
+          return { error: "Account found. Please sign in instead.", needsConfirmation: false };
+        }
+        return { error: error.message, needsConfirmation: false };
+      }
+
+      // Existing user with confirmation on returns an empty identities array
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        return { error: "Account found. Please sign in instead.", needsConfirmation: false };
+      }
+
+      if (data.session) {
+        return { error: null, needsConfirmation: false };
+      }
+
+      if (data.user && !data.session) {
+        return { error: null, needsConfirmation: true };
+      }
+
+      return { error: null, needsConfirmation: false };
+    } catch (e: any) {
+      return {
+        error: e.message || "An unexpected error occurred during officer registration.",
+        needsConfirmation: false,
+      };
+    }
+  };
+
   // Complete signup after OTP verification
   const completeSignup = async (
     email: string,
@@ -687,6 +764,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           resendSignupOtp,
           verifyEmailOtp,
           signUpApplicant,
+          signUpOfficer,
           completeSignup,
           resetPassword,
           updatePassword,

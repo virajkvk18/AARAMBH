@@ -11,7 +11,7 @@ import {
   Search,
   Info,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, type User } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
@@ -69,23 +69,30 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  const getRedirectDestination = () => {
+  const getRedirectDestination = (authenticatedRole?: User["role"] | null) => {
     if (redirectParam && redirectParam.startsWith("/")) {
       return redirectParam;
     }
-    return activeRole === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard";
+    return (authenticatedRole ?? activeRole) === "OFFICER"
+      ? "/dashboard/officer-workspace"
+      : "/dashboard";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    const error = await signIn(email, password, activeRole, activeRole === "OFFICER" ? officerDept : undefined);
-    if (error) {
-      setAuthError(error);
+    const result = await signIn(
+      email,
+      password,
+      activeRole,
+      activeRole === "OFFICER" ? officerDept : undefined
+    );
+    if (result.error) {
+      setAuthError(result.error);
       return;
     }
-    router.replace(getRedirectDestination());
+    router.replace(getRedirectDestination(result.role));
   };
 
   const handleForgotPassword = () => {
@@ -289,8 +296,13 @@ function LoginForm() {
         <CardFooter className="pt-3 pb-4 border-t border-slate-100 flex justify-center">
           <span className="text-xs text-slate-600">
             {t("auth.no_account", "Don't have an account?")}{" "}
-            <Link href="/signup" className="font-semibold text-[#FE7251] hover:underline ml-1">
-              {t("auth.signup_now", "Register Enterprise")}
+            <Link
+              href={activeRole === "OFFICER" ? "/signup?role=OFFICER" : "/signup"}
+              className="font-semibold text-[#FE7251] hover:underline ml-1"
+            >
+              {activeRole === "OFFICER"
+                ? "Register as Officer"
+                : t("auth.signup_now", "Register Enterprise")}
             </Link>
           </span>
         </CardFooter>
