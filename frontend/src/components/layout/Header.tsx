@@ -155,7 +155,7 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-xs font-medium text-slate-600 hover:text-slate-900"
           >
-            {t("header.unified_caf", "Unified Common Application (CAF)")}
+            {t("header.unified_caf", "Common Application Form")}
           </Link>
           <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
             {!user ? (

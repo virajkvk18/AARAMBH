@@ -277,14 +277,14 @@ export default function UnifiedCAFPage() {
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#FFF2DF] hover:bg-[#FFE3B8] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-all cursor-pointer shadow-xs"
           >
             <RefreshCw className="w-4 h-4 text-[#FE7251]" />
-            <span>Sync from Vault & KYA</span>
+            <span>Sync from Vault & Approval Assessment</span>
           </button>
 
           <Link
             href="/dashboard/dag"
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#16060E] hover:bg-[#2B0E1D] text-white text-xs font-bold transition-all shrink-0"
           >
-            <span>View Live DAG</span>
+            <span>View Approval Workflow</span>
             <ArrowRight className="w-4 h-4 text-[#FE7251]" />
           </Link>
         </div>
@@ -300,7 +300,7 @@ export default function UnifiedCAFPage() {
       {/* 4-STEP WIZARD PROGRESS BAR */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { id: "master", label: "1. Master CAF Dossier", sub: "Core 70% Shared Data" },
+          { id: "master", label: "1. Common Application Form Dossier", sub: "Core 70% Shared Data" },
           { id: "deltas", label: "2. Department Deltas", sub: "Specific Agency Questions" },
           { id: "vault_attach", label: "3. Central Vault Attachments", sub: "Auto-Attached Proofs" },
           { id: "gateway_dispatch", label: "4. Gateway Dispatch", sub: "Parallel Ministry Routing" },
@@ -350,7 +350,7 @@ export default function UnifiedCAFPage() {
               </div>
               <div>
                 <h2 className="text-base font-bold text-[#16060E]">
-                  Normalized Master CAF Payload
+                  Normalized Application Form Data
                 </h2>
                 <p className="text-xs text-slate-500">
                   Shared across MPCB, MahaFire, MIDC, DISH, and DPIIT. Edit once to cascade to all department applications.

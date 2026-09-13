@@ -135,10 +135,10 @@ export default function DelayAnalyticsPage() {
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold uppercase tracking-wider mb-2">
             <TrendingDown className="w-3.5 h-3.5 text-[#FE7251]" />
-            <span>Bottleneck Intelligence &amp; Delay Analytics</span>
+            <span>Approval Delays &amp; Bottlenecks</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Delay Analytics
+            Approval Delays
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Live SLA health of every statutory approval, automated delay diagnosis, and HoD escalation triggers under RTS Act 2015.
@@ -181,7 +181,7 @@ export default function DelayAnalyticsPage() {
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#F0E5E0] shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Within SLA</p>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">On Schedule</p>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-black text-emerald-700 mt-1">{withinRows.length}</p>
@@ -197,7 +197,7 @@ export default function DelayAnalyticsPage() {
         </div>
         <div className="bg-white rounded-2xl p-4 border border-[#F0E5E0] shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Avg SLA Progress</p>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Average Timeline Progress</p>
             <TimerReset className="w-4 h-4 text-[#9B2A48]" />
           </div>
           <p className="text-2xl font-black text-[#9B2A48] mt-1">{avgProgress}%</p>
@@ -213,7 +213,7 @@ export default function DelayAnalyticsPage() {
           <div className="flex items-center space-x-2.5">
             <Clock className="w-4.5 h-4.5 text-[#FE7251]" />
             <div>
-              <h2 className="text-sm font-bold text-[#16060E]">Approval Timeline &amp; SLA Health</h2>
+              <h2 className="text-sm font-bold text-[#16060E]">Approval Timeline &amp; Status</h2>
               <p className="text-[11px] text-slate-500">
                 Days elapsed vs statutory limit — {elapsedDays >= 0 ? `${elapsedDays.toFixed(1)} days` : ""} since CAF submission{applicationRef ? ` (${applicationRef})` : ""}
               </p>

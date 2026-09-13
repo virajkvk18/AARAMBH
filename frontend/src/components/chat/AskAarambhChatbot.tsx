@@ -213,7 +213,7 @@ const LANDING_SUGGESTIONS_MAP: Record<string, string[]> = {
     "What is AARAMBH Single Window Portal?",
     "What are the benefits under PSI 2019?",
     "How does Maharashtra EV Policy 2021 work?",
-    "What is Deemed Approval under RTS Act 2015?",
+    "How does Deemed Approval work under the RTS Act 2015?",
     "Explain MPCB CTE vs CTO approvals",
     "How does the Investor Grievance mechanism work?",
   ],

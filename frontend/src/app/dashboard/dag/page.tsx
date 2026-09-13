@@ -339,7 +339,7 @@ export default function DAGWorkflowPage() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight">
-            Approval Tracker
+            Approval Workflow
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             Live interactive dependency graph orchestrating multi-department industrial clearances. State is persisted via REST endpoints and broadcast across sessions in real-time.
@@ -360,7 +360,7 @@ export default function DAGWorkflowPage() {
             href="/dashboard/sla"
             className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-medium transition-colors"
           >
-            <span>Open SLA Tracker</span>
+            <span>View Approval Timelines</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -406,17 +406,17 @@ export default function DAGWorkflowPage() {
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[#2D1222] pb-4 mb-8 text-xs">
           <div className="flex items-center space-x-2 text-white font-bold">
             <Sparkles className="w-4 h-4 text-[#FFCA7C]" />
-            <span>Interactive Clearance Orchestration DAG</span>
+            <span>Interactive Approval Workflow</span>
           </div>
 
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1.5 text-slate-400">
               <span className="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-              <span>Locked</span>
+              <span>Waiting</span>
             </span>
             <span className="flex items-center space-x-1.5 text-[#FFCA7C]">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FE7251] animate-pulse"></span>
-              <span>Active (Click Approve)</span>
+              <span>In Progress (Click Approve)</span>
             </span>
             <span className="flex items-center space-x-1.5 text-[#FE7251]">
               <span className="w-2.5 h-2.5 rounded-full bg-[#9B2A48] border border-[#FED17A]"></span>
@@ -506,7 +506,7 @@ export default function DAGWorkflowPage() {
       <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
         <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
           <Clock className="w-3.5 h-3.5 text-[#FE7251]" />
-          <span>Live DAG State Transitions & Event Log</span>
+          <span>Live Workflow Updates & Event Log</span>
         </h3>
 
         <div className="max-h-48 overflow-y-auto space-y-1.5 pr-2 font-mono text-xs">
@@ -577,7 +577,7 @@ function NodeCard({
                 : "bg-slate-800 text-slate-400"
             }`}
           >
-            {isApproved ? "Approved ✓" : isActive ? "In Review" : "Locked 🔒"}
+            {isApproved ? "Approved ✓" : isActive ? "In Progress" : "Waiting 🔒"}
           </span>
         </div>
 

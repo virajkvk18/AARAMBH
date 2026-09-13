@@ -227,7 +227,7 @@ Timestamp: ${new Date().toISOString()}
             href="/dashboard/dag"
             className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
           >
-            <span>Back to DAG Workflow</span>
+            <span>Back to Approval Workflow</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -260,7 +260,7 @@ Timestamp: ${new Date().toISOString()}
         {/* Portal-wide progress bar */}
         <div className="space-y-2 mt-7">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-slate-400">Portal SLA Progress</span>
+            <span className="font-semibold text-slate-400">Overall Timeline Progress</span>
             <span className="font-black font-mono text-base text-white">{overallPct}%</span>
           </div>
           <div className="w-full bg-[#2D1222] rounded-full h-3.5 overflow-hidden p-0.5 border border-[#3D1420]">
@@ -378,7 +378,7 @@ Timestamp: ${new Date().toISOString()}
                       </span>
                     ) : (
                       <span>
-                        SLA Countdown:{" "}
+                        Official Timeline Countdown:{" "}
                         <strong className={status.textColor}>
                           {daysRemaining} Working Days Remaining
                         </strong>

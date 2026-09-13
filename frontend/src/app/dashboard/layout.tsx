@@ -43,13 +43,13 @@ export default function DashboardLayout({
 
   const pageTitles: Record<string, string> = {
     "/dashboard": "Overview | AARAMBH",
-    "/dashboard/kya": "Know Your Approvals | AARAMBH",
+    "/dashboard/kya": "Find My Approvals | AARAMBH",
     "/dashboard/caf": "Application Form | AARAMBH",
     "/dashboard/vault": "Document Vault | AARAMBH",
     "/dashboard/prevalidation": "Check My Application | AARAMBH",
-    "/dashboard/dag": "Approval Tracker | AARAMBH",
-    "/dashboard/sla": "Timeline & Alerts | AARAMBH",
-    "/dashboard/analytics": "Delay Analytics | AARAMBH",
+    "/dashboard/dag": "Approval Workflow | AARAMBH",
+    "/dashboard/sla": "Track My Approvals | AARAMBH",
+    "/dashboard/analytics": "Approval Delays | AARAMBH",
     "/dashboard/inspections": "Inspections | AARAMBH",
     "/dashboard/renewals": "Compliance & Renewals | AARAMBH",
     "/dashboard/incentives": "Incentives & Schemes | AARAMBH",
@@ -103,7 +103,7 @@ export default function DashboardLayout({
     {
       heading: "Application",
       items: [
-        { label: "Know Your Approvals", href: "/dashboard/kya", icon: Compass },
+        { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
         { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
         { label: "Incentives & Schemes", href: "/dashboard/incentives", icon: BadgePercent },
       ],
@@ -116,9 +116,9 @@ export default function DashboardLayout({
       heading: "Tracking & Compliance",
       items: [
         { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-        { label: "Approval Tracker", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-        { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-        { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
+        { label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { label: "Track My Approvals", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Approval Delays", href: "/dashboard/analytics", icon: TrendingDown },
         { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
         { label: "Compliance & Renewals", href: "/dashboard/renewals", icon: RotateCcw },
       ],
@@ -155,15 +155,15 @@ export default function DashboardLayout({
     {
       heading: "Approvals",
       items: [
-        { id: "track-approvals", label: "Approval Tracker", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
+        { id: "track-approvals", label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
         { label: "Department View", href: "/dashboard/department-approvals", icon: Landmark },
       ],
     },
     {
       heading: "Monitoring",
       items: [
-        { label: "Timeline & Alerts", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-        { label: "Delay Analytics", href: "/dashboard/analytics", icon: TrendingDown },
+        { label: "Track My Approvals", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
+        { label: "Approval Delays", href: "/dashboard/analytics", icon: TrendingDown },
       ],
     },
     {

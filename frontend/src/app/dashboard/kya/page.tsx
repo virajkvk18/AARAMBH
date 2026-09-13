@@ -482,7 +482,7 @@ export default function KYAWizardPage() {
               Statutory Rules Engine
             </span>
             <span className="text-xs text-slate-500 font-medium">
-              Know Your Approvals (KYA) & Policy Subsidies
+              Find My Approvals & Policy Subsidies
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#16060E] tracking-tight mt-1">
@@ -974,7 +974,7 @@ export default function KYAWizardPage() {
                   className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
                 >
                   <Layers className="w-3.5 h-3.5 text-[#9B2A48]" />
-                  <span>DAG Pipeline</span>
+                  <span>Approval Workflow</span>
                 </Link>
 
                 <Link
@@ -982,7 +982,7 @@ export default function KYAWizardPage() {
                   className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-[#FE7251] hover:bg-[#E85E3E] text-white text-xs font-bold shadow-xs transition-colors"
                 >
                   <FileText className="w-4 h-4" />
-                  <span>Fill Unified CAF (One-Form)</span>
+                  <span>Fill Common Application Form</span>
                 </Link>
               </div>
             </div>

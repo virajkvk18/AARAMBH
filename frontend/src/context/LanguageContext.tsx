@@ -23,7 +23,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.approvals": "Approvals & Clearances",
     "nav.schemes": "Subsidies & PSI",
     "nav.sectors": "Sectors",
-    "nav.sla_tracker": "SLA Tracker",
+    "nav.sla_tracker": "Track My Approvals",
     "nav.portal_badge": "MH-SWS 2.0",
     "nav.portal_sub": "Government of Maharashtra Single Window Portal",
     "nav.investor_login": "Investor Login",
@@ -99,10 +99,10 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Dashboard Layout & Sidebar
     "dash.overview": "Control Center",
-    "dash.kya": "KYA Wizard",
+    "dash.kya": "Find My Approvals",
     "dash.vault": "Document Vault",
-    "dash.dag": "DAG Workflow",
-    "dash.sla": "SLA Tracker",
+    "dash.dag": "Approval Workflow",
+    "dash.sla": "Track My Approvals",
     "dash.prevalidation": "Pre-Validation",
     "dash.grievances": "Grievance Desk",
     "dash.officer": "Officer Workspace",
@@ -132,7 +132,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dash.btn_action": "Open Workflow",
 
     // KYA Page
-    "kya.title": "Know Your Approvals (KYA) Wizard",
+    "kya.title": "Find My Approvals",
     "kya.sub": "Dynamic rule-based statutory clearance and subsidy evaluation for Maharashtra industries.",
     "kya.step1": "Sector Selection",
     "kya.step2": "Location & Zone",
@@ -153,7 +153,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "vault.extracted_title": "Extracted Payload Data",
 
     // DAG Page
-    "dag.title": "Directed Acyclic Graph (DAG) Workflow",
+    "dag.title": "Approval Workflow",
     "dag.sub": "Live interactive dependency graph orchestrating multi-department industrial clearances.",
     "dag.reset": "Reset Simulation",
     "dag.stage1": "STAGE 1: ROOT DEPENDENCY",
@@ -164,7 +164,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dag.passed": "Passed",
 
     // SLA Page
-    "sla.title": "SLA Tracker & Deemed Approval Simulator",
+    "sla.title": "Track My Approvals",
     "sla.sub": "Maharashtra Right to Public Services Act guarantees time-bound clearances.",
     "sla.simulator": "Interactive Time-Lapse Simulator",
     "sla.pause": "Pause Simulation",
@@ -460,7 +460,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "landing.platform_f3_link": "Document Vault",
     "landing.platform_f4_title": "4. Application Tracking",
     "landing.platform_f4_desc": "Track status, statutory SLA countdowns, and desk reviews with statutory deemed approval enforcement under the Maharashtra Right to Services Act.",
-    "landing.platform_f4_link": "SLA Tracker",
+    "landing.platform_f4_link": "Track My Approvals",
     "landing.platform_f5_title": "5. Incentives & Schemes",
     "landing.platform_f5_desc": "Discover eligible financial incentives, electricity duty waivers, stamp duty exemptions, and capital subsidies under Maharashtra Industrial Policy.",
     "landing.platform_f5_link": "View Schemes",
@@ -648,7 +648,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.approvals": "परवाने व मंजुऱ्या",
     "nav.schemes": "अनुदान व PSI योजना",
     "nav.sectors": "उद्योग क्षेत्र",
-    "nav.sla_tracker": "SLA ट्रॅकर",
+    "nav.sla_tracker": "माझ्या परवानग्या ट्रॅक करा",
     "nav.portal_badge": "MH-SWS २.०",
     "nav.portal_sub": "महाराष्ट्र शासन एक खिडकी पोर्टल",
     "nav.investor_login": "उद्योजक लॉगिन",
@@ -723,10 +723,10 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Dashboard Layout & Sidebar
     "dash.overview": "नियंत्रण केंद्र",
-    "dash.kya": "KYA विझार्ड",
+    "dash.kya": "माझ्या परवानग्या शोधा",
     "dash.vault": "कागदपत्र व्हॉल्ट",
-    "dash.dag": "DAG कार्यप्रवाह",
-    "dash.sla": "SLA ट्रॅकर",
+    "dash.dag": "मंजुरी कार्यप्रवाह",
+    "dash.sla": "माझ्या परवानग्या ट्रॅक करा",
     "dash.prevalidation": "पूर्व-पडताळणी",
     "dash.grievances": "तक्रार निवारण",
     "dash.officer": "अधिकारी कार्यक्षेत्र",
@@ -756,7 +756,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dash.btn_action": "कार्यप्रवाह उघडा",
 
     // KYA Page
-    "kya.title": "परवानग्या जाणून घ्या (KYA) विझार्ड",
+    "kya.title": "माझ्या परवानग्या शोधा",
     "kya.sub": "महाराष्ट्रातील उद्योगांसाठी नियमांवर आधारित परवाने व सबसिडी मूल्यांकन.",
     "kya.step1": "उद्योग क्षेत्र निवड",
     "kya.step2": "स्थान आणि MIDC क्षेत्र",
@@ -777,7 +777,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "vault.extracted_title": "संकलित माहिती",
 
     // DAG Page
-    "dag.title": "Directed Acyclic Graph (DAG) कार्यप्रवाह",
+    "dag.title": "मंजुरी कार्यप्रवाह",
     "dag.sub": "विविध विभागांच्या परवानग्यांचे थेट परस्परसंवादी समांतर जाळे.",
     "dag.reset": "सिम्युलेशन रीसेट करा",
     "dag.stage1": "पायरी १: मूळ पूर्वअट",
@@ -788,7 +788,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dag.passed": "मंजूर झाले",
 
     // SLA Page
-    "sla.title": "SLA ट्रॅकर आणि मानिव मंजुरी सिम्युलेटर",
+    "sla.title": "माझ्या परवानग्या ट्रॅक करा",
     "sla.sub": "महाराष्ट्र लोकसेवा हक्क अधिनियमांतर्गत वेळेत परवान्यांची कायदेशीर हमी.",
     "sla.simulator": "परस्परसंवादी टाइम-लॅप्स सिम्युलेटर",
     "sla.pause": "सिम्युलेशन थांबवा",
@@ -1084,7 +1084,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "landing.platform_f3_link": "लस्तेवेवहिबार",
     "landing.platform_f4_title": "4. अर्ज चालना",
     "landing.platform_f4_desc": "स्थिती, वैधानिक SLA ओलटाउंड आणि डेस्क समीक्षा महाराष्ट्र विहा सेवा अधिनियम अंतर्गत वैधानिक निर्णय अनुमोदन बरोबर ट्रॅक करा.",
-    "landing.platform_f4_link": "SLA ट्रॅकर",
+    "landing.platform_f4_link": "माझ्या परवानग्या ट्रॅक करा",
     "landing.platform_f5_title": "5. प्रोत्साहन व योजना",
     "landing.platform_f5_desc": "महाराष्ट्र औद्योगिक धोरण अंतर्गत पात्र आर्थिक प्रोत्साहन, वीज दर माफ, स्टॅम्प ड्यूटी माफी आणि मूल्य अनुदान शोधा.",
     "landing.platform_f5_link": "योजना पहा",
@@ -1272,7 +1272,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.approvals": "अनुमतियां एवं स्वीकृतियां",
     "nav.schemes": "सब्सिडी एवं PSI योजनाएं",
     "nav.sectors": "उद्योग क्षेत्र",
-    "nav.sla_tracker": "SLA ट्रैकर",
+    "nav.sla_tracker": "मेरी स्वीकृतियां ट्रैक करें",
     "nav.portal_badge": "MH-SWS 2.0",
     "nav.portal_sub": "महाराष्ट्र सरकार सिंगल विंडो पोर्टल",
     "nav.investor_login": "निवेशक लॉगिन",
@@ -1347,10 +1347,10 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Dashboard Layout & Sidebar
     "dash.overview": "नियंत्रण केंद्र",
-    "dash.kya": "KYA विज़ार्ड",
+    "dash.kya": "मेरी स्वीकृतियां खोजें",
     "dash.vault": "दस्तावेज़ वॉल्ट",
-    "dash.dag": "DAG वर्कफ़्लो",
-    "dash.sla": "SLA ट्रैकर",
+    "dash.dag": "स्वीकृति वर्कफ़्लो",
+    "dash.sla": "मेरी स्वीकृतियां ट्रैक करें",
     "dash.prevalidation": "पूर्व-सत्यापन",
     "dash.grievances": "शिकायत डेस्क",
     "dash.officer": "अधिकारी कार्यक्षेत्र",
@@ -1380,7 +1380,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dash.btn_action": "वर्कफ़्लो खोलें",
 
     // KYA Page
-    "kya.title": "अपनी स्वीकृतियां जानें (KYA) विज़ार्ड",
+    "kya.title": "मेरी स्वीकृतियां खोजें",
     "kya.sub": "महाराष्ट्र उद्योगों के लिए नियमों पर आधारित वैधानिक क्लीयरेंस एवं सब्सिडी मूल्यांकन।",
     "kya.step1": "उद्योग क्षेत्र चयन",
     "kya.step2": "स्थान एवं MIDC क्षेत्र",
@@ -1401,7 +1401,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "vault.extracted_title": "निष्कर्षित डेटा",
 
     // DAG Page
-    "dag.title": "Directed Acyclic Graph (DAG) वर्कफ़्लो",
+    "dag.title": "स्वीकृति वर्कफ़्लो",
     "dag.sub": "बहु-विभागीय औद्योगिक स्वीकृतियों का इंटरैक्टिव समानांतर नेटवर्क।",
     "dag.reset": "सिमुलेशन रीसेट करें",
     "dag.stage1": "चरण 1: मुख्य पूर्व-शर्त",
@@ -1412,7 +1412,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "dag.passed": "सफल",
 
     // SLA Page
-    "sla.title": "SLA ट्रैकर एवं डीम्ड अप्रूवल सिमुलेटर",
+    "sla.title": "मेरी स्वीकृतियां ट्रैक करें",
     "sla.sub": "महाराष्ट्र लोक सेवा अधिकार अधिनियम के तहत समयबद्ध क्लीयरेंस की गारंटी।",
     "sla.simulator": "इंटरैक्टिव टाइम-लैप्स सिमुलेटर",
     "sla.pause": "सिमुलेशन रोकें",
@@ -1708,7 +1708,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "landing.platform_f3_link": "दस्तावेज़ वॉल्ट",
     "landing.platform_f4_title": "4. आवेदन ट्रैकिंग",
     "landing.platform_f4_desc": "महाराष्ट्र सेवा अधिकार अधिनियम के तहत सांविधिक स्वीकृति प्रवर्तन के साथ स्थिति, SLA काउंटडाउन और डेस्क समीक्षाओं को ट्रैक करें।",
-    "landing.platform_f4_link": "SLA ट्रैकर",
+    "landing.platform_f4_link": "मेरी स्वीकृतियां ट्रैक करें",
     "landing.platform_f5_title": "5. प्रोत्साहन एवं योजनाएं",
     "landing.platform_f5_desc": "महाराष्ट्र औद्योगिक नीति के तहत पात्र वित्तीय प्रोत्साहन, बिजली शुल्क माफी, स्टाम्प ड्यूटी छूट और पूंजी सब्सिडी खोजें।",
     "landing.platform_f5_link": "योजनाएं देखें",
