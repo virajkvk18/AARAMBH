@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   ArrowRight,
   Sparkles,
+  Bot,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
@@ -15,6 +16,7 @@ import type { NodeStatus } from "@/app/dashboard/dag/page";
 import OfficerReviewConsole, {
   type ReviewCase,
 } from "@/components/officer/OfficerReviewConsole";
+import AskAarambhOfficerChatbot from "@/components/chat/AskAarambhOfficerChatbot";
 
 // Map console queue refs to DAG node ids so the approval flow persists through
 // the existing backend node-approval endpoint.
@@ -141,6 +143,20 @@ export default function OfficerWorkspacePage() {
             </span>
           </div>
           <OfficerReviewConsole onApprove={handleApprove} />
+        </div>
+
+        {/* AARAMBH Officer Chatbot */}
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Bot className="w-4 h-4 text-[#FE7251]" />
+            <h2 className="text-sm font-black uppercase tracking-wider text-[#16060E]">
+              AARAMBH Officer Bot
+            </h2>
+            <span className="text-[10px] text-slate-400">
+              Scrutiny assistant — same Groq API key as the portal chatbot
+            </span>
+          </div>
+          <AskAarambhOfficerChatbot department={user?.department} />
         </div>
       </div>
     </div>

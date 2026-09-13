@@ -36,6 +36,7 @@ function LoginForm() {
   const [resetNotice, setResetNotice] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [duplicateNotice, setDuplicateNotice] = useState<string | null>(null);
+  const [roleNotice, setRoleNotice] = useState<string | null>(null);
 
   const redirectParam = searchParams.get("redirect");
 
@@ -53,6 +54,18 @@ function LoginForm() {
     const emailParam = searchParams.get("email");
     if (emailParam) {
       setEmail(emailParam.trim());
+    }
+    const roleParam = searchParams.get("role");
+    if (roleParam === "OFFICER") {
+      setActiveRole("OFFICER");
+      setRoleNotice(
+        "Officer workspaces are restricted to verified department officers. Sign in (or register) as an officer to access the Officer Review Console."
+      );
+    } else if (roleParam === "APPLICANT") {
+      setActiveRole("APPLICANT");
+      setRoleNotice(
+        "Investor workspaces require an enterprise account. Sign in as an investor to continue."
+      );
     }
   }, [searchParams]);
 
@@ -142,6 +155,14 @@ function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {/* Role-preselect notice (forwarded from role switch attempt) */}
+          {roleNotice && (
+            <div className="p-3 rounded-lg bg-orange-50 border border-orange-300 text-orange-900 text-xs flex items-center space-x-2">
+              <Info className="w-4 h-4 text-orange-600 shrink-0" />
+              <span>{roleNotice}</span>
+            </div>
+          )}
+
           {/* Existing Account Notice (forwarded from sign-up duplicate detection) */}
           {duplicateNotice && (
             <div className="p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center space-x-2">

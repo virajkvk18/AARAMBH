@@ -46,7 +46,23 @@ export default function QuickDemoSwitcher() {
   const { demoRole, setDemoRole, open, setOpen } = useDemoRole();
   const router = useRouter();
 
+  // A real authenticated account (Supabase UUID id) is pinned to the role it
+  // registered with. Demo sessions (no session or demo-* id) may switch freely.
+  const isDemoSession = !user || user.id.startsWith("demo-");
+
   const handleSwitch = (role: DemoRole) => {
+    if (!isDemoSession) {
+      // Real user: local role switching is disabled. Offer sign-in as that
+      // role instead so the officer nav/pages only unlock via real auth.
+      setOpen(false);
+      if (role === "OFFICER") {
+        router.push("/login?role=OFFICER");
+      } else if (role === "ADMIN") {
+        router.push("/login");
+      }
+      return;
+    }
+
     // Seed the demo workspace with the rules-engine sample project so the
     // applicant / officer dashboards render fully-populated instantly.
     if (role === "APPLICANT" && !useEnterpriseStore.getState().isAssessed) {
@@ -150,9 +166,9 @@ export default function QuickDemoSwitcher() {
             </div>
 
             <p className="mt-2.5 text-[9px] leading-relaxed text-slate-500 border-t border-slate-800 pt-2">
-              Demo evaluation mode — switches the local context view without a
-              re-authentication HTTP redirect. Production role is governed by
-              Supabase profiles &amp; RLS.
+              {isDemoSession
+                ? "Demo evaluation mode — switches the local context view without a re-authentication HTTP redirect. Production role is governed by Supabase profiles & RLS."
+                : "Signed-in accounts are scoped to their registered role. Officer access requires signing in as a verified officer."}
             </p>
           </motion.div>
         ) : (

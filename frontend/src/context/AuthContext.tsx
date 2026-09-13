@@ -626,6 +626,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Quick switch role (Demo evaluation helper)
   const switchRole = (newRole: "APPLICANT" | "OFFICER", department?: string) => {
+    // Real authenticated accounts are pinned to the role they signed up /
+    // registered with. Only demo sessions (no session or demo-* id) may flip
+    // perspectives client-side; real users must sign in as the target role.
+    if (user && !user.id.startsWith("demo-")) {
+      return;
+    }
+
     if (user) {
       const updated = {
         ...user,

@@ -17,13 +17,14 @@ import {
   Edit3,
   X,
   Save,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProfilePage() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
   const { t } = useLanguage();
   const {
     sector,
@@ -161,14 +162,24 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF9F5] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer shrink-0"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>Edit Profile Details</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-[#FFF9F5] hover:bg-[#FFF2DF] border border-[#FED17A] text-[#9B2A48] text-xs font-bold transition-colors cursor-pointer shrink-0"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Edit Profile Details</span>
+            </button>
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-rose-200 text-rose-700 text-xs font-bold transition-colors cursor-pointer hover:bg-rose-50 shrink-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
 
         {/* Profile Attributes Grid */}

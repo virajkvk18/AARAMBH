@@ -25,8 +25,13 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Real authenticated accounts (Supabase UUID id) are pinned to the role they
+  // registered with. Demo sessions (no session or demo-* id) may adopt the
+  // evaluation role from the DemoRoleContext.
+  const isDemoSession = !user || user.id.startsWith("demo-");
+
   const effectiveRole: RoleId =
-    user?.role === "ADMIN" || demoRole === "ADMIN"
+    user?.role === "ADMIN" || (isDemoSession && demoRole === "ADMIN")
       ? "ADMIN"
       : user?.role === "OFFICER"
       ? "OFFICER"
@@ -35,6 +40,18 @@ export default function DashboardLayout({
   const isApplicant = effectiveRole === "APPLICANT";
   const isOfficer = effectiveRole === "OFFICER";
   const isAdmin = effectiveRole === "ADMIN";
+
+  // Real accounts cannot jump roles client-side — send them to sign-in so the
+  // switch is backed by a genuine officer registration / session.
+  const handleRoleSelect = (target: "APPLICANT" | "OFFICER") => {
+    setMobileOpen(false);
+    if (!isDemoSession) {
+      router.push(`/login?role=${target}`);
+      return;
+    }
+    switchRole(target);
+    router.push(target === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard");
+  };
 
   const pageTitles: Record<string, string> = {
     "/dashboard": "Overview | AARAMBH",
@@ -156,10 +173,7 @@ export default function DashboardLayout({
               <div className="flex items-center justify-between p-1 bg-slate-100 rounded-lg border border-slate-200 text-[11px]">
                 <button
                   type="button"
-                  onClick={() => {
-                    switchRole("APPLICANT");
-                    router.push("/dashboard");
-                  }}
+                  onClick={() => handleRoleSelect("APPLICANT")}
                   className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
                     isApplicant
                       ? "bg-[#FE7251] text-white shadow-xs"
@@ -170,10 +184,7 @@ export default function DashboardLayout({
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    switchRole("OFFICER");
-                    router.push("/dashboard/officer-workspace");
-                  }}
+                  onClick={() => handleRoleSelect("OFFICER")}
                   className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
                     isOfficer || isAdmin
                       ? "bg-[#FE7251] text-white shadow-xs"
@@ -237,6 +248,10 @@ export default function DashboardLayout({
               type="button"
               onClick={() => {
                 const target = isOfficer || isAdmin ? "APPLICANT" : "OFFICER";
+                if (!isDemoSession) {
+                  router.push(`/login?role=${target}`);
+                  return;
+                }
                 switchRole(target);
                 router.push(target === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard");
               }}
