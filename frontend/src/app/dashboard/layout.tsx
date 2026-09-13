@@ -1,33 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Compass,
-  FolderLock,
-  FileCheck2,
-  GitFork,
-  Clock,
-  ShieldAlert,
-  MessageSquareWarning,
-  User,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  X,
-  CalendarCheck,
-  FileSpreadsheet,
-  TrendingDown,
-  Landmark,
-  RotateCcw,
-  BadgePercent,
-} from "lucide-react";
+import { LogOut, ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useLanguage } from "@/context/LanguageContext";
+import { useDemoRole } from "@/context/DemoRoleContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import SidebarNav from "@/components/navigation/SidebarNav";
+import {
+  NAV_BY_ROLE,
+  OFFICER_ONLY_ROUTES,
+  type RoleId,
+} from "@/components/navigation/navConfig";
 
 export default function DashboardLayout({
   children,
@@ -35,27 +19,39 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, isLoading, logout, switchRole } = useAuth();
-  const { t } = useLanguage();
+  const { demoRole } = useDemoRole();
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const effectiveRole: RoleId =
+    user?.role === "ADMIN" || demoRole === "ADMIN"
+      ? "ADMIN"
+      : user?.role === "OFFICER"
+      ? "OFFICER"
+      : "APPLICANT";
+
+  const isApplicant = effectiveRole === "APPLICANT";
+  const isOfficer = effectiveRole === "OFFICER";
+  const isAdmin = effectiveRole === "ADMIN";
+
   const pageTitles: Record<string, string> = {
     "/dashboard": "Overview | AARAMBH",
-    "/dashboard/kya": "Find My Approvals | AARAMBH",
+    "/dashboard/kya": "Policy & Approvals Search | AARAMBH",
     "/dashboard/caf": "Application Form | AARAMBH",
     "/dashboard/vault": "Document Vault | AARAMBH",
-    "/dashboard/prevalidation": "Check My Application | AARAMBH",
-    "/dashboard/dag": "Approval Workflow | AARAMBH",
-    "/dashboard/sla": "Track My Approvals | AARAMBH",
-    "/dashboard/analytics": "Approval Delays | AARAMBH",
-    "/dashboard/inspections": "Inspections | AARAMBH",
-    "/dashboard/renewals": "Compliance & Renewals | AARAMBH",
+    "/dashboard/prevalidation": "My Clearances & Applications | AARAMBH",
+    "/dashboard/dag": "Approval Roadmap (DAG) | AARAMBH",
+    "/dashboard/sla": "SLA Tracker | AARAMBH",
+    "/dashboard/sla-tracker": "SLA Tracker | AARAMBH",
+    "/dashboard/analytics": "SLA & Delay Alerts | AARAMBH",
+    "/dashboard/inspections": "Joint Site Inspections | AARAMBH",
+    "/dashboard/renewals": "Compliance Calendar | AARAMBH",
     "/dashboard/incentives": "Incentives & Schemes | AARAMBH",
     "/dashboard/grievances": "Help & Grievances | AARAMBH",
     "/dashboard/profile": "My Business Profile | AARAMBH",
-    "/dashboard/officer-workspace": "Officer Review | AARAMBH",
+    "/dashboard/officer-workspace": "Scrutiny Work Queue | AARAMBH",
     "/dashboard/department-approvals": "Department View | AARAMBH",
   };
   const currentTitle = pageTitles[pathname] || "Dashboard | AARAMBH";
@@ -66,6 +62,19 @@ export default function DashboardLayout({
       router.replace(`/login?redirect=${encodeURIComponent(pathname || "/dashboard")}`);
     }
   }, [isLoading, pathname, router, user]);
+
+  // Role-scope route guard: an applicant who hand-types an officer-only URL is
+  // redirected to their role home WITHOUT mutating the session role. Officer /
+  // Admin roles may access the protected routes.
+  useEffect(() => {
+    if (isLoading || !user) return;
+    const blocked = OFFICER_ONLY_ROUTES.some(
+      (r) => pathname === r || pathname.startsWith(`${r}/`)
+    );
+    if (blocked && !isOfficer && !isAdmin) {
+      router.replace("/dashboard");
+    }
+  }, [effectiveRole, pathname, router, isLoading, user, isOfficer, isAdmin]);
 
   if (isLoading || !user) {
     return (
@@ -78,113 +87,7 @@ export default function DashboardLayout({
     );
   }
 
-  const isOfficer = user?.role === "OFFICER";
-
-  interface NavItem {
-    label: string;
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
-    badge?: string;
-    aliases?: string[];
-    id?: string;
-  }
-
-  interface NavSection {
-    heading: string;
-    items: NavItem[];
-  }
-
-  // Role-based navigation configuration
-  const businessSections: NavSection[] = [
-    {
-      heading: "Overview",
-      items: [{ label: "Overview", href: "/dashboard", icon: LayoutDashboard }],
-    },
-    {
-      heading: "Application",
-      items: [
-        { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
-        { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
-        { label: "Incentives & Schemes", href: "/dashboard/incentives", icon: BadgePercent },
-      ],
-    },
-    {
-      heading: "Documents",
-      items: [{ label: "Document Vault", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] }],
-    },
-    {
-      heading: "Tracking & Compliance",
-      items: [
-        { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-        { label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-        { label: "Track My Approvals", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-        { label: "Approval Delays", href: "/dashboard/analytics", icon: TrendingDown },
-        { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
-        { label: "Compliance & Renewals", href: "/dashboard/renewals", icon: RotateCcw },
-      ],
-    },
-    {
-      heading: "Support & Account",
-      items: [
-        { label: "Help & Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
-        { label: "My Business Profile", href: "/dashboard/profile", icon: User },
-      ],
-    },
-  ];
-
-  const ministrySections: NavSection[] = [
-    {
-      heading: "Work Queue",
-      items: [{ label: "Officer Review", href: "/dashboard/officer-workspace", icon: ShieldAlert }],
-    },
-    {
-      heading: "Applications",
-      items: [
-        { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-        { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
-      ],
-    },
-    {
-      heading: "Verification",
-      items: [
-        { label: "Document Vault", href: "/dashboard/vault", icon: FolderLock, aliases: ["/dashboard/document-vault"] },
-        { label: "Check My Application", href: "/dashboard/prevalidation", icon: FileCheck2, aliases: ["/dashboard/pre-validation"] },
-        { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck },
-      ],
-    },
-    {
-      heading: "Approvals",
-      items: [
-        { id: "track-approvals", label: "Approval Workflow", href: "/dashboard/dag", icon: GitFork, aliases: ["/dashboard/workflows"] },
-        { label: "Department View", href: "/dashboard/department-approvals", icon: Landmark },
-      ],
-    },
-    {
-      heading: "Monitoring",
-      items: [
-        { label: "Track My Approvals", href: "/dashboard/sla", icon: Clock, aliases: ["/dashboard/sla-tracker"] },
-        { label: "Approval Delays", href: "/dashboard/analytics", icon: TrendingDown },
-      ],
-    },
-    {
-      heading: "Support",
-      items: [
-        { id: "grievances", label: "Help & Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
-        { label: "My Business Profile", href: "/dashboard/profile", icon: User },
-      ],
-    },
-  ];
-
-  const sections = isOfficer ? ministrySections : businessSections;
-
-  const isItemActive = (item: NavItem) => {
-    if (item.href === "/dashboard") {
-      return pathname === "/dashboard";
-    }
-    const exactMatch = pathname === item.href;
-    const aliasMatch = item.aliases?.some((a) => pathname === a);
-    return exactMatch || !!aliasMatch;
-  };
+  const sections = NAV_BY_ROLE[effectiveRole];
 
   return (
     <div className="h-[calc(100vh-96px)] sm:h-[calc(100vh-104px)] h-[calc(100dvh-96px)] sm:h-[calc(100dvh-104px)] w-full bg-slate-50 flex overflow-hidden">
@@ -208,11 +111,11 @@ export default function DashboardLayout({
             <div className={`flex items-center justify-between w-full overflow-hidden ${collapsed ? "lg:hidden" : "flex"}`}>
               <div className="flex items-center space-x-2.5 overflow-hidden">
                 <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
-                  {isOfficer ? "GOV" : "ENT"}
+                  {isOfficer || isAdmin ? "GOV" : "ENT"}
                 </div>
                 <div className="truncate">
                   <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
-                    {user?.role === "OFFICER" ? "Officer Console" : "Investor Workspace"}
+                    {isOfficer ? "Officer Console" : isAdmin ? "Admin Console" : "Investor Workspace"}
                   </p>
                   <p className="text-[10px] text-slate-500 truncate">Maharashtra Single Window</p>
                 </div>
@@ -222,7 +125,7 @@ export default function DashboardLayout({
             {collapsed && (
               <div className="hidden lg:flex items-center justify-center mx-auto">
                 <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FE7251] border border-orange-200 flex items-center justify-center font-bold text-xs">
-                  {isOfficer ? "GOV" : "ENT"}
+                  {isOfficer || isAdmin ? "GOV" : "ENT"}
                 </div>
               </div>
             )}
@@ -258,7 +161,7 @@ export default function DashboardLayout({
                     router.push("/dashboard");
                   }}
                   className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
-                    !isOfficer
+                    isApplicant
                       ? "bg-[#FE7251] text-white shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
@@ -272,7 +175,7 @@ export default function DashboardLayout({
                     router.push("/dashboard/officer-workspace");
                   }}
                   className={`flex-1 py-1 px-2 rounded-md font-bold text-center transition-all cursor-pointer ${
-                    isOfficer
+                    isOfficer || isAdmin
                       ? "bg-[#FE7251] text-white shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
@@ -284,47 +187,11 @@ export default function DashboardLayout({
           )}
 
           {/* Navigation Links with grouped sections */}
-          <nav className="p-2.5 space-y-3 overflow-y-auto flex-1 min-h-0">
-            {sections.map((section, idx) => (
-              <div key={idx}>
-                {!collapsed && (
-                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-2.5 mb-1">
-                    {section.heading}
-                  </p>
-                )}
-                <div className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const IconComp = item.icon;
-                    const isActive = isItemActive(item);
-                    return (
-                      <Link
-                        key={item.id ?? item.href}
-                        href={item.href}
-                        onClick={() => setMobileOpen(false)}
-                        title={collapsed ? item.label : undefined}
-                        className={`flex items-center justify-between px-2.5 py-2.5 lg:py-2 rounded-lg text-xs font-medium transition-colors ${
-                          isActive
-                            ? "bg-[#FE7251] text-white"
-                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-2.5 overflow-hidden">
-                          <IconComp
-                            className={`w-4 h-4 shrink-0 ${
-                              isActive ? "text-white" : "text-slate-500"
-                            }`}
-                          />
-                          <span className={`truncate ${collapsed ? "lg:hidden" : "block"}`}>
-                            {item.label}
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </nav>
+          <SidebarNav
+            sections={sections}
+            collapsed={collapsed}
+            onNavigate={() => setMobileOpen(false)}
+          />
         </div>
 
         {/* User Card at bottom of Sidebar */}
@@ -369,15 +236,15 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={() => {
-                const target = isOfficer ? "APPLICANT" : "OFFICER";
+                const target = isOfficer || isAdmin ? "APPLICANT" : "OFFICER";
                 switchRole(target);
                 router.push(target === "OFFICER" ? "/dashboard/officer-workspace" : "/dashboard");
               }}
               className="text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-full border border-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
               title="Click to toggle perspective"
             >
-              <span className={`w-2 h-2 rounded-full ${isOfficer ? "bg-amber-500" : "bg-emerald-500"}`} />
-              <span>{isOfficer ? "Officer View (Switch)" : "Investor View (Switch)"}</span>
+              <span className={`w-2 h-2 rounded-full ${isOfficer || isAdmin ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <span>{isOfficer || isAdmin ? "Officer View (Switch)" : "Investor View (Switch)"}</span>
             </button>
           </div>
         </div>

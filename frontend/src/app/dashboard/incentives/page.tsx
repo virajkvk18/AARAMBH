@@ -27,6 +27,9 @@ import {
   type CalculatedIncentives,
 } from "@/data/policyRulesEngine";
 import { Button } from "@/components/ui/button";
+import PSISubsidyCalculator, {
+  type PSICalculatorDefaults,
+} from "@/components/incentives/PSISubsidyCalculator";
 
 interface IncentiveScheme {
   id: string;
@@ -521,6 +524,31 @@ export default function IncentivesPage() {
           </div>
         )}
       </div>
+
+      {/* Interactive PSI 2025 ROI Calculator */}
+      {(() => {
+        const calculatorDefaults: PSICalculatorDefaults = {
+          investmentCr: financialCapexCr > 0 ? Math.min(Math.max(financialCapexCr, 0.5), 500) : 25,
+        };
+        return (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-[#16060E] tracking-tight uppercase">
+                  Interactive PSI 2025 ROI Calculator
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Drag capital investment, pick your taluka category and watch your estimated incentive envelope update in real time.
+                </p>
+              </div>
+              <span className="text-[11px] font-bold text-[#9B2A48] bg-[#FFF2DF] border border-[#FED17A] px-2.5 py-1 rounded-lg hidden sm:inline-flex">
+                Interactive Demo Calculator
+              </span>
+            </div>
+            <PSISubsidyCalculator initial={calculatorDefaults} />
+          </section>
+        );
+      })()}
 
       {/* Scheme Catalogue */}
       <div>

@@ -31,6 +31,9 @@ import {
 } from "@/store/enterpriseStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { useLanguage } from "@/context/LanguageContext";
+import DocumentVaultGrid, {
+  type VaultCertificateDoc,
+} from "@/components/vault/DocumentVaultGrid";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -62,6 +65,61 @@ const mockDigiLockerPushedDocs: DigiLockerDocItem[] = [
 ];
 
 
+
+// Demo statutory certificates registry driving the expiry-tag compliance monitor.
+// Expirations are computed relative to "now" so the demo always demonstrates the
+// ACTIVE VALID / EXPIRING SOON / EXPIRED / PENDING REVIEW status taxonomy.
+const vaultComplianceDocs: VaultCertificateDoc[] = (() => {
+  const fromNow = (days: number) =>
+    new Date(Date.now() + days * 86400000).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  return [
+    {
+      id: "VC-FIRE-2026-011",
+      name: "Fire Safety Inspection Report",
+      issuingAuthority: "State Directorate of Fire & Emergency Services",
+      issueDate: fromNow(-353),
+      expiresAt: fromNow(12),
+    },
+    {
+      id: "VC-STRUCT-2026-017",
+      name: "Building Structural Certificate",
+      issuingAuthority: "MIDC Planning Wing / Licensed Structural Engineer",
+      issueDate: fromNow(-357),
+      expiresAt: fromNow(9),
+    },
+    {
+      id: "VC-CTO-2026-003",
+      name: "MPCB Consent to Operate (CTO)",
+      issuingAuthority: "Maharashtra Pollution Control Board",
+      issueDate: fromNow(-240),
+      expiresAt: fromNow(240),
+    },
+    {
+      id: "VC-FACTORY-2026-008",
+      name: "Factory License (DISH)",
+      issuingAuthority: "Directorate of Industrial Safety & Health",
+      issueDate: fromNow(-300),
+      expiresAt: fromNow(300),
+    },
+    {
+      id: "VC-MIDC-2026-302",
+      name: "MIDC Industrial Estate Provisional Allotment",
+      issuingAuthority: "Maharashtra Industrial Development Corporation",
+      issueDate: fromNow(-38),
+    },
+    {
+      id: "VC-GST-2026-001",
+      name: "GST Registration Certificate",
+      issuingAuthority: "Goods & Services Tax Network (GSTN)",
+      issueDate: fromNow(-420),
+      expiresAt: fromNow(720),
+    },
+  ];
+})();
 
 // Prototype data for documentation requirements per clearance type
 const clearanceRequirements = [
@@ -586,6 +644,19 @@ State Single Window Node: Government of Maharashtra (AARAMBH)
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
+
+      {/* SECTION 1.5: STATUTORY DOCUMENT COMPLIANCE MONITOR (Expiry Status Tags) */}
+      <DocumentVaultGrid
+        documents={vaultComplianceDocs}
+        onView={(doc) => {
+          const target = uploadedDocuments.find((u) => u.name === doc.name) ?? null;
+          if (target) handleOpenPreview(target);
+        }}
+        onDownload={(doc) => {
+          const target = uploadedDocuments.find((u) => u.name === doc.name);
+          if (target) handleDownloadDocument(target);
+        }}
+      />
 
 {/* SECTION 1: DIGILOCKER STATUTORY CERTIFICATES (SIH Demo Workflow) */}
 <div className="mb-6 p-4 bg-[#FFF7F0] border border-[#FED17A] rounded-xl">

@@ -7,6 +7,8 @@ import AskAarambhChatbot from "@/components/chat/AskAarambhChatbot";
 import NotificationToast from "@/components/layout/NotificationToast";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { DemoRoleProvider } from "@/context/DemoRoleContext";
+import QuickDemoSwitcher from "@/components/demo/QuickDemoSwitcher";
 
 export const metadata: Metadata = {
   title: "AARAMBH | Single Window Industrial Clearance Portal - Govt. of Maharashtra",
@@ -34,12 +36,15 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <AuthProvider>
-            <TopUtilityBar />
-            <Header />
-            <NotificationToast />
-            <main className="flex-1 w-full min-h-0 flex flex-col">{children}</main>
-            <Footer />
-            <AskAarambhChatbot />
+            <DemoRoleProvider>
+              <TopUtilityBar />
+              <Header />
+              <NotificationToast />
+              <main className="flex-1 w-full min-h-0 flex flex-col">{children}</main>
+              <Footer />
+              <AskAarambhChatbot />
+              <QuickDemoSwitcher />
+            </DemoRoleProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

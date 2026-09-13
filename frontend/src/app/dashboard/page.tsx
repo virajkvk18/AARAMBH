@@ -24,16 +24,23 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEnterpriseStore } from "@/store/enterpriseStore";
+import { useDemoRole } from "@/context/DemoRoleContext";
 import { SAMPLE_PROFILES, buildSampleAssessment } from "@/lib/sampleProjects";
 import { useNotificationStore } from "@/store/notificationStore";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import StateAnalyticsBar from "@/components/dashboard/StateAnalyticsBar";
+import CriticalBlockerCard, {
+  type CriticalBlocker,
+} from "@/components/dashboard/CriticalBlockerCard";
+import ApplicationStatusCard from "@/components/applications/ApplicationStatusCard";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const { clearances, renewals, applicableIncentives, isAssessed, sector, submittedAt } = useEnterpriseStore();
+  const { demoRole } = useDemoRole();
+  const { clearances, renewals, applicableIncentives, isAssessed, sector, submittedAt, applicationRef, grievanceTickets } = useEnterpriseStore();
 
   const [activeTab, setActiveTab] = useState<"approvals" | "renewals" | "incentives">("approvals");
   const [renewalNotice, setRenewalNotice] = useState<string | null>(null);
@@ -74,6 +81,46 @@ export default function DashboardHomePage() {
 
   const userName = user?.name || "Investor";
   const isOfficer = user?.role === "OFFICER";
+
+  // ----- Task 5: "Do This Now" critical blocker trigger (ACTION_REQUIRED / QUERY_PENDING) -----
+  const demoCriticalBlocker: CriticalBlocker = {
+    id: "blk-dish-blueprint",
+    title: "Critical Action Required: Factory Building Plan & Safety Approval",
+    blockingAuthority: "Directorate of Industrial Safety & Health (DISH)",
+    legalCitation:
+      "Submitted architectural elevation plan lacks emergency egress stairwell dimensions as required under Section 38 of the Factories Act 1948.",
+    statuteRef: "Section 38 · Factories Act 1948",
+    actionLabel: "Upload Corrected Blueprint & Resubmit →",
+    clearanceName: "Factory License & Safety Sign-off (DISH)",
+  };
+  const hasQueryPending =
+    grievanceTickets?.some((g) => g.status !== "resolved") ?? false;
+  const hasInReviewClearance =
+    clearances?.some((c) => c.status === "in_review" || c.status === "submitted") ?? false;
+  const showCriticalBlocker = !isOfficer && isAssessed && (hasQueryPending || hasInReviewClearance);
+  const [blockerResubmitted, setBlockerResubmitted] = useState<string | null>(null);
+
+  // ----- Task 6: Deemed approval (SLA breached) evaluation -----
+  const elapsedSlaWindow = submittedAt
+    ? Math.max(0, (new Date().getTime() - new Date(submittedAt).getTime()) / 86400000)
+    : 0;
+  const breachedClearance =
+    clearances?.find(
+      (c) =>
+        (c.status === "in_review" || c.status === "submitted" || !c.status) &&
+        elapsedSlaWindow > (c.slaDays || 14)
+    ) ?? null;
+  const deemedCandidate = breachedClearance
+    ? {
+        id: breachedClearance.id,
+        name: breachedClearance.name,
+        department: breachedClearance.department,
+        slaDays: breachedClearance.slaDays || 14,
+        daysElapsed: elapsedSlaWindow,
+        applicationRef: applicationRef || "MH-CAF-2026-00412",
+        enterpriseName: user?.enterpriseName || user?.name || "Applicant Enterprise",
+      }
+    : null;
 
   // Dynamic KPI Calculations
   const activeClearancesCount = clearances.length;
@@ -468,6 +515,31 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* ADMIN GOVERNANCE DEMO BANNER (Quick Demo Switcher context) */}
+      {demoRole === "ADMIN" && (
+        <div className="p-3.5 rounded-2xl bg-slate-950 border border-sky-500/40 text-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center gap-3">
+            <span className="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-300 flex items-center justify-center shrink-0 ring-1 ring-sky-400/40">
+              <ShieldAlert className="w-5 h-5" />
+            </span>
+            <div>
+              <p className="text-xs font-bold text-sky-300 uppercase tracking-wider">
+                Admin Governance Dashboard
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                System-level oversight context. RLS-enforced role remains OFFICER for demo parity with Supabase schema.
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-sky-300 bg-sky-500/10 border border-sky-400/30 rounded-lg px-2.5 py-1 w-fit">
+            Demo Switcher · System Administrator
+          </span>
+        </div>
+      )}
+
+      {/* TASK 2: Executive State Analytics Command Header Bar */}
+      <StateAnalyticsBar />
+
       {/* CRITICAL SLA & STATUTORY ALERT BANNER */}
       {criticalNotifications.length > 0 && (
         <div className="p-4 sm:p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-300">
@@ -527,6 +599,36 @@ export default function DashboardHomePage() {
           </Link>
         </div>
       </Card>
+
+      {/* TASK 5: "DO THIS NOW" CRITICAL BLOCKER CARD (Applicant view) */}
+      {showCriticalBlocker && (
+        <CriticalBlockerCard
+          blocker={demoCriticalBlocker}
+          onResubmitted={(b) => setBlockerResubmitted(b.clearanceName)}
+        />
+      )}
+
+      {/* TASK 6: DEEMED APPROVAL STATUS CARD (SLA breached) */}
+      {!isOfficer && deemedCandidate && (
+        <ApplicationStatusCard clearance={deemedCandidate} />
+      )}
+
+      {blockerResubmitted && (
+        <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 animate-in fade-in">
+          <p className="text-xs leading-relaxed">
+            <strong>Corrective blueprint received.</strong> {blockerResubmitted}{" "}
+            resubmission is in DISH review with a fresh statutory SLA clock.
+          </p>
+          <button
+            type="button"
+            onClick={() => setBlockerResubmitted(null)}
+            className="text-emerald-600 hover:text-emerald-800 font-bold text-xs cursor-pointer"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* 1.5 WELCOME TOAST (first-time per session) */}
       {welcomeToast && (
