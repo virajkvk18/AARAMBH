@@ -50,19 +50,19 @@ export const APPLICANT_NAV_ITEMS: NavSection[] = [
     heading: "My Industrial Journey",
     items: [
       {
-        label: "My Clearances & Applications",
+        label: "My Applications",
         href: "/dashboard/sla",
         icon: FileCheck2,
         aliases: ["/dashboard/sla-tracker", "/dashboard/prevalidation", "/dashboard/pre-validation"],
       },
       {
-        label: "Approval Roadmap (DAG)",
+        label: "Approval Journey",
         href: "/dashboard/dag",
         icon: GitMerge,
         aliases: ["/dashboard/workflows"],
       },
       {
-        label: "SLA & Delay Alerts",
+        label: "Deadlines & Alerts",
         href: "/dashboard/analytics",
         icon: AlertTriangle,
       },
@@ -72,7 +72,7 @@ export const APPLICANT_NAV_ITEMS: NavSection[] = [
         icon: CalendarCheck,
       },
       {
-        label: "Compliance Calendar",
+        label: "Compliance & Renewals",
         href: "/dashboard/renewals",
         icon: ShieldCheck,
       },
@@ -81,11 +81,11 @@ export const APPLICANT_NAV_ITEMS: NavSection[] = [
   {
     heading: "Application & Documents",
     items: [
-      { label: "Find My Approvals", href: "/dashboard/kya", icon: Compass },
-      { label: "Application Form", href: "/dashboard/caf", icon: FileSpreadsheet },
-      { label: "Incentives & Schemes", href: "/dashboard/incentives", icon: BadgePercent },
+      { label: "Track Approvals", href: "/dashboard/kya", icon: Compass },
+      { label: "Start New Application", href: "/dashboard/caf", icon: FileSpreadsheet },
+      { label: "Incentives & Benefits", href: "/dashboard/incentives", icon: BadgePercent },
       {
-        label: "Document Vault",
+        label: "My Documents",
         href: "/dashboard/vault",
         icon: FolderLock,
         aliases: ["/dashboard/document-vault"],
@@ -95,7 +95,7 @@ export const APPLICANT_NAV_ITEMS: NavSection[] = [
   {
     heading: "Support & Account",
     items: [
-      { label: "Help & Grievances", href: "/dashboard/grievances", icon: MessageSquareWarning },
+      { label: "Help & Support", href: "/dashboard/grievances", icon: MessageSquareWarning },
       { label: "My Business Profile", href: "/dashboard/profile", icon: User },
     ],
   },
