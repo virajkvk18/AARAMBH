@@ -57,8 +57,21 @@ function readInitialRole(): DemoRole {
 }
 
 export function DemoRoleProvider({ children }: { children: React.ReactNode }) {
-  const [demoRole, setDemoRoleState] = useState<DemoRole>(readInitialRole);
+  // Initialize deterministically so the server render and the client's first
+  // (hydration) render are identical. The persisted role is re-read in an
+  // effect after mount, when browser-only localStorage is safe to access.
+  const [demoRole, setDemoRoleState] = useState<DemoRole>("APPLICANT");
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    // Re-hydrate the persisted role only after mount, when browser-only
+    // localStorage is safe to read. Deferred so the first client render is
+    // identical to the server render (deterministic hydration).
+    const id = setTimeout(() => {
+      setDemoRoleState(readInitialRole());
+    }, 0);
+    return () => clearTimeout(id);
+  }, []);
 
   const setDemoRole = useCallback((role: DemoRole) => {
     setDemoRoleState(role);
